@@ -147,10 +147,14 @@ class Utils(object):
 		return table
 
 	@classmethod
-	def write_fits(cls,data,filename):
+	def write_fits(cls,data,filename,header=None):
 		""" Read data to FITS image """
 
-		hdu= fits.PrimaryHDU(data)
+		if header:
+			hdu= fits.PrimaryHDU(data,header)
+		else:
+			hdu= fits.PrimaryHDU(data)
+
 		hdul= fits.HDUList([hdu])
 		hdul.writeto(filename,overwrite=True)
 
@@ -207,6 +211,47 @@ class Utils(object):
 
 		return crop_data
 
-	
+	@classmethod
+	def getJyBeamToPixelConvFactor(cls,bmaj,bmin,dx,dy):
+		""" Compute conversion factor from Jy/beam to Jy/pixel """
 
-	
+		beamArea= np.pi * bmaj * bmin/(4.*np.log(2))
+		pixArea= np.abs(dx*dy)
+		toJyPerPix = pixArea/beamArea
+
+		return toJyPerPix
+
+	@classmethod
+	def convertImgToJyPixel(cls,filename,outfile):
+		""" Convert image units from original to Jy/pixel """
+
+		# - Read fits image
+		data, header= Utils.read_fits(filename)
+		units= header['BUNIT']
+		bmaj= header['BMAJ']
+		bmin= header['BMIN']
+		dx= header['CDELT1']
+		dy= header['CDELT2']
+
+		# - Convert data
+		convFactor= 1
+		if units=='JY/BEAM' or units=='Jy/beam':
+			convFactor= Utils.getJyBeamToPixelConvFactor(bmaj,bmin,dx,dy)
+		elif units=='Jy/pixel' or units=='JY/PIXEL':
+			convFactor= 1
+		else:
+			logger.error('Units ' + units + ' not recognized!')
+			return -1	
+						
+		# - Scale data
+		data_conv= data*convFactor
+		header_conv= header	
+
+		# - Edit header
+		header_conv['BUNIT']= 'Jy/pixel'
+
+		# - Write converted fits to file
+		Utils.write_fits(data_conv,outfile,header_conv)
+
+		return 0
+

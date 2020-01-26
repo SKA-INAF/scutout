@@ -138,7 +138,7 @@ class CutoutHelper(object):
 		return 0
 
 	
-	def __extract_survey_cutout(self,survey):
+	def __extract_raw_cutout(self,survey):
 		""" Find cutout for given survey """
 		
 		# - Get survey data options
@@ -147,7 +147,7 @@ class CutoutHelper(object):
 		metadata_tbl= data_dir + '/metadata.tbl'
 		print("metadata_tbl=%s" % metadata_tbl)
 		
-		# - Search in which survey file the source is located
+		# - Search in which survey file the source is located using Montage mCoverageCheck routine
 		coverage_tbl= self.tmpdir + '/coverage_' + survey + '.tbl'
 		logger.info('Making coverage table ' + coverage_tbl + ' (r=' + str(self.outer_cutout) + ') ...')
 		montage.mCoverageCheck(
@@ -159,9 +159,9 @@ class CutoutHelper(object):
 		)
 
 		# - Read coverage table to check if an image was found
-		#table= Utils.read_ascii_table(coverage_tbl,row_start=0,delimiter='',format='Ipac')
-		table= ascii.read(coverage_tbl)
-		if not table:
+		try:
+			table= ascii.read(coverage_tbl)
+		except Exception as ex:
 			logger.error('Failed to read coverage table!')
 			return -1
 
@@ -175,13 +175,33 @@ class CutoutHelper(object):
 		imgfile= table[0]['fname']
 		imgfile_fullpath= data_dir + '/' + imgfile
 		imgfile_base= os.path.basename(imgfile)
+		imgfile_local= self.sname + '_' + survey + '.fits'
+		imgfile_local_fullpath= self.tmpdir + '/' + imgfile_local
 		
 		# - Copy file to tmp dir
-		shutil.copy(imgfile_fullpath,self.tmpdir)
+		shutil.copy(imgfile_fullpath,imgfile_local_fullpath)
 
-		self.img_files[survey]= self.tmpdir + '/' + imgfile_base
-		print("img files")
+		# - Extract the cutout using Montage
+		cutout_file= self.tmpdir + '/' + self.sname + '_' + survey + '_cut.fits'
+		montage.mSubimage(
+			in_image=imgfile_local_fullpath, 
+			out_image=cutout_file, 
+			ra=self.ra, dec=self.dec, xsize=self.outer_cutout
+		)
+		self.img_files[survey]= cutout_file
+		
+		# - Convert to Jy/pixel units?
+		if self.config.convertToJyPixelUnits:
+			logger.info('Convert image in Jy/pixel units ...')
+			cutout_file_scaled= self.tmpdir + '/' + self.sname + '_' + survey + '_cut_jypix.fits'
+			Utils.convertImgToJyPixel(cutout_file,cutout_file_scaled)
+			self.img_files[survey]= cutout_file_scaled
+			
+		print("cutout file")
 		print(self.img_files)
+
+		return 0
+
 
 	def run(self):
 		""" Run search for single source """
@@ -198,7 +218,7 @@ class CutoutHelper(object):
 		#*************************************
 		for survey in self.surveys:
 			logger.info('Searching cutout for source ' + self.sname + ' for survey ' + survey + ' ...')
-			self.__extract_survey_cutout(survey)
+			self.__extract_raw_cutout(survey)
 
 
 

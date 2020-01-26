@@ -56,6 +56,7 @@ class Config(object):
 		self.workdir= os.getcwd()
 		self.outer_cutout= 10 # arcmin
 		self.inner_cutout= 1 # arcmin
+		self.convertToJyPixelUnits= True
 
 		# - FIRST survey options
 		first_options= {
@@ -114,7 +115,10 @@ class Config(object):
 		if self.parser.has_option('CUTOUT', 'inner_cutout'):
 			option_value= self.parser.get('CUTOUT', 'inner_cutout')
 			if option_value:
-				self.inner_cutout= float(option_value)			
+				self.inner_cutout= float(option_value)	
+
+		if self.parser.has_option('CUTOUT', 'convert_to_jy_pixel'):
+			self.convertToJyPixelUnits= self.parser.getboolean('CUTOUT', 'convert_to_jy_pixel') 		
 
 		return 0
 
