@@ -1,6 +1,6 @@
 License and Disclaimer
 
-Copyright 2019 Simone Riggi, Paolo Leto, Carla Buemi, Filomena Bufano (INAF)
+Copyright 2020 Simone Riggi, Paolo Leto, Carla Buemi, Filomena Bufano (INAF)
 
 scutout is free software: you can redistribute it and/or modify it 
 under the terms of the GNU General Public License as published by
