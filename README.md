@@ -19,4 +19,4 @@ All dependencies will be automatically downloaded and installed in ```$INSTALL_D
 To use package scripts:
 
 * Add binary directory to your ```PATH``` environment variable:   
-  ``` export PATH=$PATH:$INSTALL_DIR/bin ``
+  ``` export PATH=$PATH:$INSTALL_DIR/bin ```    
