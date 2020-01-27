@@ -51,22 +51,22 @@ class Config(object):
 	def __set_defaults(self):
 		""" Set default options """
 				
-		# - Main options
-		self.surveys= []
+		# - Run options		
 		self.workdir= os.getcwd()
+
+		# - Cutout search
+		self.surveys= []
 		self.outer_cutout= 10 # arcmin
 		self.inner_cutout= 1 # arcmin
 		self.convertToJyPixelUnits= True
 
 		# - FIRST survey options
 		first_options= {
-			#"search": False,
 			"path": ""
 		}
 
 		# - MGPS survey options
 		mgps_options= {
-			#"search": False,
 			"path": ""
 		}
 
@@ -82,43 +82,61 @@ class Config(object):
 	def parse(self,filename):
 		""" Read input INI config file and set options """
 
+		# ***************************
+		# **    READ CONFIG FILE
+		# ***************************
 		# - Read config parser
 		self.parser.read(filename)
 		print(self.parser.sections())
 		#self.__print_options()
 
+		# ***************************
+		# **    PARSE OPTIONS
+		# ***************************
+		# - Parse RUN section options
+		if self.parser.has_option('RUN', 'workdir'):
+			option_value= self.parser.get('RUN', 'workdir')	
+			if option_value:
+				self.workdir= option_value
 
-		# - Check mandatory options
-		# ... 
-
-		# - Parse DATA section options
-		if self.parser.has_option('DATA', 'surveys'):
-			option_value= self.parser.get('DATA', 'surveys')	
+		
+		# - Parse cutout option sections
+		if self.parser.has_option('CUTOUT_SEARCH', 'surveys'):
+			option_value= self.parser.get('CUTOUT_SEARCH', 'surveys')	
 			if option_value:
 				self.surveys= option_value.split(",")
-				print('surveys')
-				print(self.surveys)
-				print(type(self.surveys))
+				
+		if self.parser.has_option('CUTOUT_SEARCH', 'outer_cutout'):
+			option_value= self.parser.get('CUTOUT_SEARCH', 'outer_cutout')
+			if option_value:
+				self.outer_cutout= float(option_value)			
+		
+		if self.parser.has_option('CUTOUT_SEARCH', 'inner_cutout'):
+			option_value= self.parser.get('CUTOUT_SEARCH', 'inner_cutout')
+			if option_value:
+				self.inner_cutout= float(option_value)	
+
+		if self.parser.has_option('CUTOUT_SEARCH', 'convert_to_jy_pixel'):
+			self.convertToJyPixelUnits= self.parser.getboolean('CUTOUT_SEARCH', 'convert_to_jy_pixel') 		
 
 		# - Parse FIRST DATA section options
 		if self.parser.has_option('FIRST_DATA', 'path'):
 			option_value= self.parser.get('FIRST_DATA', 'path')	
 			if option_value:
 				self.survey_options['first']['path']= option_value
-			
-		# - Parse cutout option sections
-		if self.parser.has_option('CUTOUT', 'outer_cutout'):
-			option_value= self.parser.get('CUTOUT', 'outer_cutout')
-			if option_value:
-				self.outer_cutout= float(option_value)			
-		
-		if self.parser.has_option('CUTOUT', 'inner_cutout'):
-			option_value= self.parser.get('CUTOUT', 'inner_cutout')
-			if option_value:
-				self.inner_cutout= float(option_value)	
 
-		if self.parser.has_option('CUTOUT', 'convert_to_jy_pixel'):
-			self.convertToJyPixelUnits= self.parser.getboolean('CUTOUT', 'convert_to_jy_pixel') 		
+		# - Parse MGPS DATA section options
+		if self.parser.has_option('MGPS_DATA', 'path'):
+			option_value= self.parser.get('MGPS_DATA', 'path')	
+			if option_value:
+				self.survey_options['first']['path']= option_value
+			
+		# ***************************
+		# **    VALIDATE CONFIG
+		# ***************************
+		if self.__validate()<0:
+			logger.error("Invalid configuration options detected, please check!")
+			return -1
 
 		return 0
 
@@ -129,7 +147,14 @@ class Config(object):
 		""" Validate config file """
 		
 		# - Check mandatory options
+		# ...
+		# ...
+		
+		return 0
 
+	#==============================
+	#     PRINT OPTIONS
+	#==============================
 	def __print_options(self):
 		""" """
 	
