@@ -2,7 +2,7 @@
 Tool to extract source cutouts from a collection of FITS astronomical images
 
 ## **Credit**
-If you use scutout for your research, please add repository link and acknowledge authors (S.Riggi, P.Leto, C.Buemi, F.Bufano) in your papers:
+This software is distributed with GPLv3 license. If you use scutout for your research, please add repository link or acknowledge authors in your papers.
 
 ## **Installation**  
 
