@@ -11,6 +11,7 @@ import logging
 import numpy as np
 import fnmatch
 import shutil
+import errno
 
 ## ASTRO MODULES
 from astropy.io import fits
@@ -36,6 +37,17 @@ class Utils(object):
 	def __init__(self):
 		""" Return a Utils object """
 		
+	@classmethod
+	def mkdir(cls,path):
+		""" Create a directory """
+		try:
+			os.makedirs(path)
+		except OSError as exc:
+			if exc.errno != errno.EEXIST:
+				logger.error('Failed to create directory ' + path + '!')
+				return -1
+		return 0
+
 	@classmethod
 	def has_patterns_in_string(cls,s,patterns):
 		""" Return true if patterns are found in string """
@@ -222,21 +234,62 @@ class Utils(object):
 		return toJyPerPix
 
 	@classmethod
-	def convertImgToJyPixel(cls,filename,outfile):
+	def convertImgToJyPixel(cls,filename,outfile,band=-1):
 		""" Convert image units from original to Jy/pixel """
 
 		# - Read fits image
 		data, header= Utils.read_fits(filename)
+
+		# - Check header keywords
+		if not header['BUNIT']:
+			logger.error("No BUNIT keyword present in file " + filename + ", cannot compute conversion factor!")
+			return -1
+		if not header['BMAJ']:
+			logger.error("No BMAJ keyword present in file " + filename + ", cannot compute conversion factor!")
+			return -1
+		if not header['BMIN']:
+			logger.error("No BMIN keyword present in file " + filename + ", cannot compute conversion factor!")
+			return -1
+		if not header['CDELT1']:
+			logger.error("No CDELT1 keyword present in file " + filename + ", cannot compute conversion factor!")
+			return -1
+		if not header['CDELT2']:
+			logger.error("No CDELT2 keyword present in file " + filename + ", cannot compute conversion factor!")
+			return -1
 		units= header['BUNIT']
 		bmaj= header['BMAJ']
 		bmin= header['BMIN']
 		dx= header['CDELT1']
 		dy= header['CDELT2']
 
+		#==================
 		# - Convert data
+		#==================
 		convFactor= 1
+		
+		# - RADIO SURVEY MAPS
 		if units=='JY/BEAM' or units=='Jy/beam':
 			convFactor= Utils.getJyBeamToPixelConvFactor(bmaj,bmin,dx,dy)
+
+		# - WISE MAPS
+		elif units=='DN':
+			if band==1:
+				convFactor= 1.9350E-06
+			elif band==2:
+				convFactor= 2.7048E-06
+			elif band==3:
+				convFactor= 1.8326e-06
+			elif band==4:
+				convFactor= 5.2269E-05
+			else:
+				logger.error("Invalid or unknown band (" + str(band) + ") given!")
+				return -1
+
+		# - HERSCHEL/SPITZER MAPS
+		elif units=='MJy/sr':
+			convFactor= 1.e+6*dx*dy/(206265.*206265.)
+
+		# - Jy/pixel (e.g. simulated maps)
 		elif units=='Jy/pixel' or units=='JY/PIXEL':
 			convFactor= 1
 		else:
