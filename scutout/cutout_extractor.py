@@ -124,13 +124,8 @@ class CutoutHelper(object):
 
 		# - Create source work directories
 		logger.info('Creating source work directory ' + self.topdir + ' ...')
-		try:
-			os.makedirs(self.tmpdir)
-		except OSError as exc:
-			if exc.errno != errno.EEXIST:
-				logger.error('Source work directory creation failed!')
-				return -1
-
+		Utils.mkdir(self.tmpdir)
+		
 		# - Enter tmp directory
 		logger.info('Entering source work tmp directory ' + self.tmpdir + ' ...')
 		os.chdir(self.tmpdir)
@@ -148,11 +143,12 @@ class CutoutHelper(object):
 		print("metadata_tbl=%s" % metadata_tbl)
 		
 		# - Search in which survey file the source is located using Montage mCoverageCheck routine
-		coverage_tbl= self.tmpdir + '/coverage_' + survey + '.tbl'
-		logger.info('Making coverage table ' + coverage_tbl + ' (r=' + str(self.outer_cutout) + ') ...')
+		coverage_tbl= 'coverage_' + survey + '.tbl'
+		coverage_tbl_fullpath= self.tmpdir + '/' + coverage_tbl
+		logger.info('Making coverage table ' + coverage_tbl_fullpath + ' (r=' + str(self.outer_cutout) + ') ...')
 		montage.mCoverageCheck(
 			in_table=metadata_tbl,
-			out_table=coverage_tbl,
+			out_table=coverage_tbl_fullpath,
 			mode='circle',
 			ra=self.ra, dec=self.dec,
 			radius=self.outer_cutout
@@ -160,7 +156,7 @@ class CutoutHelper(object):
 
 		# - Read coverage table to check if an image was found
 		try:
-			table= ascii.read(coverage_tbl)
+			table= ascii.read(coverage_tbl_fullpath)
 		except Exception as ex:
 			logger.error('Failed to read coverage table!')
 			return -1
@@ -178,27 +174,69 @@ class CutoutHelper(object):
 		imgfile_local= self.sname + '_' + survey + '.fits'
 		imgfile_local_fullpath= self.tmpdir + '/' + imgfile_local
 		
-		# - Copy file to tmp dir
+		# - Copy input file to tmp dir
 		shutil.copy(imgfile_fullpath,imgfile_local_fullpath)
 
 		# - Extract the cutout using Montage
-		cutout_file= self.tmpdir + '/' + self.sname + '_' + survey + '_cut.fits'
+		cutout_file= self.sname + '_' + survey + '_cut.fits'
+		cutout_file_fullpath= self.tmpdir + '/' + cutout_file
+		raw_cutout_file= ''
+		raw_cutout_file_fullpath= ''
 		montage.mSubimage(
 			in_image=imgfile_local_fullpath, 
-			out_image=cutout_file, 
+			out_image=cutout_file_fullpath, 
 			ra=self.ra, dec=self.dec, xsize=self.outer_cutout
 		)
-		self.img_files[survey]= cutout_file
+		self.img_files[survey]= cutout_file_fullpath
 		
 		# - Convert to Jy/pixel units?
+		band= -1
+		pos= survey.find('_b')
+		if pos>0:
+			band= int(survey[pos+2:])
+
 		if self.config.convertToJyPixelUnits:
 			logger.info('Convert image in Jy/pixel units ...')
-			cutout_file_scaled= self.tmpdir + '/' + self.sname + '_' + survey + '_cut_jypix.fits'
-			Utils.convertImgToJyPixel(cutout_file,cutout_file_scaled)
-			self.img_files[survey]= cutout_file_scaled
+			cutout_file_scaled= self.sname + '_' + survey + '_cut_jypix.fits'
+			cutout_file_scaled_fullpath= self.tmpdir + '/' + cutout_file_scaled
+			raw_cutout_file= cutout_file
+			raw_cutout_file_fullpath= cutout_file_fullpath
+			Utils.convertImgToJyPixel(cutout_file_fullpath,cutout_file_scaled_fullpath,band)
+			self.img_files[survey]= cutout_file_scaled_fullpath
 			
 		print("cutout file")
 		print(self.img_files)
+
+		## Organize files in directories or remove some of them
+		# - Input data
+		input_img_dir= self.tmpdir + '/inputs'
+		Utils.mkdir(input_img_dir)
+
+		shutil.move(coverage_tbl_fullpath,os.path.join(input_img_dir,coverage_tbl))
+		if self.config.keep_inputs:
+			logger.info("Moving file " + imgfile_local_fullpath + ' to ' + input_img_dir + ' ...')
+			shutil.move(imgfile_local_fullpath, os.path.join(input_img_dir,imgfile_local))
+		else:
+			try:
+				logger.info("Removing tmp file " + imgfile_local_fullpath + ' ...')
+				os.remove(imgfile_local_fullpath)
+			except OSError:
+				pass
+
+		# -  Cutout file
+		tmp_cutout_dir= self.tmpdir + '/raw_cutouts'	
+		Utils.mkdir(tmp_cutout_dir)
+
+		if raw_cutout_file:
+			if self.config.keep_tmpcutouts:
+				logger.info("Moving file " + raw_cutout_file + ' to ' + tmp_cutout_dir + ' ...')
+				shutil.move(raw_cutout_file_fullpath,os.path.join(tmp_cutout_dir,raw_cutout_file))			
+			else:
+				try:
+					logger.info("Removing raw cutout file " + raw_cutout_file + ' ...')
+					os.remove(raw_cutout_file_fullpath)
+				except OSError:
+					pass
 
 		return 0
 
