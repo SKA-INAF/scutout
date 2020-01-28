@@ -53,6 +53,9 @@ class Config(object):
 				
 		# - Run options		
 		self.workdir= os.getcwd()
+		self.keep_tmpfiles= True
+		self.keep_inputs= False
+		self.keep_tmpcutouts= True
 
 		# - Cutout search
 		self.surveys= []
@@ -98,7 +101,13 @@ class Config(object):
 			option_value= self.parser.get('RUN', 'workdir')	
 			if option_value:
 				self.workdir= option_value
-
+		
+		if self.parser.has_option('RUN', 'keep_tmpfiles'):
+			self.keep_tmpfiles= self.parser.getboolean('RUN', 'keep_tmpfiles')		
+		if self.parser.has_option('RUN', 'keep_inputs'):
+			self.keep_inputs= self.parser.getboolean('RUN', 'keep_inputs')
+		if self.parser.has_option('RUN', 'keep_tmpcutouts'):
+			self.keep_tmpcutouts= self.parser.getboolean('RUN', 'keep_tmpcutouts')
 		
 		# - Parse cutout option sections
 		if self.parser.has_option('CUTOUT_SEARCH', 'surveys'):
