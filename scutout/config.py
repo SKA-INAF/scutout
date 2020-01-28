@@ -61,10 +61,16 @@ class Config(object):
 		self.surveys= []
 		self.outer_cutout= 10 # arcmin
 		self.inner_cutout= 1 # arcmin
-		self.convertToJyPixelUnits= True
+		self.convert_to_jypix_units= True
+		self.regrid= True
 
 		# - FIRST survey options
 		first_options= {
+			"path": ""
+		}
+
+		# - NVSS survey options
+		nvss_options= {
 			"path": ""
 		}
 
@@ -76,6 +82,7 @@ class Config(object):
 		# - SURVEY options
 		self.survey_options= {
 			"first" : first_options,
+			"nvss" : nvss_options,
 			"mgps" : mgps_options
 		}
 
@@ -126,7 +133,10 @@ class Config(object):
 				self.inner_cutout= float(option_value)	
 
 		if self.parser.has_option('CUTOUT_SEARCH', 'convert_to_jy_pixel'):
-			self.convertToJyPixelUnits= self.parser.getboolean('CUTOUT_SEARCH', 'convert_to_jy_pixel') 		
+			self.convert_to_jypix_units= self.parser.getboolean('CUTOUT_SEARCH', 'convert_to_jy_pixel') 		
+		
+		if self.parser.has_option('CUTOUT_SEARCH', 'regrid'):
+			self.regrid= self.parser.getboolean('CUTOUT_SEARCH', 'regrid') 		
 
 		# - Parse FIRST DATA section options
 		if self.parser.has_option('FIRST_DATA', 'path'):
@@ -134,11 +144,17 @@ class Config(object):
 			if option_value:
 				self.survey_options['first']['path']= option_value
 
+		# - Parse NVSS DATA section options
+		if self.parser.has_option('NVSS_DATA', 'path'):
+			option_value= self.parser.get('NVSS_DATA', 'path')	
+			if option_value:
+				self.survey_options['nvss']['path']= option_value
+
 		# - Parse MGPS DATA section options
 		if self.parser.has_option('MGPS_DATA', 'path'):
 			option_value= self.parser.get('MGPS_DATA', 'path')	
 			if option_value:
-				self.survey_options['first']['path']= option_value
+				self.survey_options['mgps']['path']= option_value
 			
 		# ***************************
 		# **    VALIDATE CONFIG

@@ -38,6 +38,19 @@ class Utils(object):
 		""" Return a Utils object """
 		
 	@classmethod
+	def getBaseFile(cls,filename):
+		""" Get basefilename without extension """
+		filename_base= os.path.basename(filename)
+		return filename_base
+
+	@classmethod
+	def getBaseFileNoExt(cls,filename):
+		""" Get basefilename without extension """
+		filename_base= os.path.basename(filename)
+		filename_base_noext= os.path.splitext(filename_base)[0]
+		return filename_base_noext
+
+	@classmethod
 	def mkdir(cls,path):
 		""" Create a directory """
 		try:
@@ -224,17 +237,134 @@ class Utils(object):
 		return crop_data
 
 	@classmethod
-	def getJyBeamToPixelConvFactor(cls,bmaj,bmin,dx,dy):
+	def getBeamArea(cls,bmaj,bmin):
+		""" Compute beam area """
+		beamArea= np.pi * bmaj * bmin/(4.*np.log(2))
+		return beamArea
+
+	@classmethod
+	def getNVSSSurveyBeamArea(cls):
+		""" Returns NVSS survey beam area """ 
+		bmaj= 45. # arcsec
+		bmin= 45. # arcsec
+		beamArea= Utils.getBeamArea(bmaj,bmin)
+		return beamArea
+
+	@classmethod
+	def getSurveyBeamArea(cls,survey):
+		""" Return beam area of given survey """
+		
+		beamArea= 0
+		if survey=='nvss':
+			beamArea= Utils.getNVSSSurveyBeamArea()
+		else:
+			logger.error("Unknown survey (" + survey + "), returning area=0!")
+			beamArea= 0
+
+		return beamArea
+
+	@classmethod
+	def getJyBeamToPixel(cls,beamArea,dx,dy):
 		""" Compute conversion factor from Jy/beam to Jy/pixel """
 
-		beamArea= np.pi * bmaj * bmin/(4.*np.log(2))
 		pixArea= np.abs(dx*dy)
 		toJyPerPix = pixArea/beamArea
 
 		return toJyPerPix
 
 	@classmethod
-	def convertImgToJyPixel(cls,filename,outfile,band=-1):
+	def getJyBeamToPixel2(cls,bmaj,bmin,dx,dy):
+		""" Compute conversion factor from Jy/beam to Jy/pixel """
+		beamArea= Utils.getBeamArea(bmaj,bmin)
+		return Utils.getJyBeamToPixel(beamArea,dx,dy)
+
+	@classmethod
+	def hasBeamInfo(cls,header):
+		""" Check if header has beam information """
+		hasBmaj= ('BMAJ' in header)
+		hasBmin= ('BMIN' in header)
+		hasBeamInfo= (hasBmaj and hasBmin)
+		if not hasBeamInfo:
+			return False
+		
+		hasBeamVal= (header['BMAJ'] and header['BMIN'])
+		if not hasBeamVal:
+			return False
+
+		return True
+
+
+	@classmethod
+	def fixImgAxisAndUnits(cls,filename,outfile):
+		""" Fix image axis issues and convert units """
+
+		# - Open input file
+		try:
+			hdu= fits.open(filename,memmap=False)
+		except Exception as ex:
+			logger.error('Cannot read image file: ' + filename)
+			return -1
+
+		# - Read data & header
+		header= hdu[0].header
+		data= hdu[0].data
+		data_size= np.shape(data)
+		nchan= len(data.shape)
+		if nchan==4:
+			output_data= data[0,0,:,:]
+			output_header= header
+			output_header['NAXIS']= 2
+
+		elif nchan==2:
+			output_data= data	
+			output_header= header
+
+			
+		else:
+			errmsg= 'Invalid/unsupported number of channels found in file ' + filename + ' (nchan=' + str(nchan) + ')!'
+			hdu.close()
+			logger.error(errmsg)
+			return -1
+
+		logger.info("Deleting NAXIS3/NAXIS4 from header...")
+		if 'NAXIS3' in output_header:
+			del output_header['NAXIS3']
+		if 'NAXIS4' in output_header:
+			del output_header['NAXIS4']
+
+		# - Close input file
+		hdu.close()
+
+		# - Scale flux?
+		bscale= 1
+		bzero= 0
+		if 'BZERO' in output_header:
+			bzero= output_header['BZERO']
+		if 'BSCALE' in output_header:
+			bscale= output_header['BSCALE']
+
+		if bzero!=0 or bscale!=1:
+			logger.info("Scaling image " + filename + " flux by bscale=" + str(bscale) + ", bzero=" + str(bzero) + " ...")
+			output_data_scaled= bzero + bscale*output_data
+			output_data= output_data_scaled
+			output_header['BSCALE']= 1
+			output_header['BZERO']= 0
+			
+		
+		# - Add missing BMAJ/BMIN to header?	
+		# ...
+	
+		
+		# - Convert data to float 32
+		output_data= output_data.astype(np.float32)
+
+		# - Write "fixed" fits
+		Utils.write_fits(output_data,outfile,output_header)
+
+		return 0
+
+	@classmethod
+	def convertImgToJyPixel(cls,filename,outfile,survey=''):
 		""" Convert image units from original to Jy/pixel """
 
 		# - Read fits image
@@ -244,24 +374,18 @@ class Utils(object):
 		if not header['BUNIT']:
 			logger.error("No BUNIT keyword present in file " + filename + ", cannot compute conversion factor!")
 			return -1
-		if not header['BMAJ']:
-			logger.error("No BMAJ keyword present in file " + filename + ", cannot compute conversion factor!")
-			return -1
-		if not header['BMIN']:
-			logger.error("No BMIN keyword present in file " + filename + ", cannot compute conversion factor!")
-			return -1
 		if not header['CDELT1']:
 			logger.error("No CDELT1 keyword present in file " + filename + ", cannot compute conversion factor!")
 			return -1
 		if not header['CDELT2']:
 			logger.error("No CDELT2 keyword present in file " + filename + ", cannot compute conversion factor!")
 			return -1
+		
 		units= header['BUNIT']
-		bmaj= header['BMAJ']
-		bmin= header['BMIN']
 		dx= header['CDELT1']
 		dy= header['CDELT2']
-
+			
+		
 		#==================
 		# - Convert data
 		#==================
@@ -269,20 +393,33 @@ class Utils(object):
 		
 		# - RADIO SURVEY MAPS
 		if units=='JY/BEAM' or units=='Jy/beam':
-			convFactor= Utils.getJyBeamToPixelConvFactor(bmaj,bmin,dx,dy)
-
+			
+			hasBeamInfo= Utils.hasBeamInfo(header)
+			if hasBeamInfo:
+				bmaj= header['BMAJ']
+				bmin= header['BMIN']
+				convFactor= Utils.getJyBeamToPixel2(bmaj,bmin,dx,dy)
+			else:
+				logger.warn("No BMAJ/BMIN keyword present in file " + filename + ", trying to retrieve from survey name...")
+				beamArea= Utils.getSurveyBeamArea(survey)
+				if beamArea>0:
+					convFactor= Utils.getJyBeamToPixel(beamArea,dx,dy)
+				else:
+					logger.error("No BMAJ keyword present in file " + filename + ", cannot compute conversion factor!")
+					return -1
+		
 		# - WISE MAPS
 		elif units=='DN':
-			if band==1:
+			if survey=='wise_b1':
 				convFactor= 1.9350E-06
-			elif band==2:
+			elif survey=='wise_b2':
 				convFactor= 2.7048E-06
-			elif band==3:
+			elif survey=='wise_b3':
 				convFactor= 1.8326e-06
-			elif band==4:
+			elif survey=='wise_b4':
 				convFactor= 5.2269E-05
 			else:
-				logger.error("Invalid or unknown band (" + str(band) + ") given!")
+				logger.error("Invalid or unknown survey (" + survey + ") given!")
 				return -1
 
 		# - HERSCHEL/SPITZER MAPS

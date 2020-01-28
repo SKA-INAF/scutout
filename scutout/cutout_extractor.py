@@ -119,6 +119,9 @@ class CutoutHelper(object):
 		self.surveys= self.config.surveys
 		self.img_files= {}
 
+	#==============================
+	#     INITIALIZE
+	#==============================
 	def __initialize(self):
 		""" Initialize search """
 
@@ -132,12 +135,16 @@ class CutoutHelper(object):
 
 		return 0
 
-	
+	#==============================
+	#     EXTRACT RAW CUTOUT
+	#==============================
 	def __extract_raw_cutout(self,survey):
 		""" Find cutout for given survey """
 		
-		# - Get survey data options
+		# - Get survey data options		
 		survey_opts= self.config.survey_options[survey]
+		print("Survey %s options" % survey)
+		print(survey_opts)
 		data_dir= survey_opts['path']
 		metadata_tbl= data_dir + '/metadata.tbl'
 		print("metadata_tbl=%s" % metadata_tbl)
@@ -167,6 +174,7 @@ class CutoutHelper(object):
 			return 0
 		if nimgs>1:
 			logger.warn("More than 1 image found covering source coordinates, taking the first one for the moment (FIX ME!!!)")
+			###  USE mBestImage?? ###
 
 		imgfile= table[0]['fname']
 		imgfile_fullpath= data_dir + '/' + imgfile
@@ -189,19 +197,25 @@ class CutoutHelper(object):
 		)
 		self.img_files[survey]= cutout_file_fullpath
 		
+		# - Fix image axis or scale in case BZERO!=0 or BSCALE!=0
+		status= Utils.fixImgAxisAndUnits(cutout_file_fullpath,cutout_file_fullpath)
+		if status<0:
+			logger.error("Failed to adjust axis/scale of image " + cutout_file_fullpath + "!")
+			return -1
+
 		# - Convert to Jy/pixel units?
 		band= -1
 		pos= survey.find('_b')
 		if pos>0:
 			band= int(survey[pos+2:])
 
-		if self.config.convertToJyPixelUnits:
+		if self.config.convert_to_jypix_units:
 			logger.info('Convert image in Jy/pixel units ...')
 			cutout_file_scaled= self.sname + '_' + survey + '_cut_jypix.fits'
 			cutout_file_scaled_fullpath= self.tmpdir + '/' + cutout_file_scaled
 			raw_cutout_file= cutout_file
 			raw_cutout_file_fullpath= cutout_file_fullpath
-			Utils.convertImgToJyPixel(cutout_file_fullpath,cutout_file_scaled_fullpath,band)
+			Utils.convertImgToJyPixel(cutout_file_fullpath,cutout_file_scaled_fullpath,survey)
 			self.img_files[survey]= cutout_file_scaled_fullpath
 			
 		print("cutout file")
@@ -240,7 +254,64 @@ class CutoutHelper(object):
 
 		return 0
 
+	#==============================
+	#     REGRID CUTOUTS
+	#==============================
+	def __regrid_cutouts(self):
+		""" Regrid cutouts to the same projection and pixel """
 
+		# - Get list of raw cutout images to be re-projected
+		raw_cutouts= []
+		reproj_cutouts= []
+		for survey, path in self.img_files.items(): 
+    	#print(state, ":", capital) 
+
+		#for path in self.img_files.values(): 
+			print(survey)
+			print(path)
+			reproj_cutout= Utils.getBaseFileNoExt(path) + '_reproj.fits'
+			reproj_cutout_fullpath= self.tmpdir + '/' + reproj_cutout
+			raw_cutouts.append(path)
+			reproj_cutouts.append(reproj_cutout_fullpath)
+			self.img_files[survey]= reproj_cutout_fullpath
+
+		print(raw_cutouts)
+		print(reproj_cutouts)
+
+		# - Reproject cutouts using py Montage reproject high-level API
+		montage.reproject(
+			in_images=raw_cutouts, 
+			out_images=reproj_cutouts, 
+			header=None, 
+			bitpix=None, 
+			north_aligned=True,
+			common=True	
+		)
+
+		## Organize files in directories or remove some of them
+		# -  Raw cutout file
+		tmp_cutout_dir= self.tmpdir + '/raw_cutouts'	
+
+		for filename in raw_cutouts:	
+			filename_base= Utils.getBaseFile(filename)		
+			if self.config.keep_tmpcutouts:
+				logger.info("Moving file " + filename_base + ' to ' + tmp_cutout_dir + ' ...')
+				shutil.move(filename,os.path.join(tmp_cutout_dir,filename_base))			
+			else:
+				try:
+					logger.info("Removing raw cutout file " + filename_base + ' ...')
+					os.remove(filename)
+				except OSError:
+					pass
+
+		print("cutout file")
+		print(self.img_files)
+
+		return 0
+		
+	#==============================
+	#     RUN CUTOUT EXTRACTION
+	#==============================
 	def run(self):
 		""" Run search for single source """
 
@@ -256,9 +327,20 @@ class CutoutHelper(object):
 		#*************************************
 		for survey in self.surveys:
 			logger.info('Searching cutout for source ' + self.sname + ' for survey ' + survey + ' ...')
-			self.__extract_raw_cutout(survey)
+			status= self.__extract_raw_cutout(survey)
+			if status<0:
+				logger.error('Raw cutout extraction for source ' + self.sname + ' for survey ' + survey + ' failed!')
+				continue
 
-
+		#*************************************
+		#   REGRID CUTOUTS
+		#*************************************
+		if self.config.regrid:
+			logger.info('Regridding raw cutouts ...')
+			status= self.__regrid_cutouts()
+			if status<0:
+				logger.error('Failed to regrid raw cutouts for source ' + self.sname + '!')
+				return -1
 
 		return 0
 
