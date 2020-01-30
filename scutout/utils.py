@@ -16,6 +16,7 @@ import errno
 ## ASTRO MODULES
 from astropy.io import fits
 from astropy.io import ascii 
+from astropy.wcs import WCS
 
 ## GRAPHICS MODULES
 import matplotlib.pyplot as plt
@@ -247,16 +248,61 @@ class Utils(object):
 		""" Returns NVSS survey beam area """ 
 		bmaj= 45. # arcsec
 		bmin= 45. # arcsec
-		beamArea= Utils.getBeamArea(bmaj,bmin)
+		bmaj_deg= bmaj/3600.
+		bmin_deg= bmin/3600.
+		beamArea= Utils.getBeamArea(bmaj_deg,bmin_deg)
 		return beamArea
 
 	@classmethod
-	def getSurveyBeamArea(cls,survey):
+	def getFIRSTSurveyBeamArea(cls,ra,dec):
+		""" Returns FIRST survey beam area """ 
+		
+		if not ra or not dec:
+			bmaj= 5.4
+			bmin= 5.4
+
+		if dec>4.55583333:
+			bmaj= 5.4
+			bmin= 5.4
+		else:
+			if dec<-2.50694444 and (ra<45 or ra>315):
+				bmaj= 6.8
+				bmin= 5.4
+			else:
+				bmaj= 6.4
+				bmin= 5.4
+
+		bmaj_deg= bmaj/3600.
+		bmin_deg= bmin/3600.
+		beamArea= Utils.getBeamArea(bmaj_deg,bmin_deg)
+		return beamArea
+
+	@classmethod
+	def getMGPSSurveyBeamArea(cls,dec):
+		""" Returns MGPS survey beam area """ 
+		
+		if not dec or dec==0:
+			bmaj= 43
+		else:
+			bmaj= 43./np.sin(np.deg2rad(dec)) # arcsec
+		bmin= 43. # arcsec
+
+		bmaj_deg= bmaj/3600.
+		bmin_deg= bmin/3600.
+		beamArea= Utils.getBeamArea(bmaj_deg,bmin_deg)
+		return beamArea
+
+	@classmethod
+	def getSurveyBeamArea(cls,survey,ra=None,dec=None):
 		""" Return beam area of given survey """
 		
 		beamArea= 0
 		if survey=='nvss':
 			beamArea= Utils.getNVSSSurveyBeamArea()
+		elif survey=='first':
+			beamArea= Utils.getFIRSTSurveyBeamArea(ra,dec)
+		elif survey=='mgps':
+			beamArea= Utils.getMGPSSurveyBeamArea(dec)
 		else:
 			logger.error("Unknown survey (" + survey + "), returning area=0!")
 			beamArea= 0
@@ -318,7 +364,6 @@ class Utils(object):
 		elif nchan==2:
 			output_data= data	
 			output_header= header
-
 			
 		else:
 			errmsg= 'Invalid/unsupported number of channels found in file ' + filename + ' (nchan=' + str(nchan) + ')!'
@@ -331,6 +376,28 @@ class Utils(object):
 			del output_header['NAXIS3']
 		if 'NAXIS4' in output_header:
 			del output_header['NAXIS4']
+		
+		if 'CTYPE3' in output_header:
+			del output_header['CTYPE3']
+		if 'CRVAL3' in output_header:
+			del output_header['CRVAL3']
+		if 'CDELT3' in output_header:
+			del output_header['CDELT3']
+		if 'CRPIX3' in output_header:
+			del output_header['CRPIX3']
+		if 'CROTA3' in output_header:
+			del output_header['CROTA3']
+		
+		if 'CTYPE4' in output_header:
+			del output_header['CTYPE4']
+		if 'CRVAL4' in output_header:
+			del output_header['CRVAL4']
+		if 'CDELT4' in output_header:
+			del output_header['CDELT4']
+		if 'CRPIX4' in output_header:
+			del output_header['CRPIX4']
+		if 'CROTA4' in output_header:
+			del output_header['CROTA4']
 
 		# - Close input file
 		hdu.close()
@@ -369,6 +436,7 @@ class Utils(object):
 
 		# - Read fits image
 		data, header= Utils.read_fits(filename)
+		wcs = WCS(header)
 
 		# - Check header keywords
 		if not header['BUNIT']:
@@ -380,11 +448,19 @@ class Utils(object):
 		if not header['CDELT2']:
 			logger.error("No CDELT2 keyword present in file " + filename + ", cannot compute conversion factor!")
 			return -1
+		if not header['CRPIX1']:
+			logger.error("No CRPIX1 keyword present in file " + filename + ", cannot compute conversion factor!")
+			return -1
+		if not header['CRPIX2']:
+			logger.error("No CRPIX2 keyword present in file " + filename + ", cannot compute conversion factor!")
+			return -1
 		
 		units= header['BUNIT']
-		dx= header['CDELT1']
-		dy= header['CDELT2']
-			
+		dx= header['CDELT1'] # in deg
+		dy= header['CDELT2'] # in deg
+		xc= header['CRPIX1']
+		yc= header['CRPIX2']	
+		ra, dec = wcs.all_pix2world(xc,yc,0,ra_dec_order=True)
 		
 		#==================
 		# - Convert data
@@ -396,12 +472,12 @@ class Utils(object):
 			
 			hasBeamInfo= Utils.hasBeamInfo(header)
 			if hasBeamInfo:
-				bmaj= header['BMAJ']
-				bmin= header['BMIN']
+				bmaj= header['BMAJ'] # in deg
+				bmin= header['BMIN'] # in deg
 				convFactor= Utils.getJyBeamToPixel2(bmaj,bmin,dx,dy)
 			else:
 				logger.warn("No BMAJ/BMIN keyword present in file " + filename + ", trying to retrieve from survey name...")
-				beamArea= Utils.getSurveyBeamArea(survey)
+				beamArea= Utils.getSurveyBeamArea(survey,ra,dec)
 				if beamArea>0:
 					convFactor= Utils.getJyBeamToPixel(beamArea,dx,dy)
 				else:
