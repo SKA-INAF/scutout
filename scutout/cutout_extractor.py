@@ -16,7 +16,11 @@ import shutil
 ## ASTRO MODULES
 from astropy.io import fits
 from astropy.io import ascii 
+from astropy.wcs import WCS
+from astropy import units as u
+from astropy.convolution import Gaussian2DKernel, convolve
 import montage_wrapper as montage
+import radio_beam
 
 ## GRAPHICS MODULES
 import matplotlib.pyplot as plt
@@ -183,7 +187,7 @@ class CutoutHelper(object):
 		imgfile_local_fullpath= self.tmpdir + '/' + imgfile_local
 		
 		# - Copy input file to tmp dir
-		shutil.copy(imgfile_fullpath,imgfile_local_fullpath)
+		#shutil.copy(imgfile_fullpath,imgfile_local_fullpath)
 
 		# - Extract the cutout using Montage
 		cutout_file= self.sname + '_' + survey + '_cut.fits'
@@ -191,13 +195,15 @@ class CutoutHelper(object):
 		raw_cutout_file= ''
 		raw_cutout_file_fullpath= ''
 		montage.mSubimage(
-			in_image=imgfile_local_fullpath, 
+			#in_image=imgfile_local_fullpath, 
+			in_image=imgfile_fullpath, 
 			out_image=cutout_file_fullpath, 
 			ra=self.ra, dec=self.dec, xsize=self.outer_cutout
 		)
 		self.img_files[survey]= cutout_file_fullpath
 		
 		# - Fix image axis or scale in case BZERO!=0 or BSCALE!=0
+		logger.info("Fixing possible issues with fits axis and rescale flux by BSCALE ...")
 		status= Utils.fixImgAxisAndUnits(cutout_file_fullpath,cutout_file_fullpath)
 		if status<0:
 			logger.error("Failed to adjust axis/scale of image " + cutout_file_fullpath + "!")
@@ -227,30 +233,28 @@ class CutoutHelper(object):
 		Utils.mkdir(input_img_dir)
 
 		shutil.move(coverage_tbl_fullpath,os.path.join(input_img_dir,coverage_tbl))
-		if self.config.keep_inputs:
-			logger.info("Moving file " + imgfile_local_fullpath + ' to ' + input_img_dir + ' ...')
-			shutil.move(imgfile_local_fullpath, os.path.join(input_img_dir,imgfile_local))
-		else:
-			try:
-				logger.info("Removing tmp file " + imgfile_local_fullpath + ' ...')
-				os.remove(imgfile_local_fullpath)
-			except OSError:
-				pass
-
-		# -  Cutout file
+		
+		# -  Move tmp raw cutout file
 		tmp_cutout_dir= self.tmpdir + '/raw_cutouts'	
 		Utils.mkdir(tmp_cutout_dir)
 
 		if raw_cutout_file:
-			if self.config.keep_tmpcutouts:
-				logger.info("Moving file " + raw_cutout_file + ' to ' + tmp_cutout_dir + ' ...')
-				shutil.move(raw_cutout_file_fullpath,os.path.join(tmp_cutout_dir,raw_cutout_file))			
-			else:
-				try:
-					logger.info("Removing raw cutout file " + raw_cutout_file + ' ...')
-					os.remove(raw_cutout_file_fullpath)
-				except OSError:
-					pass
+			logger.info("Moving file " + raw_cutout_file + ' to ' + tmp_cutout_dir + ' ...')
+			shutil.move(raw_cutout_file_fullpath,os.path.join(tmp_cutout_dir,raw_cutout_file))
+
+			#if self.config.keep_tmpcutouts:
+			#	logger.info("Moving file " + raw_cutout_file + ' to ' + tmp_cutout_dir + ' ...')
+			#	shutil.move(raw_cutout_file_fullpath,os.path.join(tmp_cutout_dir,raw_cutout_file))			
+			#else:
+			#	try:
+			#		logger.info("Removing raw cutout file " + raw_cutout_file + ' ...')
+			#		os.remove(raw_cutout_file_fullpath)
+			#	except OSError:
+			#		pass
+	
+		# - Copy final products in subdir
+		shutil.copy(self.img_files[survey],os.path.join(tmp_cutout_dir,os.path.basename(self.img_files[survey])))
+		
 
 		return 0
 
@@ -263,12 +267,10 @@ class CutoutHelper(object):
 		# - Get list of raw cutout images to be re-projected
 		raw_cutouts= []
 		reproj_cutouts= []
-		for survey, path in self.img_files.items(): 
-    	#print(state, ":", capital) 
+		dx_orig= []
+		dy_orig= []
 
-		#for path in self.img_files.values(): 
-			print(survey)
-			print(path)
+		for survey, path in self.img_files.items(): 
 			reproj_cutout= Utils.getBaseFileNoExt(path) + '_reproj.fits'
 			reproj_cutout_fullpath= self.tmpdir + '/' + reproj_cutout
 			raw_cutouts.append(path)
@@ -288,24 +290,187 @@ class CutoutHelper(object):
 			common=True	
 		)
 
+		# - Scale image data to conserve flux, e.g. multiply data by (pix1/pix1_ori)*(pix2/pix2_ori)
+		# - Copy back beam information (montage does not include in the re-projected image file)
+		# - Overwrite previous image
+		logger.info("Scale reprojected image to conserve flux ...")
+		for index in range(len(raw_cutouts)):
+			data, header= Utils.read_fits(raw_cutouts[index])
+			dx= header['CDELT1']
+			dy= header['CDELT2']
+		
+			data_reproj, header_reproj= Utils.read_fits(reproj_cutouts[index])
+			dx_reproj= header_reproj['CDELT1']
+			dy_reproj= header_reproj['CDELT2']
+
+			flux_scale= (dx_reproj/dx)*(dy_reproj/dy)
+			data_reproj_scaled= flux_scale*data_reproj
+
+			if Utils.hasBeamInfo(header) and not Utils.hasBeamInfo(header_reproj):
+				header_reproj['BMAJ']= header['BMAJ']
+				header_reproj['BMIN']= header['BMIN']
+				header_reproj['BPA']= header['BPA']
+
+			Utils.write_fits(data_reproj_scaled,reproj_cutouts[index],header_reproj)
+			
+
 		## Organize files in directories or remove some of them
 		# -  Raw cutout file
 		tmp_cutout_dir= self.tmpdir + '/raw_cutouts'	
+		Utils.mkdir(tmp_cutout_dir) # should already exist if previous step was called
 
 		for filename in raw_cutouts:	
 			filename_base= Utils.getBaseFile(filename)		
-			if self.config.keep_tmpcutouts:
-				logger.info("Moving file " + filename_base + ' to ' + tmp_cutout_dir + ' ...')
-				shutil.move(filename,os.path.join(tmp_cutout_dir,filename_base))			
-			else:
-				try:
-					logger.info("Removing raw cutout file " + filename_base + ' ...')
-					os.remove(filename)
-				except OSError:
-					pass
+			logger.info("Moving file " + filename_base + ' to ' + tmp_cutout_dir + ' ...')
+			shutil.move(filename,os.path.join(tmp_cutout_dir,filename_base))	
+
+			#if self.config.keep_tmpcutouts:
+			#	logger.info("Moving file " + filename_base + ' to ' + tmp_cutout_dir + ' ...')
+			#	shutil.move(filename,os.path.join(tmp_cutout_dir,filename_base))			
+			#else:
+			#	try:
+			#		logger.info("Removing raw cutout file " + filename_base + ' ...')
+			#		os.remove(filename)
+			#	except OSError:
+			#		pass
+
+		# - Copy final products in subdir
+		tmp_cutout_dir= self.tmpdir + '/reproj_cutouts'	
+		Utils.mkdir(tmp_cutout_dir)
+		for survey, path in self.img_files.items(): 
+			shutil.copy(self.img_files[survey],os.path.join(tmp_cutout_dir,os.path.basename(self.img_files[survey])))
+		
 
 		print("cutout file")
 		print(self.img_files)
+
+		return 0
+
+
+	#=========================================
+	#     CONVOLVE CUTOUTS TO SAME RESOLUTION
+	#=========================================
+	def __convolve_to_same_resolution(self):
+		""" Convolve cutouts to same resolution """
+		
+		logger.info("Convolving cutouts to the same resolution...")
+		
+		# - Get list of raw cutout images to be convolved
+		raw_cutouts= []
+		conv_cutouts= []
+		beam_list= []
+		pixsize_x= []
+		pixsize_y= []
+		data_list= []
+		header_list= []
+
+		for survey, path in self.img_files.items(): 
+			raw_cutouts.append(path)
+			conv_cutout= Utils.getBaseFileNoExt(path) + '_conv.fits'
+			conv_cutout_fullpath= self.tmpdir + '/' + conv_cutout
+			conv_cutouts.append(conv_cutout_fullpath)
+			self.img_files[survey]= conv_cutout_fullpath
+			
+			# - Get image beam
+			data, header= Utils.read_fits(path)
+			wcs = WCS(header)
+			data_list.append(data)
+			header_list.append(header)
+
+			hasBeamInfo= Utils.hasBeamInfo(header)
+			xc= header['CRPIX1']
+			yc= header['CRPIX2']	
+			ra, dec = wcs.all_pix2world(xc,yc,0,ra_dec_order=True)
+			dx= header['CDELT1'] # in deg
+			dy= header['CDELT2'] # in deg
+			pixsize_x.append(dx)
+			pixsize_y.append(dy)
+
+			if hasBeamInfo:
+				bmaj= header['BMAJ'] # in deg
+				bmin= header['BMIN'] # in deg
+				pa= header['BPA'] # in deg
+				beam= radio_beam.Beam(bmaj*u.deg,bmin*u.deg,pa*u.deg)
+			else:
+				logger.warn("No BMAJ/BMIN keyword present in file " + path + ", trying to retrieve from survey name...")
+				beamArea= Utils.getSurveyBeamArea(survey,ra,dec)
+				bmaj= np.sqrt(beamArea*4.*np.log(2)/np.pi)
+				if beamArea>0:
+					beam= radio_beam.Beam(bmaj*u.deg,bmaj*u.deg)
+				else:
+					logger.error("No BMAJ keyword present in file " + path + ", cannot compute conversion factor!")
+					return -1
+
+			print("== BEAM ==")
+			print(beam)
+		
+			beam_list.append(beam)
+		
+		# - Compute common beam
+		beams= radio_beam.Beams(beams=beam_list)
+		print(beams)
+		common_beam= radio_beam.commonbeam.common_manybeams_mve(beams)
+		common_beam_bmaj= common_beam.major.to(u.arcsec).value
+		common_beam_bmin= common_beam.minor.to(u.arcsec).value
+		common_beam_pa= common_beam.pa.to(u.deg).value
+		
+
+		# - Loop over image, find conv beam to be used to reach common beam and convolve image with this
+		logger.info("Convolving images to common beam size (bmaj,bmin,pa)=(" + str(common_beam_bmaj) + "," + str(common_beam_bmin) + "," + str(common_beam_pa) + ")) ...")
+		
+		for index in range(len(raw_cutouts)):
+
+			# - Find convolving beam 
+			bmaj, bmin, pa= radio_beam.utils.deconvolve(common_beam,beam_list[index])
+			bmaj_deg= bmaj.to(u.deg).value
+			bmin_deg= bmin.to(u.deg).value
+			pa_deg= pa.to(u.deg).value
+			conv_beam= radio_beam.Beam(bmaj_deg*u.deg,bmin_deg*u.deg,pa_deg*u.deg)
+			
+			bmaj_arcsec= bmaj.to(u.arcsec).value
+			bmin_arcsec= bmin.to(u.arcsec).value
+			logger.info("Convolving images with beam (bmaj,bmin,pa)=(" + str(bmaj_arcsec) + "," + str(bmin_arcsec) + "," + str(pa_deg) + ")) ...")
+		
+			# - Create convolution kernel
+			dx= pixsize_x[index]
+			dy= pixsize_y[index]
+			pixsize= max(dx,dy)
+			conv_kernel= conv_beam.as_kernel(pixsize*u.deg)
+
+			# - Convolve image and write fits
+			data_conv = convolve(data_list[index], conv_kernel, normalize_kernel=True)
+			Utils.write_fits(data_conv,conv_cutouts[index],header_list[index])
+
+		
+		## Organize files in directories or remove some of them
+		# -  Raw cutout file
+		tmp_cutout_dir= self.tmpdir + '/reproj_cutouts'	
+		Utils.mkdir(tmp_cutout_dir)
+
+		for filename in raw_cutouts:	
+			filename_base= Utils.getBaseFile(filename)	
+			logger.info("Moving file " + filename_base + ' to ' + tmp_cutout_dir + ' ...')
+			shutil.move(filename,os.path.join(tmp_cutout_dir,filename_base))
+	
+			#if self.config.keep_tmpcutouts:
+			#	logger.info("Moving file " + filename_base + ' to ' + tmp_cutout_dir + ' ...')
+			#	shutil.move(filename,os.path.join(tmp_cutout_dir,filename_base))			
+			#else:
+			#	try:
+			#		logger.info("Removing regridded cutout file " + filename_base + ' ...')
+			#		os.remove(filename)
+			#	except OSError:
+			#		pass
+
+		# - Copy final products in subdir
+		tmp_cutout_dir= self.tmpdir + '/conv_cutouts'	
+		Utils.mkdir(tmp_cutout_dir)
+		for survey, path in self.img_files.items(): 
+			shutil.copy(self.img_files[survey],os.path.join(tmp_cutout_dir,os.path.basename(self.img_files[survey])))
+
+		print("cutout file")
+		print(self.img_files)
+
 
 		return 0
 		
@@ -316,7 +481,7 @@ class CutoutHelper(object):
 		""" Run search for single source """
 
 		#**********************
-		#     INIT
+		#        INIT
 		#**********************
 		if self.__initialize()<0:
 			logger.error("Failed to initialize source cutout search!")
@@ -333,7 +498,7 @@ class CutoutHelper(object):
 				continue
 
 		#*************************************
-		#   REGRID CUTOUTS
+		#        REGRID CUTOUTS
 		#*************************************
 		if self.config.regrid:
 			logger.info('Regridding raw cutouts ...')
@@ -341,6 +506,32 @@ class CutoutHelper(object):
 			if status<0:
 				logger.error('Failed to regrid raw cutouts for source ' + self.sname + '!')
 				return -1
+
+		#*************************************
+		#       CONVOLVE CUTOUTS
+		#*************************************
+		if self.config.convolve:
+			logger.info('Convolving raw cutouts to the same resolution ...')
+			status= self.__convolve_to_same_resolution()
+			if status<0:
+				logger.error('Failed to convolve raw cutouts for source ' + self.sname + '!')
+				return -1
+	
+		#*************************************
+		#     COPY FINAL FILES IN MAIN DIR
+		#*************************************
+		# - Copy final files in main directory
+		logger.info("Copying final image cutouts in main directory ...")
+		for survey, filename in self.img_files.items():
+			filename_base= Utils.getBaseFile(filename)
+			filename_final= self.sname + '_' + survey + '.fits'
+			filename_final_fullpath= self.topdir + '/' + filename_final
+			shutil.move(filename,filename_final_fullpath)
+
+		# - Remove tmp file directory?
+		if not self.config.keep_tmpfiles:
+			logger.info("Removing tmp file dir " + self.tmpdir + " ...")
+			shutil.rmtree(self.tmpdir, ignore_errors=True)
 
 		return 0
 
