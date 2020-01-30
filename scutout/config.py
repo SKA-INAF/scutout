@@ -34,12 +34,10 @@ class Config(object):
 		""" Return a Config object """
 
 		# - Config options
-		#self.data_options= {}
 		self.__set_defaults()
 
 		# - Config file parser		
 		self.parser= ConfigParser.ConfigParser()
-		#self.parser= CaseConfigParser(os.environ)
 		self.config= None
 
 	def optionxform(self, optionstr):
@@ -54,8 +52,8 @@ class Config(object):
 		# - Run options		
 		self.workdir= os.getcwd()
 		self.keep_tmpfiles= True
-		self.keep_inputs= False
-		self.keep_tmpcutouts= True
+		#self.keep_inputs= False
+		#self.keep_tmpcutouts= True
 
 		# - Cutout search
 		self.surveys= []
@@ -63,6 +61,7 @@ class Config(object):
 		self.inner_cutout= 1 # arcmin
 		self.convert_to_jypix_units= True
 		self.regrid= True
+		self.convolve= True
 
 		# - FIRST survey options
 		first_options= {
@@ -79,11 +78,75 @@ class Config(object):
 			"path": ""
 		}
 
+		# - Spitzer IRAC survey options
+		spitzer_irac_3_6_options= {
+			"path": ""
+		}
+		spitzer_irac_4_5_options= {
+			"path": ""
+		}
+		spitzer_irac_5_8_options= {
+			"path": ""
+		}
+		spitzer_irac_8_options= {
+			"path": ""
+		}
+
+		# - Spitzer MIPS 24
+		spitzer_mips_24_options= {
+			"path": ""
+		}
+
+		# - Herschel HIGAL 
+		herschel_higal_70_options= {
+			"path": ""
+		}
+		herschel_higal_160_options= {
+			"path": ""
+		}
+		herschel_higal_250_options= {
+			"path": ""
+		}
+		herschel_higal_350_options= {
+			"path": ""
+		}
+		herschel_higal_500_options= {
+			"path": ""
+		}
+		
+		# - WISE 
+		wise_3_4_options= {
+			"path": ""
+		}
+		wise_4_6_options= {
+			"path": ""
+		}
+		wise_12_options= {
+			"path": ""
+		}
+		wise_22_options= {
+			"path": ""
+		}
+
 		# - SURVEY options
 		self.survey_options= {
 			"first" : first_options,
 			"nvss" : nvss_options,
-			"mgps" : mgps_options
+			"mgps" : mgps_options,
+			"irac_3_6" : spitzer_irac_3_6_options,
+			"irac_4_5" : spitzer_irac_4_5_options,
+			"irac_5_8" : spitzer_irac_5_8_options,
+			"irac_8" : spitzer_irac_8_options,
+			"mips_24" : spitzer_mips_24_options,
+			"higal_70" : herschel_higal_70_options,
+			"higal_160" : herschel_higal_160_options,
+			"higal_250" : herschel_higal_250_options,
+			"higal_350" : herschel_higal_350_options,
+			"higal_500" : herschel_higal_500_options,
+			"wise_3_4" : wise_3_4_options,
+			"wise_4_6" : wise_4_6_options,
+			"wise_12" : wise_12_options,
+			"wise_22" : wise_22_options,
 		}
 
 	#==============================
@@ -111,10 +174,10 @@ class Config(object):
 		
 		if self.parser.has_option('RUN', 'keep_tmpfiles'):
 			self.keep_tmpfiles= self.parser.getboolean('RUN', 'keep_tmpfiles')		
-		if self.parser.has_option('RUN', 'keep_inputs'):
-			self.keep_inputs= self.parser.getboolean('RUN', 'keep_inputs')
-		if self.parser.has_option('RUN', 'keep_tmpcutouts'):
-			self.keep_tmpcutouts= self.parser.getboolean('RUN', 'keep_tmpcutouts')
+		#if self.parser.has_option('RUN', 'keep_inputs'):
+		#	self.keep_inputs= self.parser.getboolean('RUN', 'keep_inputs')
+		#if self.parser.has_option('RUN', 'keep_tmpcutouts'):
+		#	self.keep_tmpcutouts= self.parser.getboolean('RUN', 'keep_tmpcutouts')
 		
 		# - Parse cutout option sections
 		if self.parser.has_option('CUTOUT_SEARCH', 'surveys'):
@@ -138,6 +201,9 @@ class Config(object):
 		if self.parser.has_option('CUTOUT_SEARCH', 'regrid'):
 			self.regrid= self.parser.getboolean('CUTOUT_SEARCH', 'regrid') 		
 
+		if self.parser.has_option('CUTOUT_SEARCH', 'convolve'):
+			self.convolve= self.parser.getboolean('CUTOUT_SEARCH', 'convolve') 		
+
 		# - Parse FIRST DATA section options
 		if self.parser.has_option('FIRST_DATA', 'path'):
 			option_value= self.parser.get('FIRST_DATA', 'path')	
@@ -155,6 +221,80 @@ class Config(object):
 			option_value= self.parser.get('MGPS_DATA', 'path')	
 			if option_value:
 				self.survey_options['mgps']['path']= option_value
+
+		# - Parse WISE section options
+		if self.parser.has_option('WISE_3_4_DATA', 'path'):
+			option_value= self.parser.get('WISE_3_4_DATA', 'path')	
+			if option_value:
+				self.survey_options['wise_3_4']['path']= option_value
+
+		if self.parser.has_option('WISE_4_6_DATA', 'path'):
+			option_value= self.parser.get('WISE_4_6_DATA', 'path')	
+			if option_value:
+				self.survey_options['wise_4_6']['path']= option_value
+
+		if self.parser.has_option('WISE_12_DATA', 'path'):
+			option_value= self.parser.get('WISE_12_DATA', 'path')	
+			if option_value:
+				self.survey_options['wise_12']['path']= option_value
+
+		if self.parser.has_option('WISE_22_DATA', 'path'):
+			option_value= self.parser.get('WISE_22_DATA', 'path')	
+			if option_value:
+				self.survey_options['wise_22']['path']= option_value
+
+		# - Parse HERSCHEL section options
+		if self.parser.has_option('HERSCHEL_HIGAL70_DATA', 'path'):
+			option_value= self.parser.get('HERSCHEL_HIGAL70_DATA', 'path')	
+			if option_value:
+				self.survey_options['higal_70']['path']= option_value
+
+		if self.parser.has_option('HERSCHEL_HIGAL160_DATA', 'path'):
+			option_value= self.parser.get('HERSCHEL_HIGAL160_DATA', 'path')	
+			if option_value:
+				self.survey_options['higal_160']['path']= option_value
+
+		if self.parser.has_option('HERSCHEL_HIGAL250_DATA', 'path'):
+			option_value= self.parser.get('HERSCHEL_HIGAL250_DATA', 'path')	
+			if option_value:
+				self.survey_options['higal_250']['path']= option_value
+
+		if self.parser.has_option('HERSCHEL_HIGAL350_DATA', 'path'):
+			option_value= self.parser.get('HERSCHEL_HIGAL350_DATA', 'path')	
+			if option_value:
+				self.survey_options['higal_350']['path']= option_value
+
+		if self.parser.has_option('HERSCHEL_HIGAL500_DATA', 'path'):
+			option_value= self.parser.get('HERSCHEL_HIGAL500_DATA', 'path')	
+			if option_value:
+				self.survey_options['higal_500']['path']= option_value
+
+		# - Parse Spitzer IRAC section options
+		if self.parser.has_option('SPITZER_IRAC3_6_DATA', 'path'):
+			option_value= self.parser.get('SPITZER_IRAC3_6_DATA', 'path')	
+			if option_value:
+				self.survey_options['irac_3_6']['path']= option_value
+	
+		if self.parser.has_option('SPITZER_IRAC4_5_DATA', 'path'):
+			option_value= self.parser.get('SPITZER_IRAC4_5_DATA', 'path')	
+			if option_value:
+				self.survey_options['irac_4_5']['path']= option_value
+
+		if self.parser.has_option('SPITZER_IRAC5_8_DATA', 'path'):
+			option_value= self.parser.get('SPITZER_IRAC5_8_DATA', 'path')	
+			if option_value:
+				self.survey_options['irac_5_8']['path']= option_value
+
+		if self.parser.has_option('SPITZER_IRAC8_DATA', 'path'):
+			option_value= self.parser.get('SPITZER_IRAC8_DATA', 'path')	
+			if option_value:
+				self.survey_options['irac_8']['path']= option_value
+
+		# - Parse Spitzer MIPS section options
+		if self.parser.has_option('SPITZER_MIPS24_DATA', 'path'):
+			option_value= self.parser.get('SPITZER_MIPS24_DATA', 'path')	
+			if option_value:
+				self.survey_options['mips_24']['path']= option_value
 			
 		# ***************************
 		# **    VALIDATE CONFIG
