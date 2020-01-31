@@ -52,16 +52,17 @@ class Config(object):
 		# - Run options		
 		self.workdir= os.getcwd()
 		self.keep_tmpfiles= True
-		#self.keep_inputs= False
-		#self.keep_tmpcutouts= True
-
+		
 		# - Cutout search
 		self.surveys= []
-		self.outer_cutout= 10 # arcmin
-		self.inner_cutout= 1 # arcmin
+		self.source_radius= 300 # arcsec
+		self.cutout_factor= 5 
+		
 		self.convert_to_jypix_units= True
 		self.regrid= True
 		self.convolve= True
+		self.crop= True
+		self.crop_size= 200 # in pixels
 
 		# - FIRST survey options
 		first_options= {
@@ -75,6 +76,24 @@ class Config(object):
 
 		# - MGPS survey options
 		mgps_options= {
+			"path": ""
+		}
+
+		# - SCORPIO ATCA survey options
+		scorpio_atca_2_1_options= {
+			"path": ""
+		}
+
+		# - SCORPIO ASKAP survey options
+		scorpio_askap15_b1_options= {
+			"path": ""
+		}
+		scorpio_askap36_b123_options= {
+			"path": ""
+		}
+		
+		# - THOR survey options
+		thor_options= {
 			"path": ""
 		}
 
@@ -128,11 +147,40 @@ class Config(object):
 			"path": ""
 		}
 
+		# - APEX ATLAS GAL
+		apex_atlasgal_options= {
+			"path": ""
+		}
+		apex_atlasgal_planck_options= {
+			"path": ""
+		}
+
+		# - MSX
+		msx_8_3_options= {
+			"path": ""
+		}
+		msx_12_1_options= {
+			"path": ""
+		}
+		msx_14_7_options= {
+			"path": ""
+		}	
+		msx_21_3_options= {
+			"path": ""
+		}		
+
+		
+
+
 		# - SURVEY options
 		self.survey_options= {
 			"first" : first_options,
 			"nvss" : nvss_options,
 			"mgps" : mgps_options,
+			"scorpio_atca_2_1" : scorpio_atca_2_1_options,
+			"scorpio_askap15_b1" : scorpio_askap15_b1_options,
+			"scorpio_askap36_b123" : scorpio_askap36_b123_options,
+			"thor" : thor_options,
 			"irac_3_6" : spitzer_irac_3_6_options,
 			"irac_4_5" : spitzer_irac_4_5_options,
 			"irac_5_8" : spitzer_irac_5_8_options,
@@ -147,6 +195,12 @@ class Config(object):
 			"wise_4_6" : wise_4_6_options,
 			"wise_12" : wise_12_options,
 			"wise_22" : wise_22_options,
+			"atlasgal" : apex_atlasgal_options,
+			"atlasgal_planck" : apex_atlasgal_planck_options,
+			"msx_8_3" : msx_8_3_options,
+			"msx_12_1" : msx_12_1_options,
+			"msx_14_7" : msx_14_7_options,
+			"msx_21_3" : msx_21_3_options,
 		}
 
 	#==============================
@@ -184,17 +238,18 @@ class Config(object):
 			option_value= self.parser.get('CUTOUT_SEARCH', 'surveys')	
 			if option_value:
 				self.surveys= option_value.split(",")
-				
-		if self.parser.has_option('CUTOUT_SEARCH', 'outer_cutout'):
-			option_value= self.parser.get('CUTOUT_SEARCH', 'outer_cutout')
-			if option_value:
-				self.outer_cutout= float(option_value)			
 		
-		if self.parser.has_option('CUTOUT_SEARCH', 'inner_cutout'):
-			option_value= self.parser.get('CUTOUT_SEARCH', 'inner_cutout')
+		if self.parser.has_option('CUTOUT_SEARCH', 'source_radius'):
+			option_value= self.parser.get('CUTOUT_SEARCH', 'source_radius')
 			if option_value:
-				self.inner_cutout= float(option_value)	
+				self.source_radius= float(option_value)
 
+		if self.parser.has_option('CUTOUT_SEARCH', 'cutout_factor'):
+			option_value= self.parser.get('CUTOUT_SEARCH', 'cutout_factor')
+			if option_value:
+				self.cutout_factor= int(option_value)	
+		
+		
 		if self.parser.has_option('CUTOUT_SEARCH', 'convert_to_jy_pixel'):
 			self.convert_to_jypix_units= self.parser.getboolean('CUTOUT_SEARCH', 'convert_to_jy_pixel') 		
 		
@@ -202,7 +257,15 @@ class Config(object):
 			self.regrid= self.parser.getboolean('CUTOUT_SEARCH', 'regrid') 		
 
 		if self.parser.has_option('CUTOUT_SEARCH', 'convolve'):
-			self.convolve= self.parser.getboolean('CUTOUT_SEARCH', 'convolve') 		
+			self.convolve= self.parser.getboolean('CUTOUT_SEARCH', 'convolve') 
+		
+		if self.parser.has_option('CUTOUT_SEARCH', 'crop'):
+			self.convolve= self.parser.getboolean('CUTOUT_SEARCH', 'crop')
+
+		if self.parser.has_option('CUTOUT_SEARCH', 'crop_size'):
+			option_value= self.parser.get('CUTOUT_SEARCH', 'crop_size')
+			if option_value:
+				self.crop_size= int(option_value)
 
 		# - Parse FIRST DATA section options
 		if self.parser.has_option('FIRST_DATA', 'path'):
@@ -296,6 +359,61 @@ class Config(object):
 			if option_value:
 				self.survey_options['mips_24']['path']= option_value
 			
+		# - Parse APEX data
+		if self.parser.has_option('APEX_ATLASGAL_DATA', 'path'):
+			option_value= self.parser.get('APEX_ATLASGAL_DATA', 'path')	
+			if option_value:
+				self.survey_options['atlasgal']['path']= option_value
+
+		if self.parser.has_option('APEX_ATLASGAL_PLANCK_DATA', 'path'):
+			option_value= self.parser.get('APEX_ATLASGAL_PLANCK_DATA', 'path')	
+			if option_value:
+				self.survey_options['atlasgal_planck']['path']= option_value
+
+		# - Parse MSX
+		if self.parser.has_option('MSX_8_3_DATA', 'path'):
+			option_value= self.parser.get('MSX_8_3_DATA', 'path')	
+			if option_value:
+				self.survey_options['msx_8_3']['path']= option_value
+
+		if self.parser.has_option('MSX_12_1_DATA', 'path'):
+			option_value= self.parser.get('MSX_12_1_DATA', 'path')	
+			if option_value:
+				self.survey_options['msx_12_1']['path']= option_value
+
+		if self.parser.has_option('MSX_14_7_DATA', 'path'):
+			option_value= self.parser.get('MSX_14_7_DATA', 'path')	
+			if option_value:
+				self.survey_options['msx_14_7']['path']= option_value
+
+		if self.parser.has_option('MSX_21_3_DATA', 'path'):
+			option_value= self.parser.get('MSX_21_3_DATA', 'path')	
+			if option_value:
+				self.survey_options['msx_21_3']['path']= option_value
+
+		# - Parse SCORPIO ATCA section options
+		if self.parser.has_option('SCORPIO_ATCA_2_1_DATA', 'path'):
+			option_value= self.parser.get('SCORPIO_ATCA_2_1_DATA', 'path')	
+			if option_value:
+				self.survey_options['scorpio_atca_2_1']['path']= option_value
+
+		# - Parse SCORPIO ASKAP section options	
+		if self.parser.has_option('SCORPIO_ASKAP15_b1_DATA', 'path'):
+			option_value= self.parser.get('SCORPIO_ASKAP15_b1_DATA', 'path')	
+			if option_value:
+				self.survey_options['scorpio_askap15_b1']['path']= option_value
+
+		if self.parser.has_option('SCORPIO_ASKAP36_b123_DATA', 'path'):
+			option_value= self.parser.get('SCORPIO_ASKAP36_b123_DATA', 'path')	
+			if option_value:
+				self.survey_options['scorpio_askap36_b123']['path']= option_value
+
+		# - Parse THOR survey
+		if self.parser.has_option('THOR_DATA', 'path'):
+			option_value= self.parser.get('THOR_DATA', 'path')	
+			if option_value:
+				self.survey_options['thor']['path']= option_value
+	
 		# ***************************
 		# **    VALIDATE CONFIG
 		# ***************************
