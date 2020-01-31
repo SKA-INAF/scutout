@@ -17,6 +17,7 @@ import errno
 from astropy.io import fits
 from astropy.io import ascii 
 from astropy.wcs import WCS
+from astropy.nddata import Cutout2D
 
 ## GRAPHICS MODULES
 import matplotlib.pyplot as plt
@@ -254,6 +255,127 @@ class Utils(object):
 		return beamArea
 
 	@classmethod
+	def getWiseSurveyBeamArea(cls,band):
+		""" Returns Wise survey beam area """ 
+		if band=='wise_3_4':
+			bmaj= 8.5 # arcsec
+			bmin= 8.5 # arcsec
+		elif band=='wise_4_6':
+			bmaj= 8.5 # arcsec
+			bmin= 8.5 # arcsec
+		elif band=='wise_12':
+			bmaj= 8.5 # arcsec
+			bmin= 8.5 # arcsec
+		elif band=='wise_22':
+			bmaj= 17 # arcsec
+			bmin= 17 # arcsec
+		else:
+			logger.error("Invalid/unknown band argument given (" + band + ")!")
+			return 0
+		
+		bmaj_deg= bmaj/3600.
+		bmin_deg= bmin/3600.
+		beamArea= Utils.getBeamArea(bmaj_deg,bmin_deg)
+		return beamArea
+
+	@classmethod
+	def getIRACSurveyBeamArea(cls,band):
+		""" Returns IRAC survey beam area """ 
+		if band=='irac_3_6':
+			bmaj= 1.7 # arcsec
+			bmin= 1.7 # arcsec
+		elif band=='irac_4_5':
+			bmaj= 1.7 # arcsec
+			bmin= 1.7 # arcsec
+		elif band=='irac_5_8':
+			bmaj= 1.7 # arcsec
+			bmin= 1.7 # arcsec
+		elif band=='irac_8':
+			bmaj= 1.9 # arcsec
+			bmin= 1.9 # arcsec
+		else:
+			logger.error("Invalid/unknown band argument given (" + band + ")!")
+			return 0
+		
+		bmaj_deg= bmaj/3600.
+		bmin_deg= bmin/3600.
+		beamArea= Utils.getBeamArea(bmaj_deg,bmin_deg)
+		return beamArea
+
+	@classmethod
+	def getMIPSSurveyBeamArea(cls):
+		""" Returns MIPS survey beam area """ 
+		
+		bmaj= 6 # arcsec
+		bmin= 6 # arcsec
+		bmaj_deg= bmaj/3600.
+		bmin_deg= bmin/3600.
+		beamArea= Utils.getBeamArea(bmaj_deg,bmin_deg)
+		return beamArea
+
+	@classmethod
+	def getHiGalSurveyBeamArea(cls,band):
+		""" Returns HiGal survey beam area """ 
+		if band=='higal_70':
+			bmaj= 8.512 # arcsec
+			bmin= 8.512 # arcsec
+		elif band=='higal_160':
+			bmaj= 12.103 # arcsec
+			bmin= 12.103 # arcsec
+		elif band=='higal_250':
+			bmaj= 18 # arcsec
+			bmin= 18 # arcsec
+		elif band=='higal_350':
+			bmaj= 24 # arcsec
+			bmin= 24 # arcsec
+		elif band=='higal_500':
+			bmaj= 34.5 # arcsec
+			bmin= 34.5 # arcsec
+		else:
+			logger.error("Invalid/unknown band argument given (" + band + ")!")
+			return 0
+		
+		bmaj_deg= bmaj/3600.
+		bmin_deg= bmin/3600.
+		beamArea= Utils.getBeamArea(bmaj_deg,bmin_deg)
+		return beamArea
+
+	@classmethod
+	def getATLASGALSurveyBeamArea(cls):
+		""" Returns ATLASGAL survey beam area """ 
+
+		bmaj= 18.6 # arcsec (from http://www.apex-telescope.org/bolometer/laboca/technical/)
+		bmin= 18.6 # arcsec (from http://www.apex-telescope.org/bolometer/laboca/technical/)
+		#bmaj= 19.2 # arcsec (from ATLASGAL papers)
+		#bmin= 19.2 # arcsec (from ATLASGAL papers)
+		bmaj_deg= bmaj/3600.
+		bmin_deg= bmin/3600.
+		beamArea= Utils.getBeamArea(bmaj_deg,bmin_deg)
+		return beamArea
+
+	@classmethod
+	def getATLASGALPlanckSurveyBeamArea(cls):
+		""" Returns ATLASGAL+Planck survey beam area """ 
+
+		bmaj= 21 # arcsec (from http://atlasgal.mpifr-bonn.mpg.de/cgi-bin/ATLASGAL_DATASETS.cgi)
+		bmin= 21 # arcsec 
+		bmaj_deg= bmaj/3600.
+		bmin_deg= bmin/3600.
+		beamArea= Utils.getBeamArea(bmaj_deg,bmin_deg)
+		return beamArea
+
+	@classmethod
+	def getMSXSurveyBeamArea(cls):
+		""" Returns MSX survey beam area """ 
+
+		bmaj= 20 # arcsec
+		bmin= 20 # arcsec
+		bmaj_deg= bmaj/3600.
+		bmin_deg= bmin/3600.
+		beamArea= Utils.getBeamArea(bmaj_deg,bmin_deg)
+		return beamArea
+
+	@classmethod
 	def getFIRSTSurveyBeamArea(cls,ra,dec):
 		""" Returns FIRST survey beam area """ 
 		
@@ -293,6 +415,57 @@ class Utils(object):
 		return beamArea
 
 	@classmethod
+	def getScorpioATCASurveyBeamArea(cls,band):
+		""" Returns Scorpio ATCA survey beam area """ 
+		
+		if band=='scorpio_atca_2_1':
+			bmaj= 9.8 # arcsec
+			bmin= 5.8 # arcsec
+		#elif band=='scorpio_atca_5_0':
+		#	bmaj= 12.103 # arcsec
+		#	bmin= 12.103 # arcsec
+		
+		else:
+			logger.error("Invalid/unknown band argument given (" + band + ")!")
+			return 0
+		
+		bmaj_deg= bmaj/3600.
+		bmin_deg= bmin/3600.
+		beamArea= Utils.getBeamArea(bmaj_deg,bmin_deg)
+		return beamArea
+
+	@classmethod
+	def getScorpioASKAPB1SurveyBeamArea(cls):
+		""" Returns Scorpio ASKAP 15 B1 survey beam area """ 
+		bmaj= 24 # arcsec
+		bmin= 21 # arcsec
+		bmaj_deg= bmaj/3600.
+		bmin_deg= bmin/3600.
+		beamArea= Utils.getBeamArea(bmaj_deg,bmin_deg)
+		return beamArea
+
+	@classmethod
+	def getScorpioASKAP36B123SurveyBeamArea(cls):
+		""" Returns Scorpio ASKAP 36 B123 survey beam area """ 
+		bmaj= 9.403 # arcsec
+		bmin= 7.713 # arcsec
+		bmaj_deg= bmaj/3600.
+		bmin_deg= bmin/3600.
+		beamArea= Utils.getBeamArea(bmaj_deg,bmin_deg)
+		return beamArea
+
+	@classmethod
+	def getTHORSurveyBeamArea(cls):
+		""" Returns THOR survey beam area """ 
+		#Beam varying from 18.1 x 11.1 to 12.0 x 11.6
+		bmaj= 12 # arcsec
+		bmin= 12 # arcsec
+		bmaj_deg= bmaj/3600.
+		bmin_deg= bmin/3600.
+		beamArea= Utils.getBeamArea(bmaj_deg,bmin_deg)
+		return beamArea
+
+	@classmethod
 	def getSurveyBeamArea(cls,survey,ra=None,dec=None):
 		""" Return beam area of given survey """
 		
@@ -303,6 +476,54 @@ class Utils(object):
 			beamArea= Utils.getFIRSTSurveyBeamArea(ra,dec)
 		elif survey=='mgps':
 			beamArea= Utils.getMGPSSurveyBeamArea(dec)
+		elif survey=='wise_3_4':
+			beamArea= Utils.getWiseSurveyBeamArea(survey)
+		elif survey=='wise_5_6':
+			beamArea= Utils.getWiseSurveyBeamArea(survey)
+		elif survey=='wise_12':
+			beamArea= Utils.getWiseSurveyBeamArea(survey)
+		elif survey=='wise_22':
+			beamArea= Utils.getWiseSurveyBeamArea(survey)
+		elif survey=='irac_3_6':
+			beamArea= Utils.getIRACSurveyBeamArea(survey)
+		elif survey=='irac_4_5':
+			beamArea= Utils.getIRACSurveyBeamArea(survey)
+		elif survey=='irac_5_8':
+			beamArea= Utils.getIRACSurveyBeamArea(survey)
+		elif survey=='irac_8':
+			beamArea= Utils.getIRACSurveyBeamArea(survey)
+		elif survey=='mips_24':
+			beamArea= Utils.getMIPSSurveyBeamArea()		
+		elif survey=='higal_70':
+			beamArea= Utils.getHiGalSurveyBeamArea(survey)
+		elif survey=='higal_160':
+			beamArea= Utils.getHiGalSurveyBeamArea(survey)
+		elif survey=='higal_250':
+			beamArea= Utils.getHiGalSurveyBeamArea(survey)
+		elif survey=='higal_350':
+			beamArea= Utils.getHiGalSurveyBeamArea(survey)
+		elif survey=='higal_500':
+			beamArea= Utils.getHiGalSurveyBeamArea(survey)
+		elif survey=='atlasgal':
+			beamArea= Utils.getATLASGALSurveyBeamArea()
+		elif survey=='atlasgal_planck':
+			beamArea= Utils.getATLASGALPlanckSurveyBeamArea()
+		elif survey=='msx_8_3':
+			beamArea= Utils.getMSXSurveyBeamArea()
+		elif survey=='msx_12_1':
+			beamArea= Utils.getMSXSurveyBeamArea()
+		elif survey=='msx_14_7':
+			beamArea= Utils.getMSXSurveyBeamArea()
+		elif survey=='msx_21_3':
+			beamArea= Utils.getMSXSurveyBeamArea()
+		elif survey=='scorpio_atca_2_1':
+			beamArea= Utils.getScorpioATCASurveyBeamArea(survey)
+		elif survey=='scorpio_askap15_b1':
+			beamArea= Utils.getScorpioASKAP15B1SurveyBeamArea()
+		elif survey=='scorpio_askap36_b123':
+			beamArea= Utils.getScorpioASKAP36B123SurveyBeamArea()
+		elif survey=='thor':
+			beamArea= Utils.getTHORSurveyBeamArea()
 		else:
 			logger.error("Unknown survey (" + survey + "), returning area=0!")
 			beamArea= 0
@@ -467,7 +688,7 @@ class Utils(object):
 		#==================
 		convFactor= 1
 		
-		# - RADIO SURVEY MAPS
+		# - Jy/beam units (e.g. radio maps, apex)
 		if units=='JY/BEAM' or units=='Jy/beam':
 			
 			hasBeamInfo= Utils.hasBeamInfo(header)
@@ -484,7 +705,7 @@ class Utils(object):
 					logger.error("No BMAJ keyword present in file " + filename + ", cannot compute conversion factor!")
 					return -1
 		
-		# - WISE MAPS
+		# - DN UNITS (e.g WISE MAPS)
 		elif units=='DN':
 			if survey=='wise_b1':
 				convFactor= 1.9350E-06
@@ -498,11 +719,26 @@ class Utils(object):
 				logger.error("Invalid or unknown survey (" + survey + ") given!")
 				return -1
 
-		# - HERSCHEL/SPITZER MAPS
+		# - MJy/sr units (e.g. HERSCHEL/SPITZER maps)
 		elif units=='MJy/sr':
 			convFactor= 1.e+6*dx*dy/(206265.*206265.)
 
-		# - Jy/pixel (e.g. simulated maps)
+		# - W/m^2-sr units (e.g. MSX maps)
+		elif units=='W/m^2-sr':
+			convFactor_fromJyToSr= dx*dy/(206265.*206265.)
+			if survey=='msx_8_3':
+				convFactor= 7.133e+12*convFactor_fromJyToSr
+			elif survey=='msx_12_1':
+				convFactor= 2.863e+13*convFactor_fromJyToSr
+			elif survey=='msx_14_7':
+				convFactor= 3.216e+13*convFactor_fromJyToSr
+			elif survey=='msx_21_3':
+				convFactor= 2.476e+13*convFactor_fromJyToSr
+			else:
+				logger.error("Invalid or unknown survey (" + survey + ") given!")
+				return -1
+
+		# - Jy/pixel units (e.g. simulated maps)
 		elif units=='Jy/pixel' or units=='JY/PIXEL':
 			convFactor= 1
 		else:
@@ -518,6 +754,46 @@ class Utils(object):
 
 		# - Write converted fits to file
 		Utils.write_fits(data_conv,outfile,header_conv)
+
+		return 0
+
+	@classmethod
+	def cropImage(cls,filename,ra,dec,crop_size,outfile,source_size=-1,nanfill=True,nanfill_mode='imgmin',nanfill_val=0):
+		""" Crop image around (ra,dec) by crop_size """
+
+		# - Read fits image
+		data, header= Utils.read_fits(filename)
+		wcs = WCS(header)
+		dx= header['CDELT1'] # in deg
+		dy= header['CDELT2'] # in deg
+		pix_size= max(dx,dy) # in deg
+
+		# - Check if crop size is cutting part of the source
+		if source_size!=-1:
+			source_size_pix= source_size/pix_size
+			if source_size_pix>=crop_size:
+				errmsg= "Requested crop size (" + crop_size + ") exceeding source size (size=" + source_size + " deg, size_pix=" + source_size_pix + "), won't write cropped fits file!"
+				logger.warn(errmsg)
+				return -1
+
+		# - Find pixel coordinates corresponding to ra,dec
+		x0, y0 = wcs.all_world2pix(ra,dec,0,ra_dec_order=True)
+
+		# - Extract cutout. With option 'partial' when cutout size is larger than image size the cutout will be filled with nan (or specified value)
+		cutout= Cutout2D(data, (x0,y0), (crop_size,crop_size), mode='partial',wcs=wcs)
+		output_data= cutout.data
+
+		# - Fill NAN?
+		if nanfill:
+			if nanfill_mode=='imgmin':
+				img_min= np.nanmin(output_data)
+				output_data[np.isnan(output_data)]= img_min	
+			else:
+				output_data[np.isnan(output_data)]= nanfill_val
+			
+		# - Write reshaped image fits
+		Utils.write_fits(output_data,outfile)
+		
 
 		return 0
 
