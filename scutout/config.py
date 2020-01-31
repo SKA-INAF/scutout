@@ -66,112 +66,110 @@ class Config(object):
 
 		# - FIRST survey options
 		first_options= {
-			"path": ""
+			"metadata": ""
 		}
 
 		# - NVSS survey options
 		nvss_options= {
-			"path": ""
+			"metadata": ""
 		}
 
 		# - MGPS survey options
 		mgps_options= {
-			"path": ""
+			"metadata": ""
 		}
 
 		# - SCORPIO ATCA survey options
 		scorpio_atca_2_1_options= {
-			"path": ""
+			"metadata": ""
 		}
 
 		# - SCORPIO ASKAP survey options
 		scorpio_askap15_b1_options= {
-			"path": ""
+			"metadata": ""
 		}
 		scorpio_askap36_b123_options= {
-			"path": ""
+			"metadata": ""
 		}
 		
 		# - THOR survey options
 		thor_options= {
-			"path": ""
+			"metadata": ""
 		}
 
 		# - Spitzer IRAC survey options
 		spitzer_irac_3_6_options= {
-			"path": ""
+			"metadata": ""
 		}
 		spitzer_irac_4_5_options= {
-			"path": ""
+			"metadata": ""
 		}
 		spitzer_irac_5_8_options= {
-			"path": ""
+			"metadata": ""
 		}
 		spitzer_irac_8_options= {
-			"path": ""
+			"metadata": ""
 		}
 
 		# - Spitzer MIPS 24
 		spitzer_mips_24_options= {
-			"path": ""
+			"metadata": ""
 		}
 
 		# - Herschel HIGAL 
 		herschel_higal_70_options= {
-			"path": ""
+			"metadata": ""
 		}
 		herschel_higal_160_options= {
-			"path": ""
+			"metadata": ""
 		}
 		herschel_higal_250_options= {
-			"path": ""
+			"metadata": ""
 		}
 		herschel_higal_350_options= {
-			"path": ""
+			"metadata": ""
 		}
 		herschel_higal_500_options= {
-			"path": ""
+			"metadata": ""
 		}
 		
 		# - WISE 
 		wise_3_4_options= {
-			"path": ""
+			"metadata": ""
 		}
 		wise_4_6_options= {
-			"path": ""
+			"metadata": ""
 		}
 		wise_12_options= {
-			"path": ""
+			"metadata": ""
 		}
 		wise_22_options= {
-			"path": ""
+			"metadata": ""
 		}
 
 		# - APEX ATLAS GAL
 		apex_atlasgal_options= {
-			"path": ""
+			"metadata": ""
 		}
 		apex_atlasgal_planck_options= {
-			"path": ""
+			"metadata": ""
 		}
 
 		# - MSX
 		msx_8_3_options= {
-			"path": ""
+			"metadata": ""
 		}
 		msx_12_1_options= {
-			"path": ""
+			"metadata": ""
 		}
 		msx_14_7_options= {
-			"path": ""
+			"metadata": ""
 		}	
 		msx_21_3_options= {
-			"path": ""
+			"metadata": ""
 		}		
 
-		
-
-
+	
 		# - SURVEY options
 		self.survey_options= {
 			"first" : first_options,
@@ -268,151 +266,151 @@ class Config(object):
 				self.crop_size= int(option_value)
 
 		# - Parse FIRST DATA section options
-		if self.parser.has_option('FIRST_DATA', 'path'):
-			option_value= self.parser.get('FIRST_DATA', 'path')	
+		if self.parser.has_option('FIRST_DATA', 'metadata'):
+			option_value= self.parser.get('FIRST_DATA', 'metadata')	
 			if option_value:
-				self.survey_options['first']['path']= option_value
+				self.survey_options['first']['metadata']= option_value
 
 		# - Parse NVSS DATA section options
-		if self.parser.has_option('NVSS_DATA', 'path'):
-			option_value= self.parser.get('NVSS_DATA', 'path')	
+		if self.parser.has_option('NVSS_DATA', 'metadata'):
+			option_value= self.parser.get('NVSS_DATA', 'metadata')	
 			if option_value:
-				self.survey_options['nvss']['path']= option_value
+				self.survey_options['nvss']['metadata']= option_value
 
 		# - Parse MGPS DATA section options
-		if self.parser.has_option('MGPS_DATA', 'path'):
-			option_value= self.parser.get('MGPS_DATA', 'path')	
+		if self.parser.has_option('MGPS_DATA', 'metadata'):
+			option_value= self.parser.get('MGPS_DATA', 'metadata')	
 			if option_value:
-				self.survey_options['mgps']['path']= option_value
+				self.survey_options['mgps']['metadata']= option_value
 
 		# - Parse WISE section options
-		if self.parser.has_option('WISE_3_4_DATA', 'path'):
-			option_value= self.parser.get('WISE_3_4_DATA', 'path')	
+		if self.parser.has_option('WISE_3_4_DATA', 'metadata'):
+			option_value= self.parser.get('WISE_3_4_DATA', 'metadata')	
 			if option_value:
-				self.survey_options['wise_3_4']['path']= option_value
+				self.survey_options['wise_3_4']['metadata']= option_value
 
-		if self.parser.has_option('WISE_4_6_DATA', 'path'):
-			option_value= self.parser.get('WISE_4_6_DATA', 'path')	
+		if self.parser.has_option('WISE_4_6_DATA', 'metadata'):
+			option_value= self.parser.get('WISE_4_6_DATA', 'metadata')	
 			if option_value:
-				self.survey_options['wise_4_6']['path']= option_value
+				self.survey_options['wise_4_6']['metadata']= option_value
 
-		if self.parser.has_option('WISE_12_DATA', 'path'):
-			option_value= self.parser.get('WISE_12_DATA', 'path')	
+		if self.parser.has_option('WISE_12_DATA', 'metadata'):
+			option_value= self.parser.get('WISE_12_DATA', 'metadata')	
 			if option_value:
-				self.survey_options['wise_12']['path']= option_value
+				self.survey_options['wise_12']['metadata']= option_value
 
-		if self.parser.has_option('WISE_22_DATA', 'path'):
-			option_value= self.parser.get('WISE_22_DATA', 'path')	
+		if self.parser.has_option('WISE_22_DATA', 'metadata'):
+			option_value= self.parser.get('WISE_22_DATA', 'metadata')	
 			if option_value:
-				self.survey_options['wise_22']['path']= option_value
+				self.survey_options['wise_22']['metadata']= option_value
 
 		# - Parse HERSCHEL section options
-		if self.parser.has_option('HERSCHEL_HIGAL70_DATA', 'path'):
-			option_value= self.parser.get('HERSCHEL_HIGAL70_DATA', 'path')	
+		if self.parser.has_option('HERSCHEL_HIGAL70_DATA', 'metadata'):
+			option_value= self.parser.get('HERSCHEL_HIGAL70_DATA', 'metadata')	
 			if option_value:
-				self.survey_options['higal_70']['path']= option_value
+				self.survey_options['higal_70']['metadata']= option_value
 
-		if self.parser.has_option('HERSCHEL_HIGAL160_DATA', 'path'):
-			option_value= self.parser.get('HERSCHEL_HIGAL160_DATA', 'path')	
+		if self.parser.has_option('HERSCHEL_HIGAL160_DATA', 'metadata'):
+			option_value= self.parser.get('HERSCHEL_HIGAL160_DATA', 'metadata')	
 			if option_value:
-				self.survey_options['higal_160']['path']= option_value
+				self.survey_options['higal_160']['metadata']= option_value
 
-		if self.parser.has_option('HERSCHEL_HIGAL250_DATA', 'path'):
-			option_value= self.parser.get('HERSCHEL_HIGAL250_DATA', 'path')	
+		if self.parser.has_option('HERSCHEL_HIGAL250_DATA', 'metadata'):
+			option_value= self.parser.get('HERSCHEL_HIGAL250_DATA', 'metadata')	
 			if option_value:
-				self.survey_options['higal_250']['path']= option_value
+				self.survey_options['higal_250']['metadata']= option_value
 
-		if self.parser.has_option('HERSCHEL_HIGAL350_DATA', 'path'):
-			option_value= self.parser.get('HERSCHEL_HIGAL350_DATA', 'path')	
+		if self.parser.has_option('HERSCHEL_HIGAL350_DATA', 'metadata'):
+			option_value= self.parser.get('HERSCHEL_HIGAL350_DATA', 'metadata')	
 			if option_value:
-				self.survey_options['higal_350']['path']= option_value
+				self.survey_options['higal_350']['metadata']= option_value
 
-		if self.parser.has_option('HERSCHEL_HIGAL500_DATA', 'path'):
-			option_value= self.parser.get('HERSCHEL_HIGAL500_DATA', 'path')	
+		if self.parser.has_option('HERSCHEL_HIGAL500_DATA', 'metadata'):
+			option_value= self.parser.get('HERSCHEL_HIGAL500_DATA', 'metadata')	
 			if option_value:
-				self.survey_options['higal_500']['path']= option_value
+				self.survey_options['higal_500']['metadata']= option_value
 
 		# - Parse Spitzer IRAC section options
-		if self.parser.has_option('SPITZER_IRAC3_6_DATA', 'path'):
-			option_value= self.parser.get('SPITZER_IRAC3_6_DATA', 'path')	
+		if self.parser.has_option('SPITZER_IRAC3_6_DATA', 'metadata'):
+			option_value= self.parser.get('SPITZER_IRAC3_6_DATA', 'metadata')	
 			if option_value:
-				self.survey_options['irac_3_6']['path']= option_value
+				self.survey_options['irac_3_6']['metadata']= option_value
 	
-		if self.parser.has_option('SPITZER_IRAC4_5_DATA', 'path'):
-			option_value= self.parser.get('SPITZER_IRAC4_5_DATA', 'path')	
+		if self.parser.has_option('SPITZER_IRAC4_5_DATA', 'metadata'):
+			option_value= self.parser.get('SPITZER_IRAC4_5_DATA', 'metadata')	
 			if option_value:
-				self.survey_options['irac_4_5']['path']= option_value
+				self.survey_options['irac_4_5']['metadata']= option_value
 
-		if self.parser.has_option('SPITZER_IRAC5_8_DATA', 'path'):
-			option_value= self.parser.get('SPITZER_IRAC5_8_DATA', 'path')	
+		if self.parser.has_option('SPITZER_IRAC5_8_DATA', 'metadata'):
+			option_value= self.parser.get('SPITZER_IRAC5_8_DATA', 'metadata')	
 			if option_value:
-				self.survey_options['irac_5_8']['path']= option_value
+				self.survey_options['irac_5_8']['metadata']= option_value
 
-		if self.parser.has_option('SPITZER_IRAC8_DATA', 'path'):
-			option_value= self.parser.get('SPITZER_IRAC8_DATA', 'path')	
+		if self.parser.has_option('SPITZER_IRAC8_DATA', 'metadata'):
+			option_value= self.parser.get('SPITZER_IRAC8_DATA', 'metadata')	
 			if option_value:
-				self.survey_options['irac_8']['path']= option_value
+				self.survey_options['irac_8']['metadata']= option_value
 
 		# - Parse Spitzer MIPS section options
-		if self.parser.has_option('SPITZER_MIPS24_DATA', 'path'):
-			option_value= self.parser.get('SPITZER_MIPS24_DATA', 'path')	
+		if self.parser.has_option('SPITZER_MIPS24_DATA', 'metadata'):
+			option_value= self.parser.get('SPITZER_MIPS24_DATA', 'metadata')	
 			if option_value:
-				self.survey_options['mips_24']['path']= option_value
+				self.survey_options['mips_24']['metadata']= option_value
 			
 		# - Parse APEX data
-		if self.parser.has_option('APEX_ATLASGAL_DATA', 'path'):
-			option_value= self.parser.get('APEX_ATLASGAL_DATA', 'path')	
+		if self.parser.has_option('APEX_ATLASGAL_DATA', 'metadata'):
+			option_value= self.parser.get('APEX_ATLASGAL_DATA', 'metadata')	
 			if option_value:
-				self.survey_options['atlasgal']['path']= option_value
+				self.survey_options['atlasgal']['metadata']= option_value
 
-		if self.parser.has_option('APEX_ATLASGAL_PLANCK_DATA', 'path'):
-			option_value= self.parser.get('APEX_ATLASGAL_PLANCK_DATA', 'path')	
+		if self.parser.has_option('APEX_ATLASGAL_PLANCK_DATA', 'metadata'):
+			option_value= self.parser.get('APEX_ATLASGAL_PLANCK_DATA', 'metadata')	
 			if option_value:
-				self.survey_options['atlasgal_planck']['path']= option_value
+				self.survey_options['atlasgal_planck']['metadata']= option_value
 
 		# - Parse MSX
-		if self.parser.has_option('MSX_8_3_DATA', 'path'):
-			option_value= self.parser.get('MSX_8_3_DATA', 'path')	
+		if self.parser.has_option('MSX_8_3_DATA', 'metadata'):
+			option_value= self.parser.get('MSX_8_3_DATA', 'metadata')	
 			if option_value:
-				self.survey_options['msx_8_3']['path']= option_value
+				self.survey_options['msx_8_3']['metadata']= option_value
 
-		if self.parser.has_option('MSX_12_1_DATA', 'path'):
-			option_value= self.parser.get('MSX_12_1_DATA', 'path')	
+		if self.parser.has_option('MSX_12_1_DATA', 'metadata'):
+			option_value= self.parser.get('MSX_12_1_DATA', 'metadata')	
 			if option_value:
-				self.survey_options['msx_12_1']['path']= option_value
+				self.survey_options['msx_12_1']['metadata']= option_value
 
-		if self.parser.has_option('MSX_14_7_DATA', 'path'):
-			option_value= self.parser.get('MSX_14_7_DATA', 'path')	
+		if self.parser.has_option('MSX_14_7_DATA', 'metadata'):
+			option_value= self.parser.get('MSX_14_7_DATA', 'metadata')	
 			if option_value:
-				self.survey_options['msx_14_7']['path']= option_value
+				self.survey_options['msx_14_7']['metadata']= option_value
 
-		if self.parser.has_option('MSX_21_3_DATA', 'path'):
-			option_value= self.parser.get('MSX_21_3_DATA', 'path')	
+		if self.parser.has_option('MSX_21_3_DATA', 'metadata'):
+			option_value= self.parser.get('MSX_21_3_DATA', 'metadata')	
 			if option_value:
-				self.survey_options['msx_21_3']['path']= option_value
+				self.survey_options['msx_21_3']['metadata']= option_value
 
 		# - Parse SCORPIO ATCA section options
-		if self.parser.has_option('SCORPIO_ATCA_2_1_DATA', 'path'):
-			option_value= self.parser.get('SCORPIO_ATCA_2_1_DATA', 'path')	
+		if self.parser.has_option('SCORPIO_ATCA_2_1_DATA', 'metadata'):
+			option_value= self.parser.get('SCORPIO_ATCA_2_1_DATA', 'metadata')	
 			if option_value:
-				self.survey_options['scorpio_atca_2_1']['path']= option_value
+				self.survey_options['scorpio_atca_2_1']['metadata']= option_value
 
 		# - Parse SCORPIO ASKAP section options	
-		if self.parser.has_option('SCORPIO_ASKAP15_b1_DATA', 'path'):
-			option_value= self.parser.get('SCORPIO_ASKAP15_b1_DATA', 'path')	
+		if self.parser.has_option('SCORPIO_ASKAP15_b1_DATA', 'metadata'):
+			option_value= self.parser.get('SCORPIO_ASKAP15_b1_DATA', 'metadata')	
 			if option_value:
-				self.survey_options['scorpio_askap15_b1']['path']= option_value
+				self.survey_options['scorpio_askap15_b1']['metadata']= option_value
 
-		if self.parser.has_option('SCORPIO_ASKAP36_b123_DATA', 'path'):
-			option_value= self.parser.get('SCORPIO_ASKAP36_b123_DATA', 'path')	
+		if self.parser.has_option('SCORPIO_ASKAP36_b123_DATA', 'metadata'):
+			option_value= self.parser.get('SCORPIO_ASKAP36_b123_DATA', 'metadata')	
 			if option_value:
-				self.survey_options['scorpio_askap36_b123']['path']= option_value
+				self.survey_options['scorpio_askap36_b123']['metadata']= option_value
 
 		# - Parse THOR survey
-		if self.parser.has_option('THOR_DATA', 'path'):
-			option_value= self.parser.get('THOR_DATA', 'path')	
+		if self.parser.has_option('THOR_DATA', 'metadata'):
+			option_value= self.parser.get('THOR_DATA', 'metadata')	
 			if option_value:
-				self.survey_options['thor']['path']= option_value
+				self.survey_options['thor']['metadata']= option_value
 	
 		# ***************************
 		# **    VALIDATE CONFIG
@@ -429,8 +427,25 @@ class Config(object):
 	def __validate(self):
 		""" Validate config file """
 		
-		# - Check mandatory options
-		# ...
+		# - Check survey options
+		valid_surveys= list(self.survey_options.keys())
+		logger.info("Checking that search surveys exist in supported survey list ...")
+		print(valid_surveys)
+		for survey in self.surveys:
+			if not survey in valid_surveys:
+				logger.error("Survey " + survey + " is unknown and/or not supported!")
+				return -1
+
+		# - Check survey metadata is not empty and existing file
+		for survey in self.surveys:
+			metadata= self.survey_options[survey]['metadata']
+			if not metadata:
+				logger.error("Metadata path for survey " + survey + " is empty string (please specify file in config)!")
+				return -1
+			if not os.path.isfile(metadata):
+				logger.error("Metadata file " + metadata + " is not existing in filesystem!")
+				return -1
+
 		# ...
 		
 		return 0

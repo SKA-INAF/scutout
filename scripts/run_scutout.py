@@ -92,7 +92,10 @@ def main():
 	logger.info("Parse config file ...")
 
 	config= Config()
-	config.parse(config_filename)
+	status= config.parse(config_filename)	
+	if status<0:
+		logger.error("Failed to parse and validate config file " + config_filename + "!")
+		return 1
 
 	# ...
 

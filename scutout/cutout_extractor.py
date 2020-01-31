@@ -170,9 +170,10 @@ class CutoutHelper(object):
 		survey_opts= self.config.survey_options[survey]
 		print("Survey %s options" % survey)
 		print(survey_opts)
-		data_dir= survey_opts['path']
-		metadata_tbl= data_dir + '/metadata.tbl'
-		print("metadata_tbl=%s" % metadata_tbl)
+		#data_dir= survey_opts['path']
+		#metadata_tbl= data_dir + '/metadata.tbl'
+		metadata_tbl= survey_opts['metadata']
+		print("Survey %s metadata=%s" % (survey,metadata_tbl))
 		
 		# - Search in which survey file the source is located using Montage mCoverageCheck routine
 		coverage_tbl= 'coverage_' + survey + '.tbl'
@@ -202,7 +203,8 @@ class CutoutHelper(object):
 			###  USE mBestImage?? ###
 
 		imgfile= table[0]['fname']
-		imgfile_fullpath= data_dir + '/' + imgfile
+		#imgfile_fullpath= data_dir + '/' + imgfile
+		imgfile_fullpath= imgfile
 		imgfile_base= os.path.basename(imgfile)
 		imgfile_local= self.sname + '_' + survey + '.fits'
 		imgfile_local_fullpath= self.tmpdir + '/' + imgfile_local
