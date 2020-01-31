@@ -86,14 +86,19 @@ class CutoutFinder(object):
 		#**********************
 		#     SEARCH CUTOUTS
 		#**********************
+		has_radius_col= 'RADIUS' in self.table.colnames
+
 		for item in self.table:	
 			ra= item['RA']
 			dec= item['DEC']
 			obj_name= item['OBJNAME']
+			radius= -1
+			if has_radius_col:
+				radius= item['RADIUS']
 	
 			logger.info("Searching cutout for source %s (%f,%f) ..." % (obj_name,ra,dec))
 
-			cs= CutoutHelper(self.config,ra,dec,obj_name)
+			cs= CutoutHelper(self.config,ra,dec,obj_name,radius)
 			status= cs.run()
 			if status<0:
 				errmsg= 'Failed to extract cutout for source ' + obj_name + ', skip to next...'
@@ -109,14 +114,20 @@ class CutoutFinder(object):
 class CutoutHelper(object):
 	""" Class to extract source cutout from RA/DEC position """
 
-	def __init__(self,_config,_ra,_dec,_obj_name):
+	def __init__(self,_config,_ra,_dec,_obj_name,_radius=-1):
 		""" Return a cutout helper object """
 
 		self.config= _config
 		self.ra= _ra
 		self.dec= _dec
-		self.outer_cutout= self.config.outer_cutout/60. # in degrees
-		self.inner_cutout= self.config.inner_cutout/60. # in degrees
+		self.source_radius= _radius
+		self.cutout_size= 2*_radius*self.config.cutout_factor
+		if _radius==-1:	
+			self.source_radius= self.config.source_radius
+			self.cutout_size= 2*self.config.source_radius*self.config.cutout_factor
+		
+		self.source_radius/= 3600. # in degrees
+		self.cutout_size/= 3600. # in degrees
 		self.sname= _obj_name
 		self.topdir= self.config.workdir + '/' + self.sname
 		self.tmpdir= self.topdir + '/tmpfiles'
@@ -145,6 +156,16 @@ class CutoutHelper(object):
 	def __extract_raw_cutout(self,survey):
 		""" Find cutout for given survey """
 		
+		##  Create output directories
+		# - Input data
+		input_img_dir= self.tmpdir + '/inputs'
+		Utils.mkdir(input_img_dir)
+		
+		# - Raw cutout data
+		raw_cutout_dir= self.tmpdir + '/raw_cutouts'	
+		Utils.mkdir(raw_cutout_dir) 
+
+
 		# - Get survey data options		
 		survey_opts= self.config.survey_options[survey]
 		print("Survey %s options" % survey)
@@ -156,13 +177,13 @@ class CutoutHelper(object):
 		# - Search in which survey file the source is located using Montage mCoverageCheck routine
 		coverage_tbl= 'coverage_' + survey + '.tbl'
 		coverage_tbl_fullpath= self.tmpdir + '/' + coverage_tbl
-		logger.info('Making coverage table ' + coverage_tbl_fullpath + ' (r=' + str(self.outer_cutout) + ') ...')
+		logger.info('Making coverage table ' + coverage_tbl_fullpath + ' (r=' + str(self.source_radius) + ') ...')
 		montage.mCoverageCheck(
 			in_table=metadata_tbl,
 			out_table=coverage_tbl_fullpath,
 			mode='circle',
 			ra=self.ra, dec=self.dec,
-			radius=self.outer_cutout
+			radius=self.source_radius
 		)
 
 		# - Read coverage table to check if an image was found
@@ -198,7 +219,7 @@ class CutoutHelper(object):
 			#in_image=imgfile_local_fullpath, 
 			in_image=imgfile_fullpath, 
 			out_image=cutout_file_fullpath, 
-			ra=self.ra, dec=self.dec, xsize=self.outer_cutout
+			ra=self.ra, dec=self.dec, xsize=self.cutout_size
 		)
 		self.img_files[survey]= cutout_file_fullpath
 		
@@ -217,44 +238,31 @@ class CutoutHelper(object):
 
 		if self.config.convert_to_jypix_units:
 			logger.info('Convert image in Jy/pixel units ...')
-			cutout_file_scaled= self.sname + '_' + survey + '_cut_jypix.fits'
+			cutout_file_scaled= self.sname + '_' + survey + '_cut_jy.fits'
 			cutout_file_scaled_fullpath= self.tmpdir + '/' + cutout_file_scaled
 			raw_cutout_file= cutout_file
 			raw_cutout_file_fullpath= cutout_file_fullpath
 			Utils.convertImgToJyPixel(cutout_file_fullpath,cutout_file_scaled_fullpath,survey)
 			self.img_files[survey]= cutout_file_scaled_fullpath
 			
-		print("cutout file")
-		print(self.img_files)
-
+		
 		## Organize files in directories or remove some of them
-		# - Input data
-		input_img_dir= self.tmpdir + '/inputs'
-		Utils.mkdir(input_img_dir)
-
+		# - Move coverage table to input subdir
 		shutil.move(coverage_tbl_fullpath,os.path.join(input_img_dir,coverage_tbl))
 		
-		# -  Move tmp raw cutout file
-		tmp_cutout_dir= self.tmpdir + '/raw_cutouts'	
-		Utils.mkdir(tmp_cutout_dir)
-
+		# -  Move raw cutout file to cutout subdir
 		if raw_cutout_file:
-			logger.info("Moving file " + raw_cutout_file + ' to ' + tmp_cutout_dir + ' ...')
-			shutil.move(raw_cutout_file_fullpath,os.path.join(tmp_cutout_dir,raw_cutout_file))
+			logger.info("Moving file " + raw_cutout_file + ' to ' + raw_cutout_dir + ' ...')
+			shutil.move(raw_cutout_file_fullpath,os.path.join(raw_cutout_dir,raw_cutout_file))
 
-			#if self.config.keep_tmpcutouts:
-			#	logger.info("Moving file " + raw_cutout_file + ' to ' + tmp_cutout_dir + ' ...')
-			#	shutil.move(raw_cutout_file_fullpath,os.path.join(tmp_cutout_dir,raw_cutout_file))			
-			#else:
-			#	try:
-			#		logger.info("Removing raw cutout file " + raw_cutout_file + ' ...')
-			#		os.remove(raw_cutout_file_fullpath)
-			#	except OSError:
-			#		pass
-	
 		# - Copy final products in subdir
-		shutil.copy(self.img_files[survey],os.path.join(tmp_cutout_dir,os.path.basename(self.img_files[survey])))
-		
+		#shutil.copy(self.img_files[survey],os.path.join(raw_cutout_dir,os.path.basename(self.img_files[survey])))
+		# - Move final products in subdir
+		shutil.move(self.img_files[survey],os.path.join(raw_cutout_dir,os.path.basename(self.img_files[survey])))
+		self.img_files[survey]= os.path.join(raw_cutout_dir,os.path.basename(self.img_files[survey]))		
+
+		print("Cutout images to be processed after raw cutout step")
+		print(self.img_files)
 
 		return 0
 
@@ -263,6 +271,15 @@ class CutoutHelper(object):
 	#==============================
 	def __regrid_cutouts(self):
 		""" Regrid cutouts to the same projection and pixel """
+
+		##  Create output directories
+		# - Raw cutout dir (should already exist if previous step was called)
+		raw_cutout_dir= self.tmpdir + '/raw_cutouts'	
+		Utils.mkdir(raw_cutout_dir)
+
+		# - Regrid cutout dir
+		reproj_cutout_dir= self.tmpdir + '/reproj_cutouts'	
+		Utils.mkdir(reproj_cutout_dir)
 
 		# - Get list of raw cutout images to be re-projected
 		raw_cutouts= []
@@ -277,8 +294,8 @@ class CutoutHelper(object):
 			reproj_cutouts.append(reproj_cutout_fullpath)
 			self.img_files[survey]= reproj_cutout_fullpath
 
-		print(raw_cutouts)
-		print(reproj_cutouts)
+		#print(raw_cutouts)
+		#print(reproj_cutouts)
 
 		# - Reproject cutouts using py Montage reproject high-level API
 		montage.reproject(
@@ -315,33 +332,20 @@ class CutoutHelper(object):
 			
 
 		## Organize files in directories or remove some of them
-		# -  Raw cutout file
-		tmp_cutout_dir= self.tmpdir + '/raw_cutouts'	
-		Utils.mkdir(tmp_cutout_dir) # should already exist if previous step was called
+		# -  Move raw cutout files to raw cutout subdir
+		#for filename in raw_cutouts:	
+		#	filename_base= Utils.getBaseFile(filename)		
+		#	logger.info("Moving file " + filename_base + ' to ' + raw_cutout_dir + ' ...')
+		#	shutil.move(filename,os.path.join(raw_cutout_dir,filename_base))	
 
-		for filename in raw_cutouts:	
-			filename_base= Utils.getBaseFile(filename)		
-			logger.info("Moving file " + filename_base + ' to ' + tmp_cutout_dir + ' ...')
-			shutil.move(filename,os.path.join(tmp_cutout_dir,filename_base))	
-
-			#if self.config.keep_tmpcutouts:
-			#	logger.info("Moving file " + filename_base + ' to ' + tmp_cutout_dir + ' ...')
-			#	shutil.move(filename,os.path.join(tmp_cutout_dir,filename_base))			
-			#else:
-			#	try:
-			#		logger.info("Removing raw cutout file " + filename_base + ' ...')
-			#		os.remove(filename)
-			#	except OSError:
-			#		pass
-
-		# - Copy final products in subdir
-		tmp_cutout_dir= self.tmpdir + '/reproj_cutouts'	
-		Utils.mkdir(tmp_cutout_dir)
+		# - Move final products to subdir
 		for survey, path in self.img_files.items(): 
-			shutil.copy(self.img_files[survey],os.path.join(tmp_cutout_dir,os.path.basename(self.img_files[survey])))
+			#shutil.copy(self.img_files[survey],os.path.join(reproj_cutout_dir,os.path.basename(self.img_files[survey])))
+			shutil.move(self.img_files[survey],os.path.join(reproj_cutout_dir,os.path.basename(self.img_files[survey])))
+			self.img_files[survey]= os.path.join(reproj_cutout_dir,os.path.basename(self.img_files[survey]))
 		
 
-		print("cutout file")
+		print("Cutout images to be processed after cutout reproj step")
 		print(self.img_files)
 
 		return 0
@@ -353,7 +357,9 @@ class CutoutHelper(object):
 	def __convolve_to_same_resolution(self):
 		""" Convolve cutouts to same resolution """
 		
-		logger.info("Convolving cutouts to the same resolution...")
+		## Create output directory
+		conv_cutout_dir= self.tmpdir + '/conv_cutouts'	
+		Utils.mkdir(conv_cutout_dir)
 		
 		# - Get list of raw cutout images to be convolved
 		raw_cutouts= []
@@ -444,32 +450,77 @@ class CutoutHelper(object):
 		
 		## Organize files in directories or remove some of them
 		# -  Raw cutout file
-		tmp_cutout_dir= self.tmpdir + '/reproj_cutouts'	
-		Utils.mkdir(tmp_cutout_dir)
+		#tmp_cutout_dir= self.tmpdir + '/reproj_cutouts'	
+		#Utils.mkdir(tmp_cutout_dir)
 
-		for filename in raw_cutouts:	
-			filename_base= Utils.getBaseFile(filename)	
-			logger.info("Moving file " + filename_base + ' to ' + tmp_cutout_dir + ' ...')
-			shutil.move(filename,os.path.join(tmp_cutout_dir,filename_base))
+		#for filename in raw_cutouts:	
+		#	filename_base= Utils.getBaseFile(filename)	
+		#	logger.info("Moving file " + filename_base + ' to ' + tmp_cutout_dir + ' ...')
+		#	shutil.move(filename,os.path.join(tmp_cutout_dir,filename_base))
 	
-			#if self.config.keep_tmpcutouts:
-			#	logger.info("Moving file " + filename_base + ' to ' + tmp_cutout_dir + ' ...')
-			#	shutil.move(filename,os.path.join(tmp_cutout_dir,filename_base))			
-			#else:
-			#	try:
-			#		logger.info("Removing regridded cutout file " + filename_base + ' ...')
-			#		os.remove(filename)
-			#	except OSError:
-			#		pass
-
-		# - Copy final products in subdir
-		tmp_cutout_dir= self.tmpdir + '/conv_cutouts'	
-		Utils.mkdir(tmp_cutout_dir)
+		# - Move final products in subdir
+		#tmp_cutout_dir= self.tmpdir + '/conv_cutouts'	
+		#Utils.mkdir(tmp_cutout_dir)
 		for survey, path in self.img_files.items(): 
-			shutil.copy(self.img_files[survey],os.path.join(tmp_cutout_dir,os.path.basename(self.img_files[survey])))
+			#shutil.copy(self.img_files[survey],os.path.join(tmp_cutout_dir,os.path.basename(self.img_files[survey])))
+			shutil.move(self.img_files[survey],os.path.join(conv_cutout_dir,os.path.basename(self.img_files[survey])))
+			self.img_files[survey]= os.path.join(conv_cutout_dir,os.path.basename(self.img_files[survey]))
 
-		print("cutout file")
+		print("Cutout images to be processed after cutout convolve step")
 		print(self.img_files)
+
+
+		return 0
+
+
+	#==============================
+	#     CROP CUTOUTS
+	#==============================
+	def __crop(self):
+		""" Crop cutouts to the desired number of pixels """
+
+		## Organize files in directories 
+		crop_cutout_dir= self.tmpdir + '/cropped_cutouts'	
+		Utils.mkdir(crop_cutout_dir)
+		
+		# - Computing source size. Crop method will internally check is cutout size is cutting part of the source
+		source_size= self.source_radius # in deg
+
+		for survey, filename in self.img_files.items(): 
+			# - Set output filename
+			cropped_cutout= Utils.getBaseFileNoExt(filename) + '_cropped.fits'
+			cropped_cutout_fullpath= self.tmpdir + '/' + cropped_cutout
+			#cropped_cutouts.append(cropped_cutout_fullpath)
+			self.img_files[survey]= cropped_cutout_fullpath
+
+			# - Crop image
+			logger.info("Cropping cutout file " + filename + " to desired size ...")
+			status= Utils.cropImage(
+				filename=filename,
+				ra=self.ra,dec=self.dec,
+				crop_size=self.config.crop_size,
+				outfile=cropped_cutout_fullpath,
+				source_size=source_size,
+				nanfill=True,
+				nanfill_mode='imgmin',
+				nanfill_val=0
+			)
+
+			# - Move conv cutout in subdir
+			#filename_base= Utils.getBaseFile(filename)	
+			#logger.info("Moving file " + filename_base + ' to ' + conv_cutout_dir + ' ...')
+			#shutil.move(filename,os.path.join(conv_cutout_dir,filename_base))
+	
+			# - Exit if crop failed
+			if status<0:
+				logger.error("Failed to crop cutout file " + filename + " (hints: check is source is larger than crop size)")
+				return -1
+
+			# - Copy final product in subdir
+			logger.info("Moving file " + os.path.basename(self.img_files[survey]) + ' to ' + crop_cutout_dir + ' ...')
+			shutil.move(self.img_files[survey],os.path.join(crop_cutout_dir,os.path.basename(self.img_files[survey])))
+			self.img_files[survey]= os.path.join(crop_cutout_dir,os.path.basename(self.img_files[survey]))
+
 
 
 		return 0
@@ -516,6 +567,16 @@ class CutoutHelper(object):
 			if status<0:
 				logger.error('Failed to convolve raw cutouts for source ' + self.sname + '!')
 				return -1
+
+		#*************************************
+		#       CROP CUTOUTS
+		#*************************************
+		if self.config.crop:
+			logger.info('Cropping cutouts to same number of pixels (#' + str(self.config.crop_size) + ' pixels per side) ...')
+			status= self.__crop()
+			if status<0:
+				logger.error('Failed to crop cutouts for source ' + self.sname + '!')
+				return -1
 	
 		#*************************************
 		#     COPY FINAL FILES IN MAIN DIR
@@ -526,7 +587,7 @@ class CutoutHelper(object):
 			filename_base= Utils.getBaseFile(filename)
 			filename_final= self.sname + '_' + survey + '.fits'
 			filename_final_fullpath= self.topdir + '/' + filename_final
-			shutil.move(filename,filename_final_fullpath)
+			shutil.copy(filename,filename_final_fullpath)
 
 		# - Remove tmp file directory?
 		if not self.config.keep_tmpfiles:
