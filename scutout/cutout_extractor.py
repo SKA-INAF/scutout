@@ -126,8 +126,13 @@ class CutoutHelper(object):
 			self.source_radius= self.config.source_radius
 			self.cutout_size= 2*self.config.source_radius*self.config.cutout_factor
 		
+		self.bkg_inner_radius= self.source_radius*self.config.bkg_inner_radius_factor # in arcsec
+		self.bkg_outer_radius= self.source_radius*self.config.bkg_outer_radius_factor # in arcsec
+
 		self.source_radius/= 3600. # in degrees
 		self.cutout_size/= 3600. # in degrees
+		
+
 		self.sname= _obj_name
 		self.topdir= self.config.workdir + '/' + self.sname
 		self.tmpdir= self.topdir + '/tmpfiles'
@@ -263,6 +268,57 @@ class CutoutHelper(object):
 
 		#print("Cutout images to be processed after raw cutout step")
 		#print(self.img_files)
+
+		return 0
+
+	#==============================
+	#     SUBTRACT BKG
+	#==============================
+	def __subtract_bkg(self):
+		""" Subtract bkg from raw cutout """
+
+		# - Create output directory
+		bkgsub_cutout_dir= self.tmpdir + '/bkgsub_cutouts'	
+		Utils.mkdir(bkgsub_cutout_dir)
+
+		#	- Loop over cutouts and compute bkg
+		for survey, filename in self.img_files.items(): 
+			filename_base= Utils.getBaseFileNoExt(filename)
+			bkgsub_cutout= filename_base + '_bkgsub.fits'
+			bkgsub_cutout_fullpath= self.tmpdir + '/' + bkgsub_cutout
+			self.img_files[survey]= bkgsub_cutout_fullpath
+	
+			# - Compute bkg in annulus around source
+			logger.info("Computing bkg for image %s (R1=%s, R2=%s) ..." % (filename_base,str(self.bkg_inner_radius),str(self.bkg_outer_radius)))			
+			bkg= Utils.estimateBkgFromAnnulus(
+				filename=filename,
+				ra=self.ra,dec=self.dec,
+				R1=self.bkg_inner_radius,R2=self.bkg_outer_radius,
+				method=self.config.bkg_estimator,
+				max_nan_thr=self.config.bkg_max_nan_thr
+			)
+
+			# - Read fits image
+			data, header= Utils.read_fits(filename)
+	
+			# - Subtract bkg?
+			good_bkg= (bkg>0 and np.isfinite(bkg))
+			if good_bkg:
+				logger.info("Subtracting bkg=%s from image %s ..." % (str(bkg),filename_base))			
+				data_nobkg= data - bkg
+			else:
+				logger.warn("Computed bkg is not valid (negative/nan/inf), won't subtract bkg from image %s ..." % (filename_base))
+				data_nobkg= data			
+
+			# - Write fits
+			logger.debug("Writing bkg-subtracted image to file %s ..." % (bkgsub_cutout))
+			Utils.write_fits(data_nobkg,bkgsub_cutout_fullpath,header)
+
+		# - Move final products in subdir
+		for survey, path in self.img_files.items(): 
+			shutil.move(self.img_files[survey],os.path.join(bkgsub_cutout_dir,os.path.basename(self.img_files[survey])))
+			self.img_files[survey]= os.path.join(bkgsub_cutout_dir,os.path.basename(self.img_files[survey]))
+
 
 		return 0
 
@@ -526,6 +582,16 @@ class CutoutHelper(object):
 			if status<0:
 				logger.error('Raw cutout extraction for source ' + self.sname + ' for survey ' + survey + ' failed!')
 				continue
+
+		#*************************************
+		#   SUBTRACT BACKGROUND
+		#*************************************
+		if self.config.subtract_bkg:
+			logger.info('Subtracting bkg from raw cutouts ...')
+			status= self.__subtract_bkg()
+			if status<0:
+				logger.error('Failed to subtract bkg from raw cutouts for source ' + self.sname + '!')
+				return -1
 
 		#*************************************
 		#        REGRID CUTOUTS

@@ -19,7 +19,9 @@ from astropy.io import ascii
 from astropy.wcs import WCS
 from astropy.nddata import Cutout2D
 from astropy.stats import sigma_clipped_stats
-import regions
+from astropy import units as u
+from astropy.coordinates import SkyCoord
+from regions import CircleAnnulusSkyRegion, CircleAnnulusPixelRegion
 
 ## GRAPHICS MODULES
 import matplotlib.pyplot as plt
@@ -806,8 +808,8 @@ class Utils(object):
 		wcs = WCS(header)	
 
 		# - Define sky annulus region
-		center= SkyCoord(ra,dec,unit='deg',frame='fk5')
-		annulus_sky = regions.CircleAnnulusSkyRegion(	
+		center= SkyCoord(ra*u.deg,dec*u.deg,frame='fk5')
+		annulus_sky = CircleAnnulusSkyRegion(	
 			center=center,
 			inner_radius=R1*u.arcsec,	
 			outer_radius=R2*u.arcsec
