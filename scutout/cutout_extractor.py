@@ -168,12 +168,10 @@ class CutoutHelper(object):
 
 		# - Get survey data options		
 		survey_opts= self.config.survey_options[survey]
-		print("Survey %s options" % survey)
-		print(survey_opts)
-		#data_dir= survey_opts['path']
-		#metadata_tbl= data_dir + '/metadata.tbl'
+		#print("Survey %s options" % survey)
+		#print(survey_opts)
 		metadata_tbl= survey_opts['metadata']
-		print("Survey %s metadata=%s" % (survey,metadata_tbl))
+		#print("Survey %s metadata=%s" % (survey,metadata_tbl))
 		
 		# - Search in which survey file the source is located using Montage mCoverageCheck routine
 		coverage_tbl= 'coverage_' + survey + '.tbl'
@@ -254,7 +252,7 @@ class CutoutHelper(object):
 		
 		# -  Move raw cutout file to cutout subdir
 		if raw_cutout_file:
-			logger.info("Moving file " + raw_cutout_file + ' to ' + raw_cutout_dir + ' ...')
+			logger.debug("Moving file " + raw_cutout_file + ' to ' + raw_cutout_dir + ' ...')
 			shutil.move(raw_cutout_file_fullpath,os.path.join(raw_cutout_dir,raw_cutout_file))
 
 		# - Copy final products in subdir
@@ -263,8 +261,8 @@ class CutoutHelper(object):
 		shutil.move(self.img_files[survey],os.path.join(raw_cutout_dir,os.path.basename(self.img_files[survey])))
 		self.img_files[survey]= os.path.join(raw_cutout_dir,os.path.basename(self.img_files[survey]))		
 
-		print("Cutout images to be processed after raw cutout step")
-		print(self.img_files)
+		#print("Cutout images to be processed after raw cutout step")
+		#print(self.img_files)
 
 		return 0
 
@@ -347,8 +345,8 @@ class CutoutHelper(object):
 			self.img_files[survey]= os.path.join(reproj_cutout_dir,os.path.basename(self.img_files[survey]))
 		
 
-		print("Cutout images to be processed after cutout reproj step")
-		print(self.img_files)
+		#print("Cutout images to be processed after cutout reproj step")
+		#print(self.img_files)
 
 		return 0
 
@@ -437,7 +435,10 @@ class CutoutHelper(object):
 			
 			bmaj_arcsec= bmaj.to(u.arcsec).value
 			bmin_arcsec= bmin.to(u.arcsec).value
-			logger.info("Convolving images with beam (bmaj,bmin,pa)=(" + str(bmaj_arcsec) + "," + str(bmin_arcsec) + "," + str(pa_deg) + ")) ...")
+			ny= data_list[index].shape[0]
+			nx= data_list[index].shape[1]
+		
+			logger.info("Convolving image %s (size=%d,%d) with beam (bmaj,bmin,pa)=(%s,%s,%s) ..." % (raw_cutouts[index],nx,ny,str(bmaj_arcsec),str(bmin_arcsec),str(pa_deg)))
 		
 			# - Create convolution kernel
 			dx= pixsize_x[index]

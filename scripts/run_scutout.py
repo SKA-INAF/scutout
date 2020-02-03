@@ -49,6 +49,7 @@ def get_args():
 	
 	parser.add_argument('-filename','--filename', dest='filename', required=True, type=str, default='', help='List of source position to be searched for cutout (ascii format)') 
 	parser.add_argument('-config','--config', dest='config', required=True, type=str, default='', help='Configuration file (INI format)') 
+	parser.add_argument('-loglevel','--loglevel', dest='loglevel', required=False, type=str, default='INFO', help='Logging level (default=INFO)') 
 	
 	# ...
 	# ...
@@ -77,6 +78,13 @@ def main():
 
 	filename= args.filename
 	config_filename= args.config
+	log_level_str= args.loglevel.upper()
+
+	log_level = getattr(logging, log_level_str, None)
+	if not isinstance(log_level, int):
+		logger.error('Invalid log level given: ' + log_level_str)
+		return 1
+	logger.setLevel(log_level)
 
 	if not filename:
 		logger.error("Input file name with coordinate list is empty!")
@@ -84,6 +92,8 @@ def main():
 	if not config_filename:
 		logger.error("Configuration file name is empty!")
 		return 1
+
+	
 		
 
 	#===========================
