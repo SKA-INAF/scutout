@@ -210,6 +210,7 @@ class CutoutHelper(object):
 		#shutil.copy(imgfile_fullpath,imgfile_local_fullpath)
 
 		# - Extract the cutout using Montage
+		logger.info("Extracting raw cutout around (%s,%s) with size %s (arcsec) ..." % (str(self.ra),str(self.dec),str(self.cutout_size*3600)))
 		cutout_file= self.sname + '_' + survey + '_cut.fits'
 		cutout_file_fullpath= self.tmpdir + '/' + cutout_file
 		raw_cutout_file= ''
