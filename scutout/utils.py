@@ -707,13 +707,13 @@ class Utils(object):
 		
 		# - DN UNITS (e.g WISE MAPS)
 		elif units=='DN':
-			if survey=='wise_b1':
+			if survey=='wise_3_4':
 				convFactor= 1.9350E-06
-			elif survey=='wise_b2':
+			elif survey=='wise_4_6':
 				convFactor= 2.7048E-06
-			elif survey=='wise_b3':
+			elif survey=='wise_12':
 				convFactor= 1.8326e-06
-			elif survey=='wise_b4':
+			elif survey=='wise_22':
 				convFactor= 5.2269E-05
 			else:
 				logger.error("Invalid or unknown survey (" + survey + ") given!")
