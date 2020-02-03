@@ -175,7 +175,8 @@ class CutoutHelper(object):
 		# - Search in which survey file the source is located using Montage mCoverageCheck routine
 		coverage_tbl= 'coverage_' + survey + '.tbl'
 		coverage_tbl_fullpath= self.tmpdir + '/' + coverage_tbl
-		logger.info('Making coverage table ' + coverage_tbl_fullpath + ' (r=' + str(self.source_radius) + ') ...')
+		logger.info('Making coverage table %s (r=%s arcsec) ...' % (coverage_tbl,str(self.source_radius)))
+		#logger.info('Making coverage table ' + coverage_tbl_fullpath + ' (r=' + str(self.source_radius) + ') ...')
 		montage.mCoverageCheck(
 			in_table=metadata_tbl,
 			out_table=coverage_tbl_fullpath,
