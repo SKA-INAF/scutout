@@ -55,6 +55,7 @@ class Config(object):
 		
 		# - Cutout search
 		self.surveys= []
+		self.use_same_radius= False
 		self.source_radius= 300 # arcsec
 		self.cutout_factor= 5 
 		
@@ -237,6 +238,9 @@ class Config(object):
 			if option_value:
 				self.surveys= option_value.split(",")
 		
+		if self.parser.has_option('CUTOUT_SEARCH', 'use_same_radius'):
+			self.use_same_radius= self.parser.getboolean('CUTOUT_SEARCH', 'use_same_radius') 		
+	
 		if self.parser.has_option('CUTOUT_SEARCH', 'source_radius'):
 			option_value= self.parser.get('CUTOUT_SEARCH', 'source_radius')
 			if option_value:

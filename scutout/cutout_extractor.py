@@ -122,7 +122,7 @@ class CutoutHelper(object):
 		self.dec= _dec
 		self.source_radius= _radius
 		self.cutout_size= 2*_radius*self.config.cutout_factor
-		if _radius==-1:	
+		if _radius<=0 or self.config.use_same_radius:	
 			self.source_radius= self.config.source_radius
 			self.cutout_size= 2*self.config.source_radius*self.config.cutout_factor
 		
