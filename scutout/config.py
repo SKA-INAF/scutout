@@ -60,10 +60,18 @@ class Config(object):
 		self.cutout_factor= 5 
 		
 		self.convert_to_jypix_units= True
+		self.subtract_bkg= False
 		self.regrid= True
 		self.convolve= True
 		self.crop= True
 		self.crop_size= 200 # in pixels
+
+		# - Background calculation
+		self.bkg_estimator= 'sigmaclip'
+		self.bkg_inner_radius_factor= 1.1
+		self.bkg_outer_radius_factor= 1.2
+		self.bkg_max_nan_thr= 0.1
+
 
 		# - FIRST survey options
 		first_options= {
@@ -255,6 +263,9 @@ class Config(object):
 		if self.parser.has_option('CUTOUT_SEARCH', 'convert_to_jy_pixel'):
 			self.convert_to_jypix_units= self.parser.getboolean('CUTOUT_SEARCH', 'convert_to_jy_pixel') 		
 		
+		if self.parser.has_option('CUTOUT_SEARCH', 'subtract_bkg'):
+			self.subtract_bkg= self.parser.getboolean('CUTOUT_SEARCH', 'subtract_bkg') 	
+
 		if self.parser.has_option('CUTOUT_SEARCH', 'regrid'):
 			self.regrid= self.parser.getboolean('CUTOUT_SEARCH', 'regrid') 		
 
@@ -268,6 +279,28 @@ class Config(object):
 			option_value= self.parser.get('CUTOUT_SEARCH', 'crop_size')
 			if option_value:
 				self.crop_size= int(option_value)
+
+		# - Parse background options
+		if self.parser.has_option('BKG_SUBTRACTION', 'bkg_estimator'):
+			option_value= self.parser.get('BKG_SUBTRACTION', 'bkg_estimator')	
+			if option_value:
+				self.bkg_estimator= option_value
+
+		if self.parser.has_option('BKG_SUBTRACTION', 'bkg_inner_radius_factor'):
+			option_value= self.parser.get('BKG_SUBTRACTION', 'bkg_inner_radius_factor')	
+			if option_value:
+				self.bkg_inner_radius_factor= float(option_value)
+
+		if self.parser.has_option('BKG_SUBTRACTION', 'bkg_outer_radius_factor'):
+			option_value= self.parser.get('BKG_SUBTRACTION', 'bkg_outer_radius_factor')	
+			if option_value:
+				self.bkg_outer_radius_factor= float(option_value)
+
+		if self.parser.has_option('BKG_SUBTRACTION', 'bkg_max_nan_thr'):
+			option_value= self.parser.get('BKG_SUBTRACTION', 'bkg_max_nan_thr')	
+			if option_value:
+				self.bkg_max_nan_thr= float(option_value)
+
 
 		# - Parse FIRST DATA section options
 		if self.parser.has_option('FIRST_DATA', 'metadata'):
