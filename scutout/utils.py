@@ -772,8 +772,7 @@ class Utils(object):
 		if source_size!=-1:
 			source_size_pix= source_size/pix_size
 			if source_size_pix>=crop_size:
-				errmsg= "Requested crop size (" + crop_size + ") exceeding source size (size=" + source_size + " deg, size_pix=" + source_size_pix + "), won't write cropped fits file!"
-				logger.warn(errmsg)
+				logger.warn("Requested crop size (%d) exceeding source size (size=%d arcsec, %d pix), won't write cropped fits file!" % (crop_size,source_size*3600,source_size_pix))
 				return -1
 
 		# - Find pixel coordinates corresponding to ra,dec
