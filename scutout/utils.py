@@ -18,6 +18,8 @@ from astropy.io import fits
 from astropy.io import ascii 
 from astropy.wcs import WCS
 from astropy.nddata import Cutout2D
+from astropy.stats import sigma_clipped_stats
+import regions
 
 ## GRAPHICS MODULES
 import matplotlib.pyplot as plt
@@ -793,6 +795,57 @@ class Utils(object):
 		# - Write reshaped image fits
 		Utils.write_fits(output_data,outfile)
 		
-
 		return 0
+
+	@classmethod
+	def estimateBkgFromAnnulus(cls,filename,ra,dec,R1,R2,method='sigmaclip',max_nan_thr=0.1):
+		""" Estimate bkg from annulus around given sky position """
+
+		# - Read fits image
+		data, header= Utils.read_fits(filename)
+		wcs = WCS(header)	
+
+		# - Define sky annulus region
+		center= SkyCoord(ra,dec,unit='deg',frame='fk5')
+		annulus_sky = regions.CircleAnnulusSkyRegion(	
+			center=center,
+			inner_radius=R1*u.arcsec,	
+			outer_radius=R2*u.arcsec
+		)
+
+		# - Convert sky annulus to pixel annulus
+		annulus_pix= annulus_sky.to_pixel(wcs)
+
+		# - Get mask corresponding to annulus and array of pixel values in the mask
+		mask= annulus_pix.to_mask()
+		mask_data= mask.to_image(shape=data.shape)
+		aperture_pixel_data= data[mask_data==1]
+		
+		# - Integrity check before computing stats
+		npixels= aperture_pixel_data.size
+		if npixels==0:
+			logger.warn("Pixel mask is empty, returning zero!")
+			return 0
+
+		nan_counts= np.count_nonzero(np.isnan(aperture_pixel_data))
+		nan_fract= float(nan_counts)/float(npixels) 
+		if nan_fract>max_nan_thr:
+			logger.warn("Fraction of nan pixels in mask (%s) exceeding max threshold (%s), returning zero!" % (str(nan_fract),str(max_nan_thr)))
+			return 0
+		
+		# - Compute median or 3-sigma clipped value as bkg estimator
+		bkg= 0
+		nsigma= 3
+		if method=='median':
+			bkg= np.median(aperture_pixel_data)
+		elif method=='sigmaclip':
+			mean,median,rms= sigma_clipped_stats(aperture_pixel_data,sigma=nsigma)
+			bkg= median
+		else:
+			logger.error("Invalid bkg estimation method (%s) given, returning zero!" % (method))
+			return -1			
+
+		return bkg
+
+		
 

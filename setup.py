@@ -27,6 +27,8 @@ reqs= []
 reqs.append('numpy>=1.10')
 reqs.append('astropy>=2.0, <3')
 reqs.append('montage-wrapper')
+reqs.append('radio-beam')
+reqs.append('regions')
 
 if PY_MAJOR_VERSION<=2:
 	print("PYTHON 2 detected")
@@ -42,8 +44,7 @@ else:
 	reqs.append('pyparsing')
 	reqs.append('matplotlib')
 
-#reqs.append('keras>=2.0')
-#reqs.append('tensorflow>=1.13')
+
 
 
 data_dir = 'data'
