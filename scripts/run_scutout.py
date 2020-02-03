@@ -94,8 +94,6 @@ def main():
 		return 1
 
 	
-		
-
 	#===========================
 	#==   PARSE CONFIG
 	#===========================
@@ -107,15 +105,7 @@ def main():
 		logger.error("Failed to parse and validate config file " + config_filename + "!")
 		return 1
 
-	# ...
-
-	#==============================
-	#==   PARSE SOURCE FILELIST
-	#==============================
-	logger.info("Parse source filelist ...")
 	
-	# ...
-
 	#===========================
 	#==   RUN CUTOUT SEARCH
 	#===========================

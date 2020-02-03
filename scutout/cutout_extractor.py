@@ -165,7 +165,6 @@ class CutoutHelper(object):
 		raw_cutout_dir= self.tmpdir + '/raw_cutouts'	
 		Utils.mkdir(raw_cutout_dir) 
 
-
 		# - Get survey data options		
 		survey_opts= self.config.survey_options[survey]
 		#print("Survey %s options" % survey)
@@ -224,7 +223,7 @@ class CutoutHelper(object):
 		self.img_files[survey]= cutout_file_fullpath
 		
 		# - Fix image axis or scale in case BZERO!=0 or BSCALE!=0
-		logger.info("Fixing possible issues with fits axis and rescale flux by BSCALE ...")
+		logger.info("Fixing possible degenerate axis and non-null BSCALE factor in image %s ..." % (cutout_file))
 		status= Utils.fixImgAxisAndUnits(cutout_file_fullpath,cutout_file_fullpath)
 		if status<0:
 			logger.error("Failed to adjust axis/scale of image " + cutout_file_fullpath + "!")
@@ -237,11 +236,12 @@ class CutoutHelper(object):
 			band= int(survey[pos+2:])
 
 		if self.config.convert_to_jypix_units:
-			logger.info('Convert image in Jy/pixel units ...')
 			cutout_file_scaled= self.sname + '_' + survey + '_cut_jy.fits'
 			cutout_file_scaled_fullpath= self.tmpdir + '/' + cutout_file_scaled
 			raw_cutout_file= cutout_file
 			raw_cutout_file_fullpath= cutout_file_fullpath
+
+			logger.info('Converting image %s in Jy/pixel units ...' % (raw_cutout_file))
 			Utils.convertImgToJyPixel(cutout_file_fullpath,cutout_file_scaled_fullpath,survey)
 			self.img_files[survey]= cutout_file_scaled_fullpath
 			
@@ -255,8 +255,6 @@ class CutoutHelper(object):
 			logger.debug("Moving file " + raw_cutout_file + ' to ' + raw_cutout_dir + ' ...')
 			shutil.move(raw_cutout_file_fullpath,os.path.join(raw_cutout_dir,raw_cutout_file))
 
-		# - Copy final products in subdir
-		#shutil.copy(self.img_files[survey],os.path.join(raw_cutout_dir,os.path.basename(self.img_files[survey])))
 		# - Move final products in subdir
 		shutil.move(self.img_files[survey],os.path.join(raw_cutout_dir,os.path.basename(self.img_files[survey])))
 		self.img_files[survey]= os.path.join(raw_cutout_dir,os.path.basename(self.img_files[survey]))		
@@ -310,7 +308,7 @@ class CutoutHelper(object):
 		# - Scale image data to conserve flux, e.g. multiply data by (pix1/pix1_ori)*(pix2/pix2_ori)
 		# - Copy back beam information (montage does not include in the re-projected image file)
 		# - Overwrite previous image
-		logger.info("Scale reprojected image to conserve flux ...")
+		
 		for index in range(len(raw_cutouts)):
 			data, header= Utils.read_fits(raw_cutouts[index])
 			dx= header['CDELT1']
@@ -322,6 +320,8 @@ class CutoutHelper(object):
 
 			flux_scale= (dx_reproj/dx)*(dy_reproj/dy)
 			data_reproj_scaled= flux_scale*data_reproj
+	
+			logger.info("Scaling re-projected image %s to conserve flux (conv factor=%s) ..." % (raw_cutouts[index],str(flux_scale)))
 
 			if Utils.hasBeamInfo(header) and not Utils.hasBeamInfo(header_reproj):
 				header_reproj['BMAJ']= header['BMAJ']
@@ -331,20 +331,11 @@ class CutoutHelper(object):
 			Utils.write_fits(data_reproj_scaled,reproj_cutouts[index],header_reproj)
 			
 
-		## Organize files in directories or remove some of them
-		# -  Move raw cutout files to raw cutout subdir
-		#for filename in raw_cutouts:	
-		#	filename_base= Utils.getBaseFile(filename)		
-		#	logger.info("Moving file " + filename_base + ' to ' + raw_cutout_dir + ' ...')
-		#	shutil.move(filename,os.path.join(raw_cutout_dir,filename_base))	
-
 		# - Move final products to subdir
 		for survey, path in self.img_files.items(): 
-			#shutil.copy(self.img_files[survey],os.path.join(reproj_cutout_dir,os.path.basename(self.img_files[survey])))
 			shutil.move(self.img_files[survey],os.path.join(reproj_cutout_dir,os.path.basename(self.img_files[survey])))
 			self.img_files[survey]= os.path.join(reproj_cutout_dir,os.path.basename(self.img_files[survey]))
 		
-
 		#print("Cutout images to be processed after cutout reproj step")
 		#print(self.img_files)
 
@@ -407,14 +398,10 @@ class CutoutHelper(object):
 					logger.error("No BMAJ keyword present in file " + path + ", cannot compute conversion factor!")
 					return -1
 
-			print("== BEAM ==")
-			print(beam)
-		
 			beam_list.append(beam)
 		
 		# - Compute common beam
 		beams= radio_beam.Beams(beams=beam_list)
-		print(beams)
 		common_beam= radio_beam.commonbeam.common_manybeams_mve(beams)
 		common_beam_bmaj= common_beam.major.to(u.arcsec).value
 		common_beam_bmin= common_beam.minor.to(u.arcsec).value
@@ -422,7 +409,7 @@ class CutoutHelper(object):
 		
 
 		# - Loop over image, find conv beam to be used to reach common beam and convolve image with this
-		logger.info("Convolving images to common beam size (bmaj,bmin,pa)=(" + str(common_beam_bmaj) + "," + str(common_beam_bmin) + "," + str(common_beam_pa) + ")) ...")
+		logger.info("Convolving images to common beam size (bmaj,bmin,pa)=(%s,%s,%s) ..." % (str(common_beam_bmaj),str(common_beam_bmin),str(common_beam_pa)))
 		
 		for index in range(len(raw_cutouts)):
 
@@ -451,26 +438,13 @@ class CutoutHelper(object):
 			Utils.write_fits(data_conv,conv_cutouts[index],header_list[index])
 
 		
-		## Organize files in directories or remove some of them
-		# -  Raw cutout file
-		#tmp_cutout_dir= self.tmpdir + '/reproj_cutouts'	
-		#Utils.mkdir(tmp_cutout_dir)
-
-		#for filename in raw_cutouts:	
-		#	filename_base= Utils.getBaseFile(filename)	
-		#	logger.info("Moving file " + filename_base + ' to ' + tmp_cutout_dir + ' ...')
-		#	shutil.move(filename,os.path.join(tmp_cutout_dir,filename_base))
-	
 		# - Move final products in subdir
-		#tmp_cutout_dir= self.tmpdir + '/conv_cutouts'	
-		#Utils.mkdir(tmp_cutout_dir)
 		for survey, path in self.img_files.items(): 
-			#shutil.copy(self.img_files[survey],os.path.join(tmp_cutout_dir,os.path.basename(self.img_files[survey])))
 			shutil.move(self.img_files[survey],os.path.join(conv_cutout_dir,os.path.basename(self.img_files[survey])))
 			self.img_files[survey]= os.path.join(conv_cutout_dir,os.path.basename(self.img_files[survey]))
 
-		print("Cutout images to be processed after cutout convolve step")
-		print(self.img_files)
+		#print("Cutout images to be processed after cutout convolve step")
+		#print(self.img_files)
 
 
 		return 0
@@ -520,7 +494,7 @@ class CutoutHelper(object):
 				return -1
 
 			# - Copy final product in subdir
-			logger.info("Moving file " + os.path.basename(self.img_files[survey]) + ' to ' + crop_cutout_dir + ' ...')
+			logger.debug("Moving file " + os.path.basename(self.img_files[survey]) + ' to ' + crop_cutout_dir + ' ...')
 			shutil.move(self.img_files[survey],os.path.join(crop_cutout_dir,os.path.basename(self.img_files[survey])))
 			self.img_files[survey]= os.path.join(crop_cutout_dir,os.path.basename(self.img_files[survey]))
 
@@ -585,7 +559,7 @@ class CutoutHelper(object):
 		#     COPY FINAL FILES IN MAIN DIR
 		#*************************************
 		# - Copy final files in main directory
-		logger.info("Copying final image cutouts in main directory ...")
+		logger.debug("Copying final image cutouts in main directory ...")
 		for survey, filename in self.img_files.items():
 			filename_base= Utils.getBaseFile(filename)
 			filename_final= self.sname + '_' + survey + '.fits'
@@ -594,7 +568,7 @@ class CutoutHelper(object):
 
 		# - Remove tmp file directory?
 		if not self.config.keep_tmpfiles:
-			logger.info("Removing tmp file dir " + self.tmpdir + " ...")
+			logger.debug("Removing tmp file dir " + self.tmpdir + " ...")
 			shutil.rmtree(self.tmpdir, ignore_errors=True)
 
 		return 0
