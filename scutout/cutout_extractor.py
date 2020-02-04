@@ -209,9 +209,13 @@ class CutoutHelper(object):
 			if self.config.multi_input_img_mode=='first':
 				imgfile_fullpath= table[0]['fname']
 
-			elif self.config.multi_input_img_mode=='best':	
-				res= montage.mBestImage(images_table=coverage_tbl_fullpath,ra=self.ra,dec=self.dec)
-				imgfile_fullpath= res.file
+			elif self.config.multi_input_img_mode=='best':
+				try:
+					res= montage.mBestImage(images_table=coverage_tbl_fullpath,ra=self.ra,dec=self.dec)
+					imgfile_fullpath= res.file
+				except:
+					logger.warn("Caught exception from Montage mBestImage, fallback to first image ...")
+					imgfile_fullpath= table[0]['fname']					
 
 			elif self.config.multi_input_img_mode=='mosaic':
 				mosaic_file= 'mosaic_' + survey + '.fits'
@@ -221,9 +225,12 @@ class CutoutHelper(object):
 					imgfile_fullpath= mosaic_file_fullpath
 				else:
 					logger.warn("Failed to compute mosaic from images listed in file %s, taking best one out of them ..." % (coverage_tbl))
-					res= montage.mBestImage(images_table=coverage_tbl_fullpath,ra=self.ra,dec=self.dec)
-					imgfile_fullpath= res.file
-
+					try:
+						res= montage.mBestImage(images_table=coverage_tbl_fullpath,ra=self.ra,dec=self.dec)
+						imgfile_fullpath= res.file
+					except:
+						logger.warn("Caught exception from Montage mBestImage, fallback to first image ...")
+						imgfile_fullpath= table[0]['fname']			
 			else:
 				logger.warn("Invalid/unknown multi input image option (%s), taking the first one..." % (self.config.multi_input_img_mode))
 				imgfile_fullpath= table[0]['fname']
