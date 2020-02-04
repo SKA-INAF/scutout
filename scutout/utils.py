@@ -865,14 +865,14 @@ class Utils(object):
 		Utils.mkdir(dir_path) 
 		
 		# - Computing optimal header
-		logger.info("Computing optimal header ...")
+		logger.info("Mosaicing: computing optimal header ...")
 		
 		header_tbl= input_tbl_base + '.hdr'
 		header_tbl_fullpath= os.path.join(dir_path,header_tbl)
 		montage.mMakeHdr(images_table=input_tbl, template_header=header_tbl_fullpath)
         
 		# - Projecting raw frames
-		logger.info("Projecting raw frames ...")
+		logger.info("Mosaicing: projecting raw frames ...")
 		stats_tbl= input_tbl_base + '_stats.tbl'
 		stats_tbl_fullpath= os.path.join(dir_path,stats_tbl)
 		
@@ -885,32 +885,32 @@ class Utils(object):
 		)
 
 		# - List projected frames
-		logger.info("Listing projected frames ...")
+		logger.info("Mosaicing: listing projected frames ...")
 		projimg_tbl= input_tbl_base + '_proj.tbl'
 		projimg_tbl_fullpath= os.path.join(dir_path,projimg_tbl)
 		res = montage.mImgtbl(dir_path, projimg_tbl_fullpath)
 		if res.count == 0:
-			logger.error("No images were successfully projected!")
+			logger.error("Mosaicing: No images were successfully projected!")
 			return -1
 		
 		# - Compute overlap if background_match is enabled
 		if background_match:
-			logger.info("Determining overlaps ...")
+			logger.info("Mosaicing: determining overlaps ...")
 			diffs_tbl= input_tbl_base + '_diffs.tbl'
 			diffs_tbl_fullpath= os.path.join(dir_path,diffs_tbl)
 			res = montage.mOverlaps(projimg_tbl_fullpath, diffs_tbl_fullpath)
 			if res.count == 0:
-				logger.info("No overlapping frames, backgrounds will not be adjusted")
+				logger.info("Mosaicing: no overlapping frames, backgrounds will not be adjusted")
 				background_match = False
 
 		# - Make mosaic
 		if background_match:
-			logger.error("Not yet implemented!")
+			logger.error("Mosaicing with background_match not yet implemented!")
 			return -1
 
 		else:
 			# - Mosaicking frames
-			logger.info("Mosaicking frames ...")
+			logger.info("Mosaicing: adding frames ...")
 			mosaic_file= input_tbl_base + '_mosaic64.fits'
 			mosaic_file_fullpath= os.path.join(dir_path,mosaic_file)
 			montage.mAdd(
@@ -922,11 +922,9 @@ class Utils(object):
 				exact=exact
 			)
 
-			#sh.copy(images_projected_tbl, output_dir)
-
 			
 		# - Converting mosaic file to desired format
-		logger.info("Converting mosaic file to desired format (type=%s) ..." % (bitpix))
+		logger.info("Mosaicing: converting mosaic file to desired format (type=%s) ..." % (bitpix))
 		montage.mConvert(mosaic_file_fullpath,output,bitpix=bitpix)
 
 		# - Converting mosaic area file to desired format
