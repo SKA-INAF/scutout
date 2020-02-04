@@ -273,7 +273,7 @@ class Config(object):
 			self.convolve= self.parser.getboolean('CUTOUT_SEARCH', 'convolve') 
 		
 		if self.parser.has_option('CUTOUT_SEARCH', 'crop'):
-			self.convolve= self.parser.getboolean('CUTOUT_SEARCH', 'crop')
+			self.crop= self.parser.getboolean('CUTOUT_SEARCH', 'crop')
 
 		if self.parser.has_option('CUTOUT_SEARCH', 'crop_size'):
 			option_value= self.parser.get('CUTOUT_SEARCH', 'crop_size')
