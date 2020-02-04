@@ -202,23 +202,33 @@ class CutoutHelper(object):
 			logger.info("No survey images found covering given source coordinates, go to next survey data...")
 			return 0
 		if nimgs>1:
-			logger.warn("More than 1 image found covering source coordinates, taking the first one for the moment (FIX ME!!!)")
+			logger.info("More than 1 image found covering source coordinates, using mode %s ..." % self.config.multi_input_img_mode)
 			if self.config.multi_input_img_mode=='first':
-				imgfile= table[0]['fname']
-				imgfile_fullpath= imgfile
-			elif: 
-				self.config.multi_input_img_mode=='best':	
+				imgfile_fullpath= table[0]['fname']
+
+			elif self.config.multi_input_img_mode=='best':	
 				res= montage.mBestImage(images_table=coverage_tbl_fullpath,ra=self.ra,dec=self.dec)
 				imgfile_fullpath= res.file
+
+			elif self.config.multi_input_img_mode=='mosaic':
+				mosaic_file= 'mosaic_' + survey + '.fits'
+				mosaic_file_fullpath= os.path.join(input_img_dir,mosaic_file)
+				status= Utils.makeMosaic(coverage_tbl_fullpath,output=mosaic_file_fullpath)	
+				if status==0:
+					imgfile_fullpath= mosaic_file_fullpath
+				else:
+					logger.warn("Failed to compute mosaic from images listed in file %s, taking best one out of them ..." % (coverage_tbl))
+					res= montage.mBestImage(images_table=coverage_tbl_fullpath,ra=self.ra,dec=self.dec)
+					imgfile_fullpath= res.file
+
 			else:
 				logger.warn("Invalid/unknown multi input image option (%s), taking the first one..." % (self.config.multi_input_img_mode))
-				imgfile= table[0]['fname']
-				imgfile_fullpath= imgfile
+				imgfile_fullpath= table[0]['fname']
 			
 
 		#imgfile= table[0]['fname']
 		#imgfile_fullpath= imgfile
-		imgfile_base= os.path.basename(imgfile)
+		#imgfile_base= os.path.basename(imgfile_fullpath)
 		imgfile_local= self.sname + '_' + survey + '.fits'
 		imgfile_local_fullpath= self.tmpdir + '/' + imgfile_local
 		
