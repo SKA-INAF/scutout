@@ -872,7 +872,7 @@ class Utils(object):
 		montage.mProjExec(
 			images_table=input_tbl, 
 			template_header=header_filename, 
-			projected_dir=dir_path, 
+			proj_dir=dir_path, 
 			stats_tbl=stats_filename_fullpath,
 			exact=exact
 		)
