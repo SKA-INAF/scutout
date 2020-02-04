@@ -203,11 +203,21 @@ class CutoutHelper(object):
 			return 0
 		if nimgs>1:
 			logger.warn("More than 1 image found covering source coordinates, taking the first one for the moment (FIX ME!!!)")
-			###  USE mBestImage?? ###
+			if self.config.multi_input_img_mode=='first':
+				imgfile= table[0]['fname']
+				imgfile_fullpath= imgfile
+			elif: 
+				self.config.multi_input_img_mode=='best':	
+				res= montage.mBestImage(images_table=coverage_tbl_fullpath,ra=self.ra,dec=self.dec)
+				imgfile_fullpath= res.file
+			else:
+				logger.warn("Invalid/unknown multi input image option (%s), taking the first one..." % (self.config.multi_input_img_mode))
+				imgfile= table[0]['fname']
+				imgfile_fullpath= imgfile
+			
 
-		imgfile= table[0]['fname']
-		#imgfile_fullpath= data_dir + '/' + imgfile
-		imgfile_fullpath= imgfile
+		#imgfile= table[0]['fname']
+		#imgfile_fullpath= imgfile
 		imgfile_base= os.path.basename(imgfile)
 		imgfile_local= self.sname + '_' + survey + '.fits'
 		imgfile_local_fullpath= self.tmpdir + '/' + imgfile_local

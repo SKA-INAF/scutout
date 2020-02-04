@@ -22,6 +22,7 @@ from astropy.stats import sigma_clipped_stats
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 from regions import CircleAnnulusSkyRegion, CircleAnnulusPixelRegion
+import montage_wrapper as montage
 
 ## GRAPHICS MODULES
 import matplotlib.pyplot as plt
@@ -849,5 +850,32 @@ class Utils(object):
 
 		return bkg
 
-		
+	@classmethod
+	def makeMosaic(cls,input_tbl,combine="mean"):
+		""" Create a mosaic from input images """
+
+		# - Get current work directory
+		dir_path = os.path.dirname(os.path.realpath(input_tbl))
+
+		# - Computing optimal header
+		logger.info("Computing optimal header ...")
+		input_tbl_base= Utils.getBaseFileNoExt(input_tbl)
+		header_filename= input_tbl_base + '.hdr'
+		header_filename_fullpath= dir_path + '/' + header_filename
+		montage.mMakeHdr(images_table=input_tbl, template_header=header_filename)
+        
+		# - Projecting raw frames
+		logger.info("Projecting raw frames ...")
+		stats_filename= input_tbl_base + '_stats.tbl'
+		stats_filename_fullpath= dir_path + '/' + stats_filename
+		exact= False
+    montage.mProjExec(
+			images_table=input_tbl, 
+			template_header=header_filename, 
+			projected_dir=dir_path, 
+			stats_tbl=stats_filename_fullpath,
+			exact=exact
+		)
+
+
 

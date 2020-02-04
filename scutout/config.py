@@ -58,7 +58,7 @@ class Config(object):
 		self.use_same_radius= False
 		self.source_radius= 300 # arcsec
 		self.cutout_factor= 5 
-		
+		self.multi_input_img_mode= 'best'
 		self.convert_to_jypix_units= True
 		self.subtract_bkg= False
 		self.regrid= True
@@ -259,6 +259,10 @@ class Config(object):
 			if option_value:
 				self.cutout_factor= int(option_value)	
 		
+		if self.parser.has_option('CUTOUT_SEARCH', 'multi_input_img_mode'):
+			option_value= self.parser.get('CUTOUT_SEARCH', 'multi_input_img_mode')	
+			if option_value:
+				self.multi_input_img_mode= option_value
 		
 		if self.parser.has_option('CUTOUT_SEARCH', 'convert_to_jy_pixel'):
 			self.convert_to_jypix_units= self.parser.getboolean('CUTOUT_SEARCH', 'convert_to_jy_pixel') 		
