@@ -201,6 +201,9 @@ class CutoutHelper(object):
 		if nimgs<=0:
 			logger.info("No survey images found covering given source coordinates, go to next survey data...")
 			return 0
+
+		imgfile_fullpath= table[0]['fname']		
+
 		if nimgs>1:
 			logger.info("More than 1 image found covering source coordinates, using mode %s ..." % self.config.multi_input_img_mode)
 			if self.config.multi_input_img_mode=='first':
@@ -224,8 +227,8 @@ class CutoutHelper(object):
 			else:
 				logger.warn("Invalid/unknown multi input image option (%s), taking the first one..." % (self.config.multi_input_img_mode))
 				imgfile_fullpath= table[0]['fname']
+		
 			
-
 		#imgfile= table[0]['fname']
 		#imgfile_fullpath= imgfile
 		#imgfile_base= os.path.basename(imgfile_fullpath)
