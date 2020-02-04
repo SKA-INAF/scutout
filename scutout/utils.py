@@ -854,12 +854,16 @@ class Utils(object):
 	def makeMosaic(cls,input_tbl,combine="mean"):
 		""" Create a mosaic from input images """
 
-		# - Get current work directory
-		dir_path = os.path.dirname(os.path.realpath(input_tbl))
-
+		# - Get current directory and create work dir
+		currdir = os.path.dirname(os.path.realpath(input_tbl))
+		input_tbl_base= Utils.getBaseFileNoExt(input_tbl)
+		workdir= 'mosaic_' + input_tbl_base 
+		dir_path= currdir + '/' + workdir
+		Utils.mkdir(dir_path) 
+		
 		# - Computing optimal header
 		logger.info("Computing optimal header ...")
-		input_tbl_base= Utils.getBaseFileNoExt(input_tbl)
+		
 		header_filename= input_tbl_base + '.hdr'
 		header_filename_fullpath= dir_path + '/' + header_filename
 		montage.mMakeHdr(images_table=input_tbl, template_header=header_filename)
@@ -877,5 +881,18 @@ class Utils(object):
 			exact=exact
 		)
 
+		# - List projected frames
+		logger.info("Listing projected frames ...")
+		projimgtbl_filename= input_tbl_base + '_proj.tbl'
+		projimgtbl_filename_fullpath= dir_path + '/' + projimgtbl_filename
+		res = m.mImgtbl(dir_path, projimgtbl_filename_fullpath)
+		if res.count == 0:
+			logger.error("No images were successfully projected!")
+			return -1
+	
 
+		# ...
+		# ...
+
+		return 0
 
