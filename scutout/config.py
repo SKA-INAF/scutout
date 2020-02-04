@@ -221,7 +221,7 @@ class Config(object):
 		# ***************************
 		# - Read config parser
 		self.parser.read(filename)
-		print(self.parser.sections())
+		#print(self.parser.sections())
 		#self.__print_options()
 
 		# ***************************
@@ -471,7 +471,7 @@ class Config(object):
 		# - Check survey options
 		valid_surveys= list(self.survey_options.keys())
 		logger.info("Checking that search surveys exist in supported survey list ...")
-		print(valid_surveys)
+		#print(valid_surveys)
 		for survey in self.surveys:
 			if not survey in valid_surveys:
 				logger.error("Survey " + survey + " is unknown and/or not supported!")
