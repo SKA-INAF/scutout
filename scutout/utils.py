@@ -869,7 +869,7 @@ class Utils(object):
 		stats_filename= input_tbl_base + '_stats.tbl'
 		stats_filename_fullpath= dir_path + '/' + stats_filename
 		exact= False
-    montage.mProjExec(
+		montage.mProjExec(
 			images_table=input_tbl, 
 			template_header=header_filename, 
 			projected_dir=dir_path, 
