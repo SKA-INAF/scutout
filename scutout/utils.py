@@ -885,7 +885,7 @@ class Utils(object):
 		logger.info("Listing projected frames ...")
 		projimgtbl_filename= input_tbl_base + '_proj.tbl'
 		projimgtbl_filename_fullpath= dir_path + '/' + projimgtbl_filename
-		res = m.mImgtbl(dir_path, projimgtbl_filename_fullpath)
+		res = montage.mImgtbl(dir_path, projimgtbl_filename_fullpath)
 		if res.count == 0:
 			logger.error("No images were successfully projected!")
 			return -1
