@@ -581,7 +581,7 @@ class CutoutHelper(object):
 			status= self.__extract_raw_cutout(survey)
 			if status<0:
 				logger.error('Raw cutout extraction for source ' + self.sname + ' for survey ' + survey + ' failed!')
-				continue
+				return -1
 
 		#*************************************
 		#   SUBTRACT BACKGROUND
