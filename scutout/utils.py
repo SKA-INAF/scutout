@@ -878,7 +878,7 @@ class Utils(object):
 		
 		montage.mProjExec(
 			images_table=input_tbl, 
-			template_header=header_filename, 
+			template_header=header_tbl_fullpath, 
 			proj_dir=dir_path, 
 			stats_table=stats_tbl_fullpath,
 			exact=exact
