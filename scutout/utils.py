@@ -873,7 +873,7 @@ class Utils(object):
 			images_table=input_tbl, 
 			template_header=header_filename, 
 			proj_dir=dir_path, 
-			stats_tbl=stats_filename_fullpath,
+			stats_table=stats_filename_fullpath,
 			exact=exact
 		)
 
