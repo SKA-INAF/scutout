@@ -25,7 +25,7 @@ from regions import CircleAnnulusSkyRegion, CircleAnnulusPixelRegion
 import montage_wrapper as montage
 
 ## GRAPHICS MODULES
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 
 logger = logging.getLogger(__name__)

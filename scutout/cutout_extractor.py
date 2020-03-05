@@ -23,7 +23,7 @@ import montage_wrapper as montage
 import radio_beam
 
 ## GRAPHICS MODULES
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 ## MODULES
 from scutout import logger

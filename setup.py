@@ -34,15 +34,13 @@ if PY_MAJOR_VERSION<=2:
 	print("PYTHON 2 detected")
 	reqs.append('future')
 	reqs.append('scipy<=1.2.1')
-	#reqs.append('scikit-learn>=0.20')
 	reqs.append('pyparsing>=2.0.1')
-	reqs.append('matplotlib<=2.2.4')
+	#reqs.append('matplotlib<=2.2.4')
 else:
 	print("PYTHON 3 detected")
 	reqs.append('scipy')
-	#reqs.append('scikit-learn')
 	reqs.append('pyparsing')
-	reqs.append('matplotlib')
+	#reqs.append('matplotlib')
 
 
 
@@ -60,7 +58,6 @@ setup(
 	long_description=read('README.md'),
 	packages=['scutout'],
 	install_requires=reqs,
-	#scripts=['scripts/read_imgdata.py','scripts/run_reducer.py','scripts/extract_features.py'],
 	scripts=['scripts/run_scutout.py'],
 	
 )
