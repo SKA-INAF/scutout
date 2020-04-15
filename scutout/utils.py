@@ -421,7 +421,7 @@ class Utils(object):
 
 
 	@classmethod
-	def getSGPSSurveyBeamArea(cls,dec):
+	def getSGPSSurveyBeamArea(cls):
 		""" Returns SGPS survey beam area """ 
 		
 		# - Taken from SGPS images
@@ -434,7 +434,7 @@ class Utils(object):
 		return beamArea
 
 	@classmethod
-	def getVGPSSurveyBeamArea(cls,dec):
+	def getVGPSSurveyBeamArea(cls):
 		""" Returns VGPS survey beam area """ 
 		
 		# - Taken from https://iopscience.iop.org/article/10.1086/505940/pdf
@@ -508,9 +508,9 @@ class Utils(object):
 		elif survey=='mgps':
 			beamArea= Utils.getMGPSSurveyBeamArea(dec)
 		elif survey=='sgps':
-			beamArea= Utils.getSGPSSurveyBeamArea(dec)
+			beamArea= Utils.getSGPSSurveyBeamArea()
 		elif survey=='vgps':
-			beamArea= Utils.getVGPSSurveyBeamArea(dec)
+			beamArea= Utils.getVGPSSurveyBeamArea()
 		elif survey=='wise_3_4':
 			beamArea= Utils.getWiseSurveyBeamArea(survey)
 		elif survey=='wise_5_6':
