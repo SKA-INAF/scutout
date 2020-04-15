@@ -52,7 +52,10 @@ To run source cutout tool:
     - `bkg_inner_radius_factor`: Factor used to compute the background annulus inner radius R1= R_source x factor. Default: 1.1
     - `bkg_outer_radius_factor`: Factor used to compute the background annulus outer radius R2= R_source x factor. Default: 1.2
     - `bkg_max_nan_thr`: Max fraction of NAN pixels in background annulus above which bkg calculation fails. In this case the background is set to 0. Default: 0.1
-
+    
+  `[XXX_DATA]`
+    - `metadata`: Path to Montage table (.tbl file produced with Montage mImgtbl task) containing survey FITS file list and metadata. Specify an option block per each survey XXX, where XXX can be: {FIRST, NVSS, MGPS, APEX_ATLASGAL, APEX_ATLASGAL_PLANCK, SCORPIO_ATCA_2_1_DATA, SCORPIO_ASKAP15_B1, SCORPIO_ASKAP36_B123, THOR, WISE_3_4, WISE_4_6, WISE_12, WISE_22, SPITZER_IRAC3_6, SPITZER_IRAC4_5, SPITZER_IRAC5_8, SPITZER_IRAC8, SPITZER_MIPS24, HERSCHEL_HIGAL70, HERSCHEL_HIGAL160, HERSCHEL_HIGAL250, HERSCHEL_HIGAL350, HERSCHEL_HIGAL500, MSX_8_3, MSX_12_1, MSX_14_7, MSX_21_3}   
+    
     
 * Prepare an ascii file (e.g. ```sources.dat```) with source sky positions for cutout extraction. File shall be given with the following header and space-delimited columns:    
     
