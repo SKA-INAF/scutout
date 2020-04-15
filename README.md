@@ -46,8 +46,13 @@ To run source cutout tool:
     - `convolve`: To convolve cutouts to same resolution. Valid values: {yes|no}. Default: yes
     - `crop`: To crop cutouts around source position to have final images with same number of pixels. Valid values: {yes|no}. Default: yes
     - `crop_size`: Cropped image size in pixels. Default: 200
-    -         
-    - 
+    
+  `[BKG_SUBTRACTION]`    
+    - `bkg_estimator`: Estimator used to compute the background. Valid values: {median|sigmaclip}. Default: sigmaclip
+    - `bkg_inner_radius_factor`: Factor used to compute the background annulus inner radius R1= R_source x factor. Default: 1.1
+    - `bkg_outer_radius_factor`: Factor used to compute the background annulus outer radius R2= R_source x factor. Default: 1.2
+    - `bkg_max_nan_thr`: Max fraction of NAN pixels in background annulus above which bkg calculation fails. In this case the background is set to 0. Default: 0.1
+
     
 * Prepare an ascii file (e.g. ```sources.dat```) with source sky positions for cutout extraction. File shall be given with the following header and space-delimited columns:    
     
