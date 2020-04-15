@@ -787,7 +787,6 @@ class Utils(object):
 
 		# - T units (e.g. VGPS)
 		elif units=='K':
-			convFactor_fromKToJy= 
 			if survey=='vgps':
 				nu= 1.4 # GHz
 				bmaj= 45 # arcsec
