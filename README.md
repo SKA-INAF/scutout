@@ -35,7 +35,7 @@ To run source cutout tool:
     - `keep_tmpfiles`: To keep or remove tmp files produced per each source. Valid values: {yes|no}. Default: yes    
     
   `[CUTOUT_SEARCH]`
-    - `survey`: List of surveys to be searched, separated by commas. For each searched survey you must provide the path to metadata (e.g. a .tbl table produced by Montage mImgtbl task). Valid values: {first, nvss, mgps, scorpio_atca_2_1, scorpio_askap15_b1, scorpio_askap36_b123, thor, irac_3_6, irac_4_5, irac_5_8, irac_8, mips_24, higal_70, higal_160, higal_250, higal_350, higal_500, wise_3_4, wise_4_6, wise_12, wise_22, atlasgal, atlasgal_planck, msx_8_3, msx_12_1, msx_14_7, msx_21_3}.    
+    - `survey`: List of surveys to be searched, separated by commas. For each searched survey you must provide the path to metadata (e.g. a .tbl table produced by Montage mImgtbl task). Valid values: {first, nvss, mgps, vgps, sgps, scorpio_atca_2_1, scorpio_askap15_b1, scorpio_askap36_b123, thor, irac_3_6, irac_4_5, irac_5_8, irac_8, mips_24, higal_70, higal_160, higal_250, higal_350, higal_500, wise_3_4, wise_4_6, wise_12, wise_22, atlasgal, atlasgal_planck, msx_8_3, msx_12_1, msx_14_7, msx_21_3}.    
     - `use_same_radius`: Use the source radius given in `source_radius` option instead of the radius provided in input file. Valid values: {yes|no}. Default: no
     - `source_radius`: Source radius in arcsec used by default if no radius is given in the input file. Default: 300"
     - `cutout_factor`: Used to compute cutout size as 2 x source_radius x cutout_factor. Default: 5
@@ -54,7 +54,7 @@ To run source cutout tool:
     - `bkg_max_nan_thr`: Max fraction of NAN pixels in background annulus above which bkg calculation fails. In this case the background is set to 0. Default: 0.1
     
   `[XXX_DATA]`
-    - `metadata`: Path to Montage table (.tbl file produced with Montage mImgtbl task) containing survey FITS file list and metadata. Specify an option block per each survey XXX, where XXX can be: {FIRST, NVSS, MGPS, APEX_ATLASGAL, APEX_ATLASGAL_PLANCK, SCORPIO_ATCA_2_1_DATA, SCORPIO_ASKAP15_B1, SCORPIO_ASKAP36_B123, THOR, WISE_3_4, WISE_4_6, WISE_12, WISE_22, SPITZER_IRAC3_6, SPITZER_IRAC4_5, SPITZER_IRAC5_8, SPITZER_IRAC8, SPITZER_MIPS24, HERSCHEL_HIGAL70, HERSCHEL_HIGAL160, HERSCHEL_HIGAL250, HERSCHEL_HIGAL350, HERSCHEL_HIGAL500, MSX_8_3, MSX_12_1, MSX_14_7, MSX_21_3}   
+    - `metadata`: Path to Montage table (.tbl file produced with Montage mImgtbl task) containing survey FITS file list and metadata. Specify an option block per each survey XXX, where XXX can be: {FIRST, NVSS, MGPS, VGPS, SGPS, APEX_ATLASGAL, APEX_ATLASGAL_PLANCK, SCORPIO_ATCA_2_1_DATA, SCORPIO_ASKAP15_B1, SCORPIO_ASKAP36_B123, THOR, WISE_3_4, WISE_4_6, WISE_12, WISE_22, SPITZER_IRAC3_6, SPITZER_IRAC4_5, SPITZER_IRAC5_8, SPITZER_IRAC8, SPITZER_MIPS24, HERSCHEL_HIGAL70, HERSCHEL_HIGAL160, HERSCHEL_HIGAL250, HERSCHEL_HIGAL350, HERSCHEL_HIGAL500, MSX_8_3, MSX_12_1, MSX_14_7, MSX_21_3}   
     
     
 * Prepare an ascii file (e.g. ```sources.dat```) with source sky positions for cutout extraction. File shall be given with the following header and space-delimited columns:    
