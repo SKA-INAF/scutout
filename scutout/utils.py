@@ -419,6 +419,32 @@ class Utils(object):
 		beamArea= Utils.getBeamArea(bmaj_deg,bmin_deg)
 		return beamArea
 
+
+	@classmethod
+	def getSGPSSurveyBeamArea(cls,dec):
+		""" Returns SGPS survey beam area """ 
+		
+		# - Taken from SGPS images
+		#   NB: In https://iopscience.iop.org/article/10.1086/430114/pdf slightly different values (depending on l/b) are given
+		bmin= 100. # arcsec
+		bmaj= 100. # arcsec
+		bmaj_deg= bmaj/3600.
+		bmin_deg= bmin/3600.
+		beamArea= Utils.getBeamArea(bmaj_deg,bmin_deg)
+		return beamArea
+
+	@classmethod
+	def getVGPSSurveyBeamArea(cls,dec):
+		""" Returns VGPS survey beam area """ 
+		
+		# - Taken from https://iopscience.iop.org/article/10.1086/505940/pdf
+		bmin= 45. # arcsec
+		bmaj= 45. # arcsec
+		bmaj_deg= bmaj/3600.
+		bmin_deg= bmin/3600.
+		beamArea= Utils.getBeamArea(bmaj_deg,bmin_deg)
+		return beamArea
+
 	@classmethod
 	def getScorpioATCASurveyBeamArea(cls,band):
 		""" Returns Scorpio ATCA survey beam area """ 
@@ -481,6 +507,10 @@ class Utils(object):
 			beamArea= Utils.getFIRSTSurveyBeamArea(ra,dec)
 		elif survey=='mgps':
 			beamArea= Utils.getMGPSSurveyBeamArea(dec)
+		elif survey=='sgps':
+			beamArea= Utils.getSGPSSurveyBeamArea(dec)
+		elif survey=='vgps':
+			beamArea= Utils.getVGPSSurveyBeamArea(dec)
 		elif survey=='wise_3_4':
 			beamArea= Utils.getWiseSurveyBeamArea(survey)
 		elif survey=='wise_5_6':
@@ -656,6 +686,18 @@ class Utils(object):
 
 		return 0
 
+
+	@classmethod
+	def fromBrightnessTempToJyBeam(cls,nu_GHz,bmin_arcsec,bmaj_arcsec):
+		""" Convert flux density from brightness temperature to Jy/beam """
+
+		# - Taken from https://science.nrao.edu/facilities/vla/proposing/TBconv
+		#T= 1.222e+3*I/(nu_GHz*nu_GHz*bmin_arcsec*bmaj_arcsec)
+		I_mJyBeam= nu_GHz*nu_GHz*bmin_arcsec*bmaj_arcsec/1.222e+3
+		I_JyBeam= I_mJyBeam*1.e-3
+		return I_JyBeam
+
+
 	@classmethod
 	def convertImgToJyPixel(cls,filename,outfile,survey=''):
 		""" Convert image units from original to Jy/pixel """
@@ -739,6 +781,18 @@ class Utils(object):
 				convFactor= 3.216e+13*convFactor_fromJyToSr
 			elif survey=='msx_21_3':
 				convFactor= 2.476e+13*convFactor_fromJyToSr
+			else:
+				logger.error("Invalid or unknown survey (" + survey + ") given!")
+				return -1
+
+		# - T units (e.g. VGPS)
+		elif units=='K':
+			convFactor_fromKToJy= 
+			if survey=='vgps':
+				nu= 1.4 # GHz
+				bmaj= 45 # arcsec
+				bmin= 45 # arcsec
+				convFactor= Utils.fromBrightnessTempToJyBeam(nu,bmin,bmaj)
 			else:
 				logger.error("Invalid or unknown survey (" + survey + ") given!")
 				return -1
