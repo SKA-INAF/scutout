@@ -28,7 +28,36 @@ To use package scripts:
 
 To run source cutout tool:
 
-* Prepare a configuration file (e.g. ```config.ini```) with desired options (e.g. workdir, data paths, cutout search options, etc). A sample config file is provided in the ```config``` directory.    
+* Prepare a configuration file (e.g. ```config.ini```) with desired options (e.g. workdir, data paths, cutout search options, etc). A sample config file is provided in the ```config``` directory. Supported surveys that can be specified in the `survey` option (separated by commas) of the configuration file are listed below:    
+
+    - first   
+    - nvss   
+    - mgps   
+    - scorpio_atca_2_1    
+    - scorpio_askap15_b1   
+    - scorpio_askap36_b123
+    - thor    
+    - irac_3_6    
+    - irac_4_5    
+    - irac_5_8
+    - irac_8    
+    - mips_24    
+    - higal_70   
+    - higal_160    
+    - higal_250   
+    - higal_350   
+    - higal_500   
+    - wise_3_4   
+    - wise_4_6    
+    - wise_12
+    - wise_22			
+    - atlasgal
+    - atlasgal_planck      
+    - msx_8_3   
+    - msx_12_1   
+    - msx_14_7   
+    - msx_21_3    
+
 * Prepare an ascii file (e.g. ```sources.dat```) with source sky positions for cutout extraction. File shall be given with the following header and space-delimited columns:    
     
     ```# RA DEC RADIUS OBJNAME```    
