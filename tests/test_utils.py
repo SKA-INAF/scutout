@@ -505,6 +505,9 @@ class UtilsTest(unittest.TestCase):
                 fixed_hdu_head = fixed_hdu[2]
                 self.assertEqual(fixed_hdu_name, outfile)
                 self.assertEqual(fixed_hdu_head['BUNIT'], 'Jy/pixel')
+                # position of maxima should match (just scaling)
+                self.assertEqual(np.argmax(fixed_hdu_data),
+                                 np.argmax(hdu.data))
 
     @patch('utils.Utils.write_fits')
     @patch('utils.Utils.read_fits')
@@ -524,6 +527,8 @@ class UtilsTest(unittest.TestCase):
         fixed_hdu_head = fixed_hdu[2]
         self.assertEqual(fixed_hdu_name, outfile)
         self.assertEqual(fixed_hdu_head['BUNIT'], 'Jy/pixel')
+        # position of maxima should match (just scaling)
+        self.assertEqual(np.argmax(fixed_hdu_data), np.argmax(hdu.data))
 
     @patch('utils.Utils.write_fits')
     @patch('utils.Utils.read_fits')
@@ -548,6 +553,9 @@ class UtilsTest(unittest.TestCase):
                 fixed_hdu_head = fixed_hdu[2]
                 self.assertEqual(fixed_hdu_name, outfile)
                 self.assertEqual(fixed_hdu_head['BUNIT'], 'Jy/pixel')
+                # position of maxima should match (just scaling)
+                self.assertEqual(np.argmax(fixed_hdu_data),
+                                 np.argmax(hdu.data))
 
     @patch('utils.Utils.write_fits')
     @patch('utils.Utils.read_fits')
@@ -569,6 +577,8 @@ class UtilsTest(unittest.TestCase):
         fixed_hdu_head = fixed_hdu[2]
         self.assertEqual(fixed_hdu_name, outfile)
         self.assertEqual(fixed_hdu_head['BUNIT'], 'Jy/pixel')
+        # position of maxima should match (just scaling)
+        self.assertEqual(np.argmax(fixed_hdu_data), np.argmax(hdu.data))
 
         # case 2: no survey
         mock_read.reset_mock()
@@ -577,6 +587,8 @@ class UtilsTest(unittest.TestCase):
         mock_read.return_value = (hdu.data, header)
         self.assertEqual(self.utils.convertImgToJyPixel(
             infile, outfile), -1)
+        # position of maxima should match (just scaling)
+        self.assertEqual(np.argmax(fixed_hdu_data), np.argmax(hdu.data))
         assert mock_read.called
         assert not mock_write.called
 

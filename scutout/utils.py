@@ -728,8 +728,8 @@ class Utils(object):
             return -1
 
         units = header['BUNIT']
-        dx = header['CDELT1']  # in deg
-        dy = header['CDELT2']  # in deg
+        dx = abs(header['CDELT1'])  # in deg
+        dy = abs(header['CDELT2'])  # in deg
         xc = header['CRPIX1']
         yc = header['CRPIX2']
         ra, dec = wcs.all_pix2world(xc, yc, 0, ra_dec_order=True)
