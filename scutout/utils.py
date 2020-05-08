@@ -775,11 +775,13 @@ class Utils(object):
 
         # - MJy/sr units (e.g. HERSCHEL/SPITZER maps)
         elif units == 'MJy/sr':
-            convFactor = 1.e+6*dx*dy/(206265.*206265.)
+            # we need dx and dy in ''
+            convFactor = 1.e+6*(3600*dx)*(3600*dy)/(206265.*206265.)
 
         # - W/m^2-sr units (e.g. MSX maps)
         elif units == 'W/m^2-sr':
-            convFactor_fromJyToSr = dx*dy/(206265.*206265.)
+            # we need dx and dy in ''
+            convFactor_fromJyToSr = (3600*dx)*(3600*dy)/(206265.*206265.)
             if survey == 'msx_8_3':
                 convFactor = 7.133e+12*convFactor_fromJyToSr
             elif survey == 'msx_12_1':
