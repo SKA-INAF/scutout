@@ -649,25 +649,6 @@ class UtilsTest(unittest.TestCase):
 
     @patch('utils.os')
     @patch('utils.montage')
-    def test_makeMosaic_Success(self, mock_montage, mock_os):
-        outfile = '/out/mosaic.fits'
-        input_tbl = '/tmp/input_tbl.txt'
-
-        # setup montage methods
-        # mImgTbl output http://montage.ipac.caltech.edu/docs/mImgtbl.html
-        def mImgtbl_ret(): return 0
-        mImgtbl_ret.stat = 'OK'
-        mImgtbl_ret.count = 5
-        mImgtbl_ret.badfits = 0
-        mock_montage.mImgtbl.return_value = mImgtbl_ret
-
-        self.assertEqual(self.utils.makeMosaic(input_tbl, outfile),  0)
-        assert mock_montage.mImgtbl.called
-        assert mock_montage.mAdd.called
-        assert mock_montage.mConvert.called
-
-    @patch('utils.os')
-    @patch('utils.montage')
     def test_makeMosaic_Success_BackgroundMatchNotOverlapping(self, mock_montage, mock_os):
         outfile = '/out/mosaic.fits'
         input_tbl = '/tmp/input_tbl.txt'
