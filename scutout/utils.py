@@ -727,12 +727,9 @@ class Utils(object):
                          filename + ", cannot compute conversion factor!")
             return -1
 
-        units = header['BUNIT']
+        units = header['BUNIT'].strip()
         dx = abs(header['CDELT1'])  # in deg
         dy = abs(header['CDELT2'])  # in deg
-        xc = header['CRPIX1']
-        yc = header['CRPIX2']
-        ra, dec = wcs.all_pix2world(xc, yc, 0, ra_dec_order=True)
 
         # ==================
         # - Convert data
@@ -741,6 +738,9 @@ class Utils(object):
 
         # - Jy/beam units (e.g. radio maps, apex)
         if units == 'JY/BEAM' or units == 'Jy/beam':
+            xc = header['CRPIX1']
+            yc = header['CRPIX2']
+            ra, dec = wcs.all_pix2world(xc, yc, 0, ra_dec_order=True)
 
             hasBeamInfo = Utils.hasBeamInfo(header)
             if hasBeamInfo:
