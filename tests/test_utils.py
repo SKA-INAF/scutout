@@ -142,13 +142,13 @@ class UtilsTest(unittest.TestCase):
 
     def test_getWiseSurveyBeamArea(self):
         self.assertEqual(self.utils.getWiseSurveyBeamArea(
-            band='wise_3_4'),  6.316802088098279e-06)
+            band='wise_3_4'),  3.2532623626039716e-06)
         self.assertEqual(self.utils.getWiseSurveyBeamArea(
-            band='wise_4_6'),  6.316802088098279e-06)
+            band='wise_4_6'),  3.581124062678277e-06)
         self.assertEqual(self.utils.getWiseSurveyBeamArea(
-            band='wise_12'),  6.316802088098279e-06)
+            band='wise_12'),  3.6939084875038367e-06)
         self.assertEqual(self.utils.getWiseSurveyBeamArea(
-            band='wise_22'),  2.5267208352393116e-05)
+            band='wise_22'),  1.2589889282853316e-05)
         self.assertEqual(self.utils.getWiseSurveyBeamArea(band='no_band'),  0)
         self.assertEqual(self.utils.getWiseSurveyBeamArea(band=''),  0)
 
@@ -170,15 +170,15 @@ class UtilsTest(unittest.TestCase):
 
     def test_getHiGalSurveyBeamArea(self):
         self.assertEqual(self.utils.getHiGalSurveyBeamArea(
-            band='higal_70'), 6.334650354471603e-06)
+            band='higal_70'), 3.924723124356149e-06)
         self.assertEqual(self.utils.getHiGalSurveyBeamArea(
-            band='higal_160'), 1.2806943258149252e-05)
+            band='higal_160'), 1.0579004189064245e-05)
         self.assertEqual(self.utils.getHiGalSurveyBeamArea(
             band='higal_250'), 2.8327250886419965e-05)
         self.assertEqual(self.utils.getHiGalSurveyBeamArea(
-            band='higal_350'), 5.0359557131413266e-05)
+            band='higal_350'), 5.464361667905085e-05)
         self.assertEqual(self.utils.getHiGalSurveyBeamArea(
-            band='higal_500'), 0.00010406330360358443)
+            band='higal_500'), 0.00011969137797379301)
         self.assertEqual(self.utils.getIRACSurveyBeamArea(band='no_band'),  0)
         self.assertEqual(self.utils.getHiGalSurveyBeamArea(band=''),  0)
 
@@ -224,13 +224,13 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(self.utils.getSurveyBeamArea(
             'vgps'), 0.00017704531804012478)
         self.assertEqual(self.utils.getSurveyBeamArea(
-            'wise_3_4'), 6.316802088098279e-06)
+            'wise_3_4'), 3.2532623626039716e-06)
         self.assertEqual(self.utils.getSurveyBeamArea(
-            'wise_4_6'), 6.316802088098279e-06)
+            'wise_4_6'), 3.581124062678277e-06)
         self.assertEqual(self.utils.getSurveyBeamArea(
-            'wise_12'), 6.316802088098279e-06)
+            'wise_12'), 3.6939084875038367e-06)
         self.assertEqual(self.utils.getSurveyBeamArea(
-            'wise_22'), 2.5267208352393116e-05)
+            'wise_22'), 1.2589889282853316e-05)
         self.assertEqual(self.utils.getSurveyBeamArea(
             'irac_3_6'), 2.526720835239311e-07)
         self.assertEqual(self.utils.getSurveyBeamArea(
@@ -242,15 +242,15 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(self.utils.getSurveyBeamArea(
             'mips_24'), 3.147472320713329e-06)
         self.assertEqual(self.utils.getSurveyBeamArea(
-            'higal_70'), 6.334650354471603e-06)
+            'higal_70'), 3.924723124356149e-06)
         self.assertEqual(self.utils.getSurveyBeamArea(
-            'higal_160'), 1.2806943258149252e-05)
+            'higal_160'), 1.0579004189064245e-05)
         self.assertEqual(self.utils.getSurveyBeamArea(
             'higal_250'), 2.8327250886419965e-05)
         self.assertEqual(self.utils.getSurveyBeamArea(
-            'higal_350'), 5.0359557131413266e-05)
+            'higal_350'), 5.464361667905085e-05)
         self.assertEqual(self.utils.getSurveyBeamArea(
-            'higal_500'), 0.00010406330360358443)
+            'higal_500'), 0.00011969137797379301)
         self.assertEqual(self.utils.getSurveyBeamArea(
             'atlasgal'),  3.0247209002055094e-05)
         self.assertEqual(self.utils.getSurveyBeamArea(
