@@ -262,18 +262,18 @@ class Utils(object):
     @classmethod
     def getWiseSurveyBeamArea(cls, band):
         """ Returns Wise survey beam area """
-        if band == 'wise_3_4':
-            bmaj = 8.5  # arcsec
-            bmin = 8.5  # arcsec
+        if band == 'wise_3_4':     # http://wise2.ipac.caltech.edu/docs/release/allsky/  (Wrigth+10)
+            bmaj = 6.1  # arcsec
+            bmin = 6.1  # arcsec
         elif band == 'wise_4_6':
-            bmaj = 8.5  # arcsec
-            bmin = 8.5  # arcsec
+            bmaj = 6.4  # arcsec
+            bmin = 6.4  # arcsec
         elif band == 'wise_12':
-            bmaj = 8.5  # arcsec
-            bmin = 8.5  # arcsec
+            bmaj = 6.5  # arcsec
+            bmin = 6.5  # arcsec
         elif band == 'wise_22':
-            bmaj = 17  # arcsec
-            bmin = 17  # arcsec
+            bmaj = 12  # arcsec
+            bmin = 12  # arcsec
         else:
             logger.error("Invalid/unknown band argument given (" + band + ")!")
             return 0
@@ -311,7 +311,8 @@ class Utils(object):
     def getMIPSSurveyBeamArea(cls):
         """ Returns MIPS survey beam area """
 
-        bmaj = 6  # arcsec
+        # arcsec    Rieke+04 (https://iopscience.iop.org/article/10.1086/422717/pdf)
+        bmaj = 6
         bmin = 6  # arcsec
         bmaj_deg = bmaj/3600.
         bmin_deg = bmin/3600.
@@ -322,20 +323,20 @@ class Utils(object):
     def getHiGalSurveyBeamArea(cls, band):
         """ Returns HiGal survey beam area """
         if band == 'higal_70':
-            bmaj = 8.512  # arcsec
-            bmin = 8.512  # arcsec
+            bmaj = 6.7  # arcsec	https://hi-gal.iaps.inaf.it/ ; Bufano+18
+            bmin = 6.7  # arcsec
         elif band == 'higal_160':
-            bmaj = 12.103  # arcsec
-            bmin = 12.103  # arcsec
+            bmaj = 11.  # arcsec
+            bmin = 11.  # arcsec
         elif band == 'higal_250':
-            bmaj = 18  # arcsec
-            bmin = 18  # arcsec
+            bmaj = 18.  # arcsec
+            bmin = 18.  # arcsec
         elif band == 'higal_350':
-            bmaj = 24  # arcsec
-            bmin = 24  # arcsec
+            bmaj = 25.  # arcsec
+            bmin = 25.  # arcsec
         elif band == 'higal_500':
-            bmaj = 34.5  # arcsec
-            bmin = 34.5  # arcsec
+            bmaj = 37.  # arcsec
+            bmin = 37.  # arcsec
         else:
             logger.error("Invalid/unknown band argument given (" + band + ")!")
             return 0
@@ -376,7 +377,7 @@ class Utils(object):
     def getMSXSurveyBeamArea(cls):
         """ Returns MSX survey beam area """
 
-        bmaj = 20  # arcsec
+        bmaj = 20  # arcsec	http://irsa.ipac.caltech.edu/applications/MSX/MSX/imageDescriptions.htm
         bmin = 20  # arcsec
         bmaj_deg = bmaj/3600.
         bmin_deg = bmin/3600.
@@ -740,7 +741,12 @@ class Utils(object):
         if units == 'JY/BEAM' or units == 'Jy/beam':
             xc = header['CRPIX1']
             yc = header['CRPIX2']
-            ra, dec = wcs.all_pix2world(xc, yc, 0, ra_dec_order=True)
+            try:
+                ra, dec = wcs.all_pix2world(xc, yc, 0, ra_dec_order=True)
+            except Exception:
+                ra, dec = (0, 0)
+                logger.warning(
+                    "Cannot compute RA, Dec from WCS header, assuming (0,0)")
 
             hasBeamInfo = Utils.hasBeamInfo(header)
             if hasBeamInfo:
@@ -774,7 +780,7 @@ class Utils(object):
                 return -1
 
         # - MJy/sr units (e.g. HERSCHEL/SPITZER maps)
-        elif units == 'MJy/sr':
+        elif units.startswith('MJy/sr'):
             # we need dx and dy in ''
             convFactor = 1.e+6*(3600*dx)*(3600*dy)/(206265.*206265.)
 
@@ -833,8 +839,8 @@ class Utils(object):
         # - Read fits image
         data, header = Utils.read_fits(filename)
         wcs = WCS(header)
-        dx = header['CDELT1']  # in deg
-        dy = header['CDELT2']  # in deg
+        dx = abs(header['CDELT1'])  # in deg
+        dy = abs(header['CDELT2'])  # in deg
         pix_size = max(dx, dy)  # in deg
 
         # - Check if crop size is cutting part of the source

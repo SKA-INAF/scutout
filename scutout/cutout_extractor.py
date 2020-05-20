@@ -399,12 +399,12 @@ class CutoutHelper(object):
 		
 		for index in range(len(raw_cutouts)):
 			data, header= Utils.read_fits(raw_cutouts[index])
-			dx= header['CDELT1']
-			dy= header['CDELT2']
+			dx= abs(header['CDELT1'])
+			dy= abs(header['CDELT2'])
 		
 			data_reproj, header_reproj= Utils.read_fits(reproj_cutouts[index])
-			dx_reproj= header_reproj['CDELT1']
-			dy_reproj= header_reproj['CDELT2']
+			dx_reproj= abs(header_reproj['CDELT1'])
+			dy_reproj= abs(header_reproj['CDELT2'])
 
 			flux_scale= (dx_reproj/dx)*(dy_reproj/dy)
 			data_reproj_scaled= flux_scale*data_reproj
@@ -414,7 +414,7 @@ class CutoutHelper(object):
 			if Utils.hasBeamInfo(header) and not Utils.hasBeamInfo(header_reproj):
 				header_reproj['BMAJ']= header['BMAJ']
 				header_reproj['BMIN']= header['BMIN']
-				header_reproj['BPA']= header['BPA']
+				header_reproj['BPA']= header['BPA'] if 'BPA' in header else 0.
 
 			Utils.write_fits(data_reproj_scaled,reproj_cutouts[index],header_reproj)
 			
@@ -466,15 +466,15 @@ class CutoutHelper(object):
 			xc= header['CRPIX1']
 			yc= header['CRPIX2']	
 			ra, dec = wcs.all_pix2world(xc,yc,0,ra_dec_order=True)
-			dx= header['CDELT1'] # in deg
-			dy= header['CDELT2'] # in deg
+			dx= abs(header['CDELT1']) # in deg
+			dy= abs(header['CDELT2']) # in deg
 			pixsize_x.append(dx)
 			pixsize_y.append(dy)
 
 			if hasBeamInfo:
 				bmaj= header['BMAJ'] # in deg
 				bmin= header['BMIN'] # in deg
-				pa= header['BPA'] # in deg
+				pa= header['BPA'] if 'BPA' in header else 0 # in deg
 				beam= radio_beam.Beam(bmaj*u.deg,bmin*u.deg,pa*u.deg)
 			else:
 				logger.warn("No BMAJ/BMIN keyword present in file " + path + ", trying to retrieve from survey name...")
