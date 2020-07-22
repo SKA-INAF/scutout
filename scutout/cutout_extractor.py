@@ -12,6 +12,7 @@ import numpy as np
 import errno
 import fnmatch
 import shutil
+import cv2 as cv
 
 ## ASTRO MODULES
 from astropy.io import fits
@@ -520,9 +521,15 @@ class CutoutHelper(object):
 			dy= pixsize_y[index]
 			pixsize= max(dx,dy)
 			conv_kernel= conv_beam.as_kernel(pixsize*u.deg)
+			conv_kernel.normalize()
+			kernel=conv_kernel.array
+
+			
 
 			# - Convolve image and write fits
-			data_conv = convolve(data_list[index], conv_kernel, normalize_kernel=True)
+			data_list[index][np.isnan(data_list[index])]=0.0
+			data_conv=cv.filter2D(np.float64(data_list[index]),-1,kernel,borderType=cv.BORDER_CONSTANT)
+			logger.info("Kernel size: %d x %d" % (kernel.shape[0],kernel.shape[1]))
 			Utils.write_fits(data_conv,conv_cutouts[index],header_list[index])
 
 		
