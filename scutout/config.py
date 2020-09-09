@@ -269,7 +269,7 @@ class Config(object):
 		if self.parser.has_option('CUTOUT_SEARCH', 'cutout_factor'):
 			option_value= self.parser.get('CUTOUT_SEARCH', 'cutout_factor')
 			if option_value:
-				self.cutout_factor= int(option_value)	
+				self.cutout_factor= float(option_value)	
 		
 		if self.parser.has_option('CUTOUT_SEARCH', 'multi_input_img_mode'):
 			option_value= self.parser.get('CUTOUT_SEARCH', 'multi_input_img_mode')	
