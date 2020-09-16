@@ -58,14 +58,17 @@ class Utils(object):
         return filename_base_noext
 
     @classmethod
-    def mkdir(cls, path):
+    def mkdir(cls, path, delete_if_exists=False):
         """ Create a directory """
         try:
+	    if delete_if_exists and os.path.isdir(path):
+		shutil.rmtree(path)
             os.makedirs(path)
         except OSError as exc:
             if exc.errno != errno.EEXIST:
                 logger.error('Failed to create directory ' + path + '!')
                 return -1
+
         return 0
 
     @classmethod
@@ -937,7 +940,8 @@ class Utils(object):
         input_tbl_base = Utils.getBaseFileNoExt(input_tbl)
         workdir = 'mosaic_' + input_tbl_base
         dir_path = os.path.join(currdir, workdir)
-        Utils.mkdir(dir_path)
+
+        Utils.mkdir(dir_path, delete_if_exists=True)
 
         # - Computing optimal header
         logger.info("Mosaicing: computing optimal header ...")
@@ -991,19 +995,31 @@ class Utils(object):
             logger.info("Mosaicing: adding frames ...")
             mosaic_file = input_tbl_base + '_mosaic64.fits'
             mosaic_file_fullpath = os.path.join(dir_path, mosaic_file)
-            montage.mAdd(
-                projimg_tbl_fullpath,
-                header_tbl_fullpath,
-                mosaic_file_fullpath,
-                img_dir=dir_path,
-                type=combine,
-                exact=exact
-            )
+
+	    try:
+		montage.mAdd(
+			projimg_tbl_fullpath,
+		        header_tbl_fullpath,
+		        mosaic_file_fullpath,
+		        img_dir=dir_path,
+		        type=combine,
+		        exact=exact
+		    )
+	    except:
+		logger.error(sys.exc_info())
+		return -1
+
 
         # - Converting mosaic file to desired format
         logger.info(
             "Mosaicing: converting mosaic file to desired format (type=%s) ..." % (bitpix))
-        montage.mConvert(mosaic_file_fullpath, output, bitpix=bitpix)
+
+
+	try:
+		montage.mConvert(mosaic_file_fullpath, output, bitpix=bitpix)
+	except:
+		logger.error(sys.exc_info())
+		return -1
 
         # - Converting mosaic area file to desired format
         mosaic_area_file = input_tbl_base + '_mosaic64_area.fits'
@@ -1012,7 +1028,12 @@ class Utils(object):
         mosaic_area_outfile = output_base + '_area.fits'
         mosaic_area_outfile_fullpath = os.path.join(
             outdir, mosaic_area_outfile)
-        montage.mConvert(mosaic_area_file_fullpath,
+
+	try:
+        	montage.mConvert(mosaic_area_file_fullpath,
                          mosaic_area_outfile_fullpath, bitpix=bitpix)
+	except:
+		logger.error(sys.exc_info())
+		return -1
 
         return 0
