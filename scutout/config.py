@@ -63,7 +63,7 @@ class Config(object):
 		self.subtract_bkg= False
 		self.regrid= True
 		self.convolve= True
-		self.crop= True
+		self.crop_mode= 'none'
 		self.crop_size= 200 # in pixels
 
 		# - Background calculation
@@ -288,13 +288,15 @@ class Config(object):
 		if self.parser.has_option('CUTOUT_SEARCH', 'convolve'):
 			self.convolve= self.parser.getboolean('CUTOUT_SEARCH', 'convolve') 
 		
-		if self.parser.has_option('CUTOUT_SEARCH', 'crop'):
-			self.crop= self.parser.getboolean('CUTOUT_SEARCH', 'crop')
+		if self.parser.has_option('CUTOUT_SEARCH', 'crop_mode'):
+			option_value= self.parser.get('CUTOUT_SEARCH', 'crop_mode')
+			if option_value:
+				self.crop_mode = option_value
 
 		if self.parser.has_option('CUTOUT_SEARCH', 'crop_size'):
 			option_value= self.parser.get('CUTOUT_SEARCH', 'crop_size')
 			if option_value:
-				self.crop_size= int(option_value)
+				self.crop_size= float(option_value)
 
 		# - Parse background options
 		if self.parser.has_option('BKG_SUBTRACTION', 'bkg_estimator'):

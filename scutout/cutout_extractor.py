@@ -13,6 +13,7 @@ import errno
 import fnmatch
 import shutil
 import cv2 as cv
+import enlighten
 
 ## ASTRO MODULES
 from astropy.io import fits
@@ -89,6 +90,9 @@ class CutoutFinder(object):
 		#**********************
 		has_radius_col= 'RADIUS' in self.table.colnames
 
+		manager = enlighten.get_manager()
+		pbar = manager.counter(total=len(self.table), desc='Processing sources', unit='sources')
+
 		for item in self.table:	
 			ra= item['RA']
 			dec= item['DEC']
@@ -98,13 +102,20 @@ class CutoutFinder(object):
 				radius= item['RADIUS']
 	
 			logger.info("Searching cutout for source %s (%f,%f) ..." % (obj_name,ra,dec))
-
-			cs= CutoutHelper(self.config,ra,dec,obj_name,radius)
-			status= cs.run()
-			if status<0:
-				errmsg= 'Failed to extract cutout for source ' + obj_name + ', skip to next...'
+			
+			try:
+			    cs= CutoutHelper(self.config,ra,dec,obj_name,radius)
+     			    status= cs.run()
+			    if status<0:
+   				errmsg= 'Failed to extract cutout for source ' + obj_name + ', skip to next...'
 				logger.warn(errmsg)
 				continue
+
+			except Exception as e:
+			    logger.error('Unknown error in source {0}. Trace: {1}'.format(obj_name, e.message))
+			    continue
+
+			pbar.update()
 
 		return 0
 
@@ -216,7 +227,7 @@ class CutoutHelper(object):
 					imgfile_fullpath= res.file
 				except:
 					logger.warn("Caught exception from Montage mBestImage, fallback to first image ...")
-					imgfile_fullpath= table[0]['fname']					
+					imgfile_fullpath= table[0]['fname']				
 
 			elif self.config.multi_input_img_mode=='mosaic':
 				mosaic_file= 'mosaic_' + survey + '.fits'
@@ -280,7 +291,7 @@ class CutoutHelper(object):
 			raw_cutout_file_fullpath= cutout_file_fullpath
 
 			logger.info('Converting image %s in Jy/pixel units ...' % (raw_cutout_file))
-			Utils.convertImgToJyPixel(cutout_file_fullpath,cutout_file_scaled_fullpath,survey)
+			Utils.convertImgToJyPixel(cutout_file_fullpath,cutout_file_scaled_fullpath,survey,table[0]['bunit'])
 			self.img_files[survey]= cutout_file_scaled_fullpath
 			
 		
@@ -570,7 +581,8 @@ class CutoutHelper(object):
 			status= Utils.cropImage(
 				filename=filename,
 				ra=self.ra,dec=self.dec,
-				crop_size=self.config.crop_size,
+				crop_mode = self.config.crop_mode,
+				crop_size = self.config.crop_size,
 				outfile=cropped_cutout_fullpath,
 				source_size=source_size,
 				nanfill=True,
@@ -602,14 +614,14 @@ class CutoutHelper(object):
 	#==============================
 	def run(self):
 		""" Run search for single source """
-
+		
 		#**********************
 		#        INIT
 		#**********************
 		if self.__initialize()<0:
 			logger.error("Failed to initialize source cutout search!")
 			return -1
-
+		
 		#*************************************
 		#   EXTRACT CUTOUT FROM SURVEY DATA
 		#*************************************
@@ -653,8 +665,8 @@ class CutoutHelper(object):
 		#*************************************
 		#       CROP CUTOUTS
 		#*************************************
-		if self.config.crop:
-			logger.info('Cropping cutouts to same number of pixels (#' + str(self.config.crop_size) + ' pixels per side) ...')
+		if self.config.crop_mode is not 'n':
+			logger.info('Cropping cutouts in ' + self.config.crop_mode +  ' mode!')
 			status= self.__crop()
 			if status<0:
 				logger.error('Failed to crop cutouts for source ' + self.sname + '!')

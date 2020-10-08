@@ -702,7 +702,7 @@ class Utils(object):
         return I_JyBeam
 
     @classmethod
-    def convertImgToJyPixel(cls, filename, outfile, survey=''):
+    def convertImgToJyPixel(cls, filename, outfile, survey='',default_bunit=''):
         """ Convert image units from original to Jy/pixel """
 
         # - Read fits image
@@ -711,9 +711,14 @@ class Utils(object):
 
         # - Check header keywords
         if not bool(header.get('BUNIT')):
-            logger.error("No BUNIT keyword present in file " +
-                         filename + ", cannot compute conversion factor!")
-            return -1
+            if not default_bunit:
+                logger.error("No available BUNIT, cannot compute conversion factor!")
+                return -1
+            else:
+                header['BUNIT'] = default_bunit
+                logger.warning("No BUNIT keyword present in file " +
+                         filename + ", using value read from metadata table!")
+                
         if not bool(header.get('CDELT1')):
             logger.error("No CDELT1 keyword present in file " +
                          filename + ", cannot compute conversion factor!")
@@ -836,7 +841,7 @@ class Utils(object):
         return 0
 
     @classmethod
-    def cropImage(cls, filename, ra, dec, crop_size, outfile, source_size=-1, nanfill=True, nanfill_mode='imgmin', nanfill_val=0):
+    def cropImage(cls, filename, ra, dec, crop_mode, crop_size, outfile, source_size=-1, nanfill=True, nanfill_mode='imgmin', nanfill_val=0):
         """ Crop image around (ra,dec) by crop_size """
 
         # - Read fits image
@@ -847,19 +852,29 @@ class Utils(object):
         pix_size = max(dx, dy)  # in deg
 
         # - Check if crop size is cutting part of the source
-        if source_size != -1:
+
+	if source_size != -1:
             source_size_pix = source_size/pix_size
-            if source_size_pix >= crop_size:
-                logger.warning("Requested crop size (%d) exceeding source size (size=%d arcsec, %d pix), won't write cropped fits file!" % (
-                    crop_size, source_size*3600, source_size_pix))
+
+	crop_size_pix = 0
+
+	if crop_mode == 'pixel':
+	    crop_size_pix = crop_size
+	    if source_size_pix >= crop_size_pix:
+		logger.warning("Requested crop size (%d) smaller than source size (size=%d arcsec, %d pix), won't write cropped fits file!" % (
+                    crop_size_pix, source_size*3600, source_size_pix))
                 return -1
+	elif crop_mode == 'factor':
+		crop_size_pix = 2 * crop_size * source_size_pix # twice the source radius*factor
+		
+	logging.info('Cropping image to {0}x{0} px'.format(crop_size_pix, crop_size_pix))
 
         # - Find pixel coordinates corresponding to ra,dec
         x0, y0 = wcs.all_world2pix(ra, dec, 0, ra_dec_order=True)
 
         # - Extract cutout. With option 'partial' when cutout size is larger than image size the cutout will be filled with nan (or specified value)
-        cutout = Cutout2D(data, (x0, y0), (crop_size,
-                                           crop_size), mode='partial', wcs=wcs)
+        cutout = Cutout2D(data, (x0, y0), (crop_size_pix,
+                                           crop_size_pix), mode='partial', wcs=wcs)
         output_data = cutout.data
 
         # - Fill NAN?
@@ -951,6 +966,8 @@ class Utils(object):
         montage.mMakeHdr(images_table=input_tbl,
                          template_header=header_tbl_fullpath)
 
+        
+
         # - Projecting raw frames
         logger.info("Mosaicing: projecting raw frames ...")
         stats_tbl = input_tbl_base + '_stats.tbl'
@@ -961,7 +978,8 @@ class Utils(object):
             template_header=header_tbl_fullpath,
             proj_dir=dir_path,
             stats_table=stats_tbl_fullpath,
-            exact=exact
+            exact=exact,
+	    debug=True
         )
 
         # - List projected frames
