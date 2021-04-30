@@ -503,6 +503,17 @@ class Utils(object):
         return beamArea
 
     @classmethod
+    def getMeerKATGPSSurveyBeamArea(cls):
+        """ Returns MeerKAT GPS survey beam area """
+        # Beam varying from 18.1 x 11.1 to 12.0 x 11.6
+        bmaj = 8.0  # arcsec
+        bmin = 8.0  # arcsec
+        bmaj_deg = bmaj/3600.
+        bmin_deg = bmin/3600.
+        beamArea = Utils.getBeamArea(bmaj_deg, bmin_deg)
+        return beamArea
+
+    @classmethod
     def getSurveyBeamArea(cls, survey, ra=None, dec=None):
         """ Return beam area of given survey """
 
@@ -565,6 +576,9 @@ class Utils(object):
             beamArea = Utils.getScorpioASKAP36B123SurveyBeamArea()
         elif survey == 'thor':
             beamArea = Utils.getTHORSurveyBeamArea()
+        elif survey == 'meerkat_gps_mom0':
+            beamArea = Utils.getMeerKATGPSSurveyBeamArea()
+
         else:
             logger.error("Unknown survey (" + survey + "), returning area=0!")
             beamArea = 0
@@ -704,12 +718,14 @@ class Utils(object):
     @classmethod
     def convertImgToJyPixel(cls, filename, outfile, survey='',default_bunit=''):
         """ Convert image units from original to Jy/pixel """
-
+        
         # - Read fits image
         data, header = Utils.read_fits(filename)
         wcs = WCS(header)
 
         # - Check header keywords
+
+
         if not bool(header.get('BUNIT')):
             if not default_bunit:
                 logger.error("No available BUNIT, cannot compute conversion factor!")
