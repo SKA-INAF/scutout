@@ -503,11 +503,20 @@ class Utils(object):
         return beamArea
 
     @classmethod
-    def getMeerKATGPSSurveyBeamArea(cls):
-        """ Returns MeerKAT GPS survey beam area """
-        # Beam varying from 18.1 x 11.1 to 12.0 x 11.6
-        bmaj = 8.0  # arcsec
-        bmin = 8.0  # arcsec
+    def getMeerkatGPSSurveyBeamArea(cls):
+        """ Returns Meerkat GPS survey beam area """
+        bmaj = 8  # arcsec
+        bmin = 8  # arcsec
+        bmaj_deg = bmaj/3600.
+        bmin_deg = bmin/3600.
+        beamArea = Utils.getBeamArea(bmaj_deg, bmin_deg)
+        return beamArea
+
+    @classmethod
+    def getMAGPIS21cmSurveyBeamArea(cls):
+        """ Returns MAGPIS new 21cm survey beam area """
+        bmaj = 6.2  # arcsec
+        bmin = 5.4  # arcsec
         bmaj_deg = bmaj/3600.
         bmin_deg = bmin/3600.
         beamArea = Utils.getBeamArea(bmaj_deg, bmin_deg)
@@ -576,9 +585,10 @@ class Utils(object):
             beamArea = Utils.getScorpioASKAP36B123SurveyBeamArea()
         elif survey == 'thor':
             beamArea = Utils.getTHORSurveyBeamArea()
-        elif survey == 'meerkat_gps_mom0':
-            beamArea = Utils.getMeerKATGPSSurveyBeamArea()
-
+        elif survey == 'meerkat_gps':
+            beamArea = Utils.getMeerkatGPSSurveyBeamArea()
+        elif survey == 'magpis_21cm':
+            beamArea = Utils.getMAGPIS21cmSurveyBeamArea()
         else:
             logger.error("Unknown survey (" + survey + "), returning area=0!")
             beamArea = 0
@@ -718,14 +728,12 @@ class Utils(object):
     @classmethod
     def convertImgToJyPixel(cls, filename, outfile, survey='',default_bunit=''):
         """ Convert image units from original to Jy/pixel """
-        
+
         # - Read fits image
         data, header = Utils.read_fits(filename)
         wcs = WCS(header)
 
         # - Check header keywords
-
-
         if not bool(header.get('BUNIT')):
             if not default_bunit:
                 logger.error("No available BUNIT, cannot compute conversion factor!")
@@ -868,22 +876,20 @@ class Utils(object):
         pix_size = max(dx, dy)  # in deg
 
         # - Check if crop size is cutting part of the source
-
-	if source_size != -1:
+        if source_size != -1:
             source_size_pix = source_size/pix_size
 
-	crop_size_pix = 0
+        crop_size_pix = 0
 
-	if crop_mode == 'pixel':
-	    crop_size_pix = crop_size
-	    if source_size_pix >= crop_size_pix:
-		logger.warning("Requested crop size (%d) smaller than source size (size=%d arcsec, %d pix), won't write cropped fits file!" % (
-                    crop_size_pix, source_size*3600, source_size_pix))
+        if crop_mode == 'pixel':
+            crop_size_pix = crop_size
+            if source_size_pix >= crop_size_pix:
+                logger.warning("Requested crop size (%d) smaller than source size (size=%d arcsec, %d pix), won't write cropped fits file!" % (crop_size_pix, source_size*3600, source_size_pix))
                 return -1
-	elif crop_mode == 'factor':
-		crop_size_pix = 2 * crop_size * source_size_pix # twice the source radius*factor
+        elif crop_mode == 'factor':
+		        crop_size_pix = 2 * crop_size * source_size_pix # twice the source radius*factor
 		
-	logging.info('Cropping image to {0}x{0} px'.format(crop_size_pix, crop_size_pix))
+        logging.info('Cropping image to {0}x{0} px'.format(crop_size_pix, crop_size_pix))
 
         # - Find pixel coordinates corresponding to ra,dec
         x0, y0 = wcs.all_world2pix(ra, dec, 0, ra_dec_order=True)

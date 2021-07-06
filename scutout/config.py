@@ -98,11 +98,6 @@ class Config(object):
 			"metadata": ""
 		}
 
-		# - MeerKAT-GPS-mom0 survey options
-		meerkat_gps_mom0_options= {
-			"metadata": ""
-	 	}
-
 		# - SCORPIO ATCA survey options
 		scorpio_atca_2_1_options= {
 			"metadata": ""
@@ -118,6 +113,16 @@ class Config(object):
 		
 		# - THOR survey options
 		thor_options= {
+			"metadata": ""
+		}
+
+		# - MEERKAT-GPS survey options
+		meerkat_gps_options= {
+			"metadata": ""
+		}
+
+		# - MAGPIS 21cm survey options
+		magpis_21cm_options= {
 			"metadata": ""
 		}
 
@@ -201,11 +206,12 @@ class Config(object):
 			"mgps" : mgps_options,
 			"vgps" : vgps_options,
 			"sgps" : sgps_options,
-			"meerkat_gps_mom0" : meerkat_gps_mom0_options,
 			"scorpio_atca_2_1" : scorpio_atca_2_1_options,
 			"scorpio_askap15_b1" : scorpio_askap15_b1_options,
 			"scorpio_askap36_b123" : scorpio_askap36_b123_options,
 			"thor" : thor_options,
+			"meerkat_gps" : meerkat_gps_options,
+			"magpis_21cm" : magpis_21cm_options,
 			"irac_3_6" : spitzer_irac_3_6_options,
 			"irac_4_5" : spitzer_irac_4_5_options,
 			"irac_5_8" : spitzer_irac_5_8_options,
@@ -356,13 +362,6 @@ class Config(object):
 			if option_value:
 				self.survey_options['sgps']['metadata']= option_value
 
-		# - Parse MeerKAT GPS Mom0 DATA section options
-		if self.parser.has_option('MeerKAT_GPS_mom0_DATA', 'metadata'):
-			option_value= self.parser.get('MeerKAT_GPS_mom0_DATA', 'metadata')	
-			if option_value:
-				self.survey_options['meerkat_gps_mom0']['metadata']= option_value
-
-
 		# - Parse WISE section options
 		if self.parser.has_option('WISE_3_4_DATA', 'metadata'):
 			option_value= self.parser.get('WISE_3_4_DATA', 'metadata')	
@@ -491,6 +490,18 @@ class Config(object):
 			option_value= self.parser.get('THOR_DATA', 'metadata')	
 			if option_value:
 				self.survey_options['thor']['metadata']= option_value
+
+		# - Parse MeerKAT-GPS section options	
+		if self.parser.has_option('MEERKAT_GPS_DATA', 'metadata'):
+			option_value= self.parser.get('MEERKAT_GPS_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['meerkat_gps']['metadata']= option_value
+
+		# - Parse MAGPIS 21cm section options	
+		if self.parser.has_option('MAGPIS_21cm_DATA', 'metadata'):
+			option_value= self.parser.get('MAGPIS_21cm_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['magpis_21cm']['metadata']= option_value
 	
 		# ***************************
 		# **    VALIDATE CONFIG
