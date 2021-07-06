@@ -587,6 +587,34 @@ class Utils(object):
             beamArea = Utils.getTHORSurveyBeamArea()
         elif survey == 'meerkat_gps':
             beamArea = Utils.getMeerkatGPSSurveyBeamArea()
+				elif survey == 'meerkat_gps_ch1':
+            beamArea = Utils.getMeerkatGPSSurveyBeamArea()
+				elif survey == 'meerkat_gps_ch2':
+            beamArea = Utils.getMeerkatGPSSurveyBeamArea()
+				elif survey == 'meerkat_gps_ch3':
+            beamArea = Utils.getMeerkatGPSSurveyBeamArea()
+				elif survey == 'meerkat_gps_ch4':
+            beamArea = Utils.getMeerkatGPSSurveyBeamArea()
+				elif survey == 'meerkat_gps_ch5':
+            beamArea = Utils.getMeerkatGPSSurveyBeamArea()
+				elif survey == 'meerkat_gps_ch6':
+            beamArea = Utils.getMeerkatGPSSurveyBeamArea()
+				elif survey == 'meerkat_gps_ch7':
+            beamArea = Utils.getMeerkatGPSSurveyBeamArea()
+				elif survey == 'meerkat_gps_ch8':
+            beamArea = Utils.getMeerkatGPSSurveyBeamArea()
+				elif survey == 'meerkat_gps_ch9':
+            beamArea = Utils.getMeerkatGPSSurveyBeamArea()
+				elif survey == 'meerkat_gps_ch10':
+            beamArea = Utils.getMeerkatGPSSurveyBeamArea()
+				elif survey == 'meerkat_gps_ch11':
+            beamArea = Utils.getMeerkatGPSSurveyBeamArea()
+				elif survey == 'meerkat_gps_ch12':
+            beamArea = Utils.getMeerkatGPSSurveyBeamArea()
+				elif survey == 'meerkat_gps_ch13':
+            beamArea = Utils.getMeerkatGPSSurveyBeamArea()
+				elif survey == 'meerkat_gps_ch14':
+            beamArea = Utils.getMeerkatGPSSurveyBeamArea()
         elif survey == 'magpis_21cm':
             beamArea = Utils.getMAGPIS21cmSurveyBeamArea()
         else:

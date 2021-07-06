@@ -120,6 +120,48 @@ class Config(object):
 		meerkat_gps_options= {
 			"metadata": ""
 		}
+		meerkat_gps_ch1_options= {
+			"metadata": ""
+		}
+		meerkat_gps_ch2_options= {
+			"metadata": ""
+		}
+		meerkat_gps_ch3_options= {
+			"metadata": ""
+		}
+		meerkat_gps_ch4_options= {
+			"metadata": ""
+		}
+		meerkat_gps_ch5_options= {
+			"metadata": ""
+		}
+		meerkat_gps_ch6_options= {
+			"metadata": ""
+		}
+		meerkat_gps_ch7_options= {
+			"metadata": ""
+		}
+		meerkat_gps_ch8_options= {
+			"metadata": ""
+		}
+		meerkat_gps_ch9_options= {
+			"metadata": ""
+		}
+		meerkat_gps_ch10_options= {
+			"metadata": ""
+		}
+		meerkat_gps_ch11_options= {
+			"metadata": ""
+		}
+		meerkat_gps_ch12_options= {
+			"metadata": ""
+		}
+		meerkat_gps_ch13_options= {
+			"metadata": ""
+		}
+		meerkat_gps_ch14_options= {
+			"metadata": ""
+		}
 
 		# - MAGPIS 21cm survey options
 		magpis_21cm_options= {
@@ -211,6 +253,20 @@ class Config(object):
 			"scorpio_askap36_b123" : scorpio_askap36_b123_options,
 			"thor" : thor_options,
 			"meerkat_gps" : meerkat_gps_options,
+			"meerkat_gps_ch1" : meerkat_gps_ch1_options,
+			"meerkat_gps_ch2" : meerkat_gps_ch2_options,
+			"meerkat_gps_ch3" : meerkat_gps_ch3_options,
+			"meerkat_gps_ch4" : meerkat_gps_ch4_options,
+			"meerkat_gps_ch5" : meerkat_gps_ch5_options,
+			"meerkat_gps_ch6" : meerkat_gps_ch6_options,
+			"meerkat_gps_ch7" : meerkat_gps_ch7_options,
+			"meerkat_gps_ch8" : meerkat_gps_ch8_options,
+			"meerkat_gps_ch9" : meerkat_gps_ch9_options,
+			"meerkat_gps_ch10" : meerkat_gps_ch10_options,
+			"meerkat_gps_ch11" : meerkat_gps_ch11_options,
+			"meerkat_gps_ch12" : meerkat_gps_ch12_options,
+			"meerkat_gps_ch13" : meerkat_gps_ch13_options,
+			"meerkat_gps_ch14" : meerkat_gps_ch14_options,
 			"magpis_21cm" : magpis_21cm_options,
 			"irac_3_6" : spitzer_irac_3_6_options,
 			"irac_4_5" : spitzer_irac_4_5_options,
@@ -496,6 +552,76 @@ class Config(object):
 			option_value= self.parser.get('MEERKAT_GPS_DATA', 'metadata')	
 			if option_value:
 				self.survey_options['meerkat_gps']['metadata']= option_value
+
+		if self.parser.has_option('MEERKAT_GPS_CH1_DATA', 'metadata'):
+			option_value= self.parser.get('MEERKAT_GPS_CH1_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['meerkat_gps_ch1']['metadata']= option_value
+
+		if self.parser.has_option('MEERKAT_GPS_CH2_DATA', 'metadata'):
+			option_value= self.parser.get('MEERKAT_GPS_CH2_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['meerkat_gps_ch2']['metadata']= option_value
+
+		if self.parser.has_option('MEERKAT_GPS_CH3_DATA', 'metadata'):
+			option_value= self.parser.get('MEERKAT_GPS_CH3_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['meerkat_gps_ch3']['metadata']= option_value
+
+		if self.parser.has_option('MEERKAT_GPS_CH4_DATA', 'metadata'):
+			option_value= self.parser.get('MEERKAT_GPS_CH4_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['meerkat_gps_ch4']['metadata']= option_value
+
+		if self.parser.has_option('MEERKAT_GPS_CH5_DATA', 'metadata'):
+			option_value= self.parser.get('MEERKAT_GPS_CH5_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['meerkat_gps_ch5']['metadata']= option_value
+
+		if self.parser.has_option('MEERKAT_GPS_CH6_DATA', 'metadata'):
+			option_value= self.parser.get('MEERKAT_GPS_CH6_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['meerkat_gps_ch6']['metadata']= option_value
+
+		if self.parser.has_option('MEERKAT_GPS_CH7_DATA', 'metadata'):
+			option_value= self.parser.get('MEERKAT_GPS_CH7_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['meerkat_gps_ch7']['metadata']= option_value
+
+		if self.parser.has_option('MEERKAT_GPS_CH8_DATA', 'metadata'):
+			option_value= self.parser.get('MEERKAT_GPS_CH8_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['meerkat_gps_ch8']['metadata']= option_value
+
+		if self.parser.has_option('MEERKAT_GPS_CH9_DATA', 'metadata'):
+			option_value= self.parser.get('MEERKAT_GPS_CH9_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['meerkat_gps_ch9']['metadata']= option_value
+
+		if self.parser.has_option('MEERKAT_GPS_CH10_DATA', 'metadata'):
+			option_value= self.parser.get('MEERKAT_GPS_CH10_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['meerkat_gps_ch10']['metadata']= option_value
+
+		if self.parser.has_option('MEERKAT_GPS_CH11_DATA', 'metadata'):
+			option_value= self.parser.get('MEERKAT_GPS_CH11_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['meerkat_gps_ch11']['metadata']= option_value
+	
+		if self.parser.has_option('MEERKAT_GPS_CH12_DATA', 'metadata'):
+			option_value= self.parser.get('MEERKAT_GPS_CH12_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['meerkat_gps_ch12']['metadata']= option_value
+
+		if self.parser.has_option('MEERKAT_GPS_CH13_DATA', 'metadata'):
+			option_value= self.parser.get('MEERKAT_GPS_CH13_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['meerkat_gps_ch13']['metadata']= option_value
+
+		if self.parser.has_option('MEERKAT_GPS_CH14_DATA', 'metadata'):
+			option_value= self.parser.get('MEERKAT_GPS_CH14_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['meerkat_gps_ch14']['metadata']= option_value
 
 		# - Parse MAGPIS 21cm section options	
 		if self.parser.has_option('MAGPIS_21cm_DATA', 'metadata'):
