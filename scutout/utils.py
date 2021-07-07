@@ -62,7 +62,7 @@ class Utils(object):
         """ Create a directory """
         try:
           if delete_if_exists and os.path.isdir(path):
-		        shutil.rmtree(path)
+            shutil.rmtree(path)
           os.makedirs(path)
         except OSError as exc:
           if exc.errno != errno.EEXIST:
