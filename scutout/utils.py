@@ -1029,7 +1029,7 @@ class Utils(object):
             proj_dir=dir_path,
             stats_table=stats_tbl_fullpath,
             exact=exact,
-	    debug=True
+	          debug=True
         )
 
         # - List projected frames
@@ -1048,14 +1048,12 @@ class Utils(object):
             diffs_tbl_fullpath = os.path.join(dir_path, diffs_tbl)
             res = montage.mOverlaps(projimg_tbl_fullpath, diffs_tbl_fullpath)
             if res.count == 0:
-                logger.info(
-                    "Mosaicing: no overlapping frames, backgrounds will not be adjusted")
+                logger.info("Mosaicing: no overlapping frames, backgrounds will not be adjusted")
                 background_match = False
 
         # - Make mosaic
         if background_match:
-            logger.error(
-                "Mosaicing with background_match not yet implemented!")
+            logger.error("Mosaicing with background_match not yet implemented!")
             raise NotImplementedError
 
         else:
@@ -1064,44 +1062,41 @@ class Utils(object):
             mosaic_file = input_tbl_base + '_mosaic64.fits'
             mosaic_file_fullpath = os.path.join(dir_path, mosaic_file)
 
-	    try:
-		montage.mAdd(
-			projimg_tbl_fullpath,
-		        header_tbl_fullpath,
-		        mosaic_file_fullpath,
-		        img_dir=dir_path,
-		        type=combine,
-		        exact=exact
-		    )
-	    except:
-		logger.error(sys.exc_info())
-		return -1
+        try:
+		        montage.mAdd(
+              projimg_tbl_fullpath,
+		          header_tbl_fullpath,
+		          mosaic_file_fullpath,
+		          img_dir=dir_path,
+		          type=combine,
+		          exact=exact
+		        )
+        except:
+		        logger.error(sys.exc_info())
+		        return -1
 
 
         # - Converting mosaic file to desired format
-        logger.info(
-            "Mosaicing: converting mosaic file to desired format (type=%s) ..." % (bitpix))
+        logger.info("Mosaicing: converting mosaic file to desired format (type=%s) ..." % (bitpix))
 
 
-	try:
-		montage.mConvert(mosaic_file_fullpath, output, bitpix=bitpix)
-	except:
-		logger.error(sys.exc_info())
-		return -1
+        try:
+		        montage.mConvert(mosaic_file_fullpath, output, bitpix=bitpix)
+        except:
+            logger.error(sys.exc_info())
+            return -1
 
         # - Converting mosaic area file to desired format
         mosaic_area_file = input_tbl_base + '_mosaic64_area.fits'
         mosaic_area_file_fullpath = os.path.join(dir_path, mosaic_area_file)
         output_base = Utils.getBaseFileNoExt(output)
         mosaic_area_outfile = output_base + '_area.fits'
-        mosaic_area_outfile_fullpath = os.path.join(
-            outdir, mosaic_area_outfile)
+        mosaic_area_outfile_fullpath = os.path.join(outdir, mosaic_area_outfile)
 
-	try:
-        	montage.mConvert(mosaic_area_file_fullpath,
-                         mosaic_area_outfile_fullpath, bitpix=bitpix)
-	except:
-		logger.error(sys.exc_info())
-		return -1
+        try:
+            montage.mConvert(mosaic_area_file_fullpath,mosaic_area_outfile_fullpath, bitpix=bitpix)
+        except:
+            logger.error(sys.exc_info())
+            return -1
 
         return 0
