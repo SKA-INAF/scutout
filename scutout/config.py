@@ -41,8 +41,12 @@ class Config(object):
 		# - Config options
 		self.__set_defaults()
 
-		# - Config file parser		
-		self.parser= ConfigParser.ConfigParser()
+		# - Config file parser
+		try: # py2
+			self.parser= ConfigParser.ConfigParser()
+		except: # py3
+			self.parser= configparser.ConfigParser()
+
 		self.config= None
 
 	def optionxform(self, optionstr):
