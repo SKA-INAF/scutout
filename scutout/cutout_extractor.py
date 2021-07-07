@@ -104,16 +104,16 @@ class CutoutFinder(object):
 			logger.info("Searching cutout for source %s (%f,%f) ..." % (obj_name,ra,dec))
 			
 			try:
-			    cs= CutoutHelper(self.config,ra,dec,obj_name,radius)
-     			    status= cs.run()
-			    if status<0:
-   				errmsg= 'Failed to extract cutout for source ' + obj_name + ', skip to next...'
-				logger.warn(errmsg)
-				continue
+				cs= CutoutHelper(self.config,ra,dec,obj_name,radius)
+				status= cs.run()
+				if status<0:
+					errmsg= 'Failed to extract cutout for source ' + obj_name + ', skip to next...'
+					logger.warn(errmsg)
+					continue
 
 			except Exception as e:
-			    logger.error('Unknown error in source {0}. Trace: {1}'.format(obj_name, e.message))
-			    continue
+				logger.error('Unknown error in source {0}. Trace: {1}'.format(obj_name, e.message))
+				continue
 
 			pbar.update()
 
@@ -665,8 +665,8 @@ class CutoutHelper(object):
 		#*************************************
 		#       CROP CUTOUTS
 		#*************************************
-		if self.config.crop_mode is not 'n':
-			logger.info('Cropping cutouts in ' + self.config.crop_mode +  ' mode!')
+		if self.config.crop_mode!='none':
+			logger.info('Cropping cutouts in ' + self.config.crop_mode +  ' mode')
 			status= self.__crop()
 			if status<0:
 				logger.error('Failed to crop cutouts for source ' + self.sname + '!')
