@@ -61,13 +61,13 @@ class Utils(object):
     def mkdir(cls, path, delete_if_exists=False):
         """ Create a directory """
         try:
-	    if delete_if_exists and os.path.isdir(path):
-		shutil.rmtree(path)
-            os.makedirs(path)
+          if delete_if_exists and os.path.isdir(path):
+		        shutil.rmtree(path)
+          os.makedirs(path)
         except OSError as exc:
-            if exc.errno != errno.EEXIST:
-                logger.error('Failed to create directory ' + path + '!')
-                return -1
+          if exc.errno != errno.EEXIST:
+            logger.error('Failed to create directory ' + path + '!')
+            return -1
 
         return 0
 
