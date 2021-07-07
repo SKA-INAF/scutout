@@ -11,8 +11,13 @@ import logging
 import io
 
 ## CONFIG PARSER MODULES
-from ConfigParser import SafeConfigParser
-import ConfigParser
+try:
+	from ConfigParser import SafeConfigParser
+	import ConfigParser
+except:
+	# in Python3 it was renamed from ConfigParser to configparser
+	from configparser import SafeConfigParser
+	import configparser
 
 ##############################
 ##     GLOBAL VARS
