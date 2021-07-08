@@ -559,13 +559,9 @@ class Config(object):
 		# - Parse MeerKAT-GPS section options	
 		if self.parser.has_option('MEERKAT_GPS_DATA', 'metadata'):
 			option_value= self.parser.get('MEERKAT_GPS_DATA', 'metadata')	
-			logger.info("Reading meerkat-gps data %s ..." % str(option_value))
-			
 			if option_value:
 				self.survey_options['meerkat_gps']['metadata']= option_value
-			else:
-				logger.warn("Failed to read metadata for meerkat_gps survey (value=%s)" % str(option_value))
-
+			
 		if self.parser.has_option('MEERKAT_GPS_CH1_DATA', 'metadata'):
 			option_value= self.parser.get('MEERKAT_GPS_CH1_DATA', 'metadata')	
 			if option_value:
