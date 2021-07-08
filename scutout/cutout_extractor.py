@@ -516,7 +516,7 @@ class CutoutHelper(object):
 			# - Find convolving beam 
 			bmaj, bmin, pa= radio_beam.utils.deconvolve(common_beam,beam_list[index])
 
-			if type(bmaj)==numpy.float64:
+			if type(bmaj)==np.float64:
 				bmaj_deg= bmaj
 				bmin_deg= bmin
 				pa_deg= pa
