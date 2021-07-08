@@ -762,30 +762,28 @@ class Utils(object):
         wcs = WCS(header)
 
         # - Check header keywords
-        if not bool(header.get('BUNIT')):
+        if 'BUNIT' not in header:
             if not default_bunit:
                 logger.error("No available BUNIT, cannot compute conversion factor!")
                 return -1
             else:
                 header['BUNIT'] = default_bunit
-                logger.warning("No BUNIT keyword present in file " +
-                         filename + ", using value read from metadata table!")
+                logger.warning("No BUNIT keyword present in file " + filename + ", using value read from metadata table!")
                 
-        if not bool(header.get('CDELT1')):
-            logger.error("No CDELT1 keyword present in file " +
-                         filename + ", cannot compute conversion factor!")
+        if 'CDELT1' not in header:
+            logger.error("No CDELT1 keyword present in file " + filename + ", cannot compute conversion factor!")
             return -1
-        if not bool(header.get('CDELT2')):
-            logger.error("No CDELT2 keyword present in file " +
-                         filename + ", cannot compute conversion factor!")
+
+        if 'CDELT2' not in header:
+            logger.error("No CDELT2 keyword present in file " + filename + ", cannot compute conversion factor!")
             return -1
-        if not bool(header.get('CRPIX1')):
-            logger.error("No CRPIX1 keyword present in file " +
-                         filename + ", cannot compute conversion factor!")
+
+        if 'CRPIX1' not in header:
+            logger.error("No CRPIX1 keyword present in file " + filename + ", cannot compute conversion factor!")
             return -1
-        if not bool(header.get('CRPIX2')):
-            logger.error("No CRPIX2 keyword present in file " +
-                         filename + ", cannot compute conversion factor!")
+
+        if 'CRPIX2' not in header:
+            logger.error("No CRPIX2 keyword present in file " + filename + ", cannot compute conversion factor!")
             return -1
 
         units = header['BUNIT'].strip()
