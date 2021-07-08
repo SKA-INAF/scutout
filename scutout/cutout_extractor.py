@@ -397,14 +397,19 @@ class CutoutHelper(object):
 		#print(reproj_cutouts)
 
 		# - Reproject cutouts using py Montage reproject high-level API
-		montage.reproject(
-			in_images=raw_cutouts, 
-			out_images=reproj_cutouts, 
-			header=None, 
-			bitpix=None, 
-			north_aligned=True,
-			common=True	
-		)
+		try:
+			montage.reproject(
+				in_images=raw_cutouts, 
+				out_images=reproj_cutouts, 
+				header=None, 
+				bitpix=None, 
+				north_aligned=True,
+				common=True	
+			)
+		except Exception as e:
+			logger.error("Failed to reproject cutouts (err=%s)!" % str(e))
+			return -1
+			
 
 		# - Scale image data to conserve flux, e.g. multiply data by (pix1/pix1_ori)*(pix2/pix2_ori)
 		# - Copy back beam information (montage does not include in the re-projected image file)
