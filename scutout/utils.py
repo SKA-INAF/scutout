@@ -923,8 +923,12 @@ class Utils(object):
         x0, y0 = wcs.all_world2pix(ra, dec, 0, ra_dec_order=True)
 
         # - Extract cutout. With option 'partial' when cutout size is larger than image size the cutout will be filled with nan (or specified value)
-        cutout = Cutout2D(data, (x0, y0), (crop_size_pix,
-                                           crop_size_pix), mode='partial', wcs=wcs)
+        try:
+            cutout = Cutout2D(data, (x0, y0), (crop_size_pix,crop_size_pix), mode='partial', wcs=wcs)
+        except Exception as e:
+            logger.error("Failed to create cutout (err=%s)!" % str(e))
+            return -1
+
         output_data = cutout.data
 
         # - Fill NAN?

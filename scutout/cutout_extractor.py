@@ -112,7 +112,8 @@ class CutoutFinder(object):
 					continue
 
 			except Exception as e:
-				logger.error('Unknown error in source {0}. Trace: {1}'.format(obj_name, e.message))
+				#logger.error('Unknown error in source {0}. Trace: {1}'.format(obj_name, e.message))
+				logger.error('Unknown error in source {0}. Trace: {1}'.format(obj_name, str(e)))
 				continue
 
 			pbar.update()
