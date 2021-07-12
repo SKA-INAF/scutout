@@ -555,9 +555,12 @@ class CutoutHelper(object):
 				logger.error("Failed to create conv beam from (bmaj,bmin,pa)=(%f,%f,%f) (err=%s)" % (bmaj_deg,bmin_deg,pa_deg,str(e)))
 				continue			
 
+			logger.info("pto 1")
 			ny= data_list[index].shape[0]
 			nx= data_list[index].shape[1]
-		
+			logger.info("pto 2")
+					
+
 			try:
 				logger.info("Convolving image %s (size=%d,%d) with beam (bmaj,bmin,pa)=(%f,%f,%f) ..." % (raw_cutouts[index],nx,ny,bmaj_arcsec,bmin_arcsec,pa_deg))
 			except Exception as e:
