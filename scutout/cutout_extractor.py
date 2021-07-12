@@ -558,8 +558,12 @@ class CutoutHelper(object):
 			ny= data_list[index].shape[0]
 			nx= data_list[index].shape[1]
 		
-			logger.info("Convolving image %s (size=%d,%d) with beam (bmaj,bmin,pa)=(%f,%f,%f) ..." % (raw_cutouts[index],nx,ny,bmaj_arcsec,bmin_arcsec,pa_deg))
-		
+			try:
+				logger.info("Convolving image %s (size=%d,%d) with beam (bmaj,bmin,pa)=(%f,%f,%f) ..." % (raw_cutouts[index],nx,ny,bmaj_arcsec,bmin_arcsec,pa_deg))
+			except Exception as e:
+				logger.error("Failed to print (err=%s)" % str(e))
+				continue		
+
 			# - Create convolution kernel
 			logger.info("Creating convolution kernel ...")
 			dx= pixsize_x[index]
