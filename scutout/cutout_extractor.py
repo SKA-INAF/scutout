@@ -540,8 +540,12 @@ class CutoutHelper(object):
 				bmaj_arcsec= bmaj*3600
 				bmin_arcsec= bmin*3600		
 
-			conv_beam= radio_beam.Beam(bmaj_deg*u.deg,bmin_deg*u.deg,pa_deg*u.deg)
-			
+			try:
+				conv_beam= radio_beam.Beam(bmaj_deg*u.deg,bmin_deg*u.deg,pa_deg*u.deg)
+			except Exception as e:	
+				logger.error("Failed to create conv beam (err=%s)" % str(e))
+				continue			
+
 			ny= data_list[index].shape[0]
 			nx= data_list[index].shape[1]
 		
