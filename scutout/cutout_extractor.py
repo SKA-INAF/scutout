@@ -526,6 +526,9 @@ class CutoutHelper(object):
 				logger.error("Failed to deconvolve beam no. %d (err=%s)" % (index,str(e)))
 				continue
 
+			print("type(bmaj)")
+			print(type(bmaj))
+
 			try:
 				bmaj_deg= bmaj.to(u.deg).value
 				bmin_deg= bmin.to(u.deg).value
