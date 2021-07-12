@@ -549,6 +549,9 @@ class CutoutHelper(object):
 					continue
 
 			logger.info("Creating radio beam object ...")
+			logger.info("type(bmaj_deg)")
+			logger.info(type(bmaj_deg))
+
 			try:
 				conv_beam= radio_beam.Beam(bmaj_deg*u.deg,bmin_deg*u.deg,pa_deg*u.deg)
 			except Exception as e:	
