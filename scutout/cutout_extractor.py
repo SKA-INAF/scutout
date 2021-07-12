@@ -531,11 +531,17 @@ class CutoutHelper(object):
 			logger.info(type(bmaj))
 
 			try:
-				bmaj_deg= bmaj.to(u.deg).value
-				bmin_deg= bmin.to(u.deg).value
-				pa_deg= pa.to(u.deg).value
-				bmaj_arcsec= bmaj.to(u.arcsec).value
-				bmin_arcsec= bmin.to(u.arcsec).value
+				#bmaj_deg= bmaj.to(u.deg).value
+				#bmin_deg= bmin.to(u.deg).value
+				#pa_deg= pa.to(u.deg).value
+				#bmaj_arcsec= bmaj.to(u.arcsec).value
+				#bmin_arcsec= bmin.to(u.arcsec).value
+
+				bmaj_deg= bmaj.to_value(u.deg)
+				bmin_deg= bmin.to_value(u.deg)
+				pa_deg= pa.to_value(u.deg)
+				bmaj_arcsec= bmaj.to_value(u.arcsec)
+				bmin_arcsec= bmin.to_value(u.arcsec)
 
 			except:
 				try:
