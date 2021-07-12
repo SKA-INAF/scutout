@@ -536,28 +536,31 @@ class CutoutHelper(object):
 
 			try:
 				#bmaj_deg= bmaj.to(u.deg).value
-				#bmin_deg= bmin.to(u.deg).value
-				#pa_deg= pa.to(u.deg).value
 				#bmaj_arcsec= bmaj.to(u.arcsec).value
-				#bmin_arcsec= bmin.to(u.arcsec).value
-
 				bmaj_deg= bmaj.to_value(u.deg)
-				bmin_deg= bmin.to_value(u.deg)
-				pa_deg= pa.to_value(u.deg)
 				bmaj_arcsec= bmaj.to_value(u.arcsec)
-				bmin_arcsec= bmin.to_value(u.arcsec)
-
 			except Exception as e:
-				logger.error("Failed to convert (bmin,bmaj,pa) to no unit values (possibly not astropy Units type) (err=%s) ..." % str(e))
-				try:
-					bmaj_deg= bmaj
-					bmin_deg= bmin
-					pa_deg= pa
-					bmaj_arcsec= bmaj*3600
-					bmin_arcsec= bmin*3600		
-				except Exception as e:
-					logger.error("Failed to set (bmaj,bmin,pa)=(%f,%f,%f) to values!" % (bmaj,bmin,pa))
-					continue
+				logger.warn("Failed to convert bmaj to no unit values (possibly not astropy Units type) (err=%s), assuming it is a scalar ..." % str(e))
+				bmaj_deg= bmaj
+				bmaj_arcsec= bmaj*3600
+				
+			try:
+				#bmin_deg= bmin.to(u.deg).value
+				#bmin_arcsec= bmin.to(u.arcsec).value
+				bmin_deg= bmin.to_value(u.deg)
+				bmin_arcsec= bmin.to_value(u.arcsec)
+			except Exception as e:
+				logger.warn("Failed to convert bmin to no unit values (possibly not astropy Units type) (err=%s), assuming it is a scalar ..." % str(e))
+				bmin_deg= bmin
+				bmin_arcsec= bmin*3600
+
+			try:
+				#pa_deg= pa.to(u.deg).value
+				pa_deg= pa.to_value(u.deg)
+			except Exception as e:
+				logger.warn("Failed to convert pa to no unit values (possibly not astropy Units type) (err=%s), assuming it is a scalar ..." % str(e))
+				pa_deg= pa
+				
 
 			logger.info("Creating radio beam object ...")
 			logger.info("type(bmaj_deg)")
