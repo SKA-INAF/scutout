@@ -543,7 +543,7 @@ class CutoutHelper(object):
 			try:
 				conv_beam= radio_beam.Beam(bmaj_deg*u.deg,bmin_deg*u.deg,pa_deg*u.deg)
 			except Exception as e:	
-				logger.error("Failed to create conv beam (err=%s)" % str(e))
+				logger.error("Failed to create conv beam from (bmaj,bmin,pa)=(%f,%f,%f) (err=%s)" % (bmaj_deg,bmin_deg,pa_deg,str(e)))
 				continue			
 
 			ny= data_list[index].shape[0]
