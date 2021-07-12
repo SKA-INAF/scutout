@@ -520,19 +520,19 @@ class CutoutHelper(object):
 		for index in range(len(raw_cutouts)):
 
 			# - Find convolving beam 
-			logger.info("Finding convolving beam ...")
+			logger.debug("Finding convolving beam ...")
 			try:
 				bmaj, bmin, pa= radio_beam.utils.deconvolve(common_beam,beam_list[index])
 			except Exception as e:	
 				logger.error("Failed to deconvolve beam no. %d (err=%s)" % (index,str(e)))
 				continue
 
-			logger.info("type(bmaj)")
-			logger.info(type(bmaj))
-			logger.info("type(bmin)")
-			logger.info(type(bmin))
-			logger.info("type(pa)")
-			logger.info(type(pa))
+			logger.debug("type(bmaj)")
+			logger.debug(type(bmaj))
+			logger.debug("type(bmin)")
+			logger.debug(type(bmin))
+			logger.debug("type(pa)")
+			logger.debug(type(pa))
 
 			try:
 				#bmaj_deg= bmaj.to(u.deg).value
@@ -562,9 +562,9 @@ class CutoutHelper(object):
 				pa_deg= pa
 				
 
-			logger.info("Creating radio beam object ...")
-			logger.info("type(bmaj_deg)")
-			logger.info(type(bmaj_deg))
+			logger.debug("Creating radio beam object ...")
+			logger.debug("type(bmaj_deg)")
+			logger.debug(type(bmaj_deg))
 
 			try:
 				conv_beam= radio_beam.Beam(bmaj_deg*u.deg,bmin_deg*u.deg,pa_deg*u.deg)
@@ -572,20 +572,12 @@ class CutoutHelper(object):
 				logger.error("Failed to create conv beam from (bmaj,bmin,pa)=(%f,%f,%f) (err=%s)" % (bmaj_deg,bmin_deg,pa_deg,str(e)))
 				continue			
 
-			logger.info("pto 1")
 			ny= data_list[index].shape[0]
 			nx= data_list[index].shape[1]
-			logger.info("pto 2")
-					
-
-			try:
-				logger.info("Convolving image %s (size=%d,%d) with beam (bmaj,bmin,pa)=(%f,%f,%f) ..." % (raw_cutouts[index],nx,ny,bmaj_arcsec,bmin_arcsec,pa_deg))
-			except Exception as e:
-				logger.error("Failed to print (err=%s)" % str(e))
-				continue		
-
+			
+			
 			# - Create convolution kernel
-			logger.info("Creating convolution kernel ...")
+			logger.info("Convolving image %s (size=%d,%d) with beam (bmaj,bmin,pa)=(%f,%f,%f) ..." % (raw_cutouts[index],nx,ny,bmaj_arcsec,bmin_arcsec,pa_deg))
 			dx= pixsize_x[index]
 			dy= pixsize_y[index]
 			pixsize= max(dx,dy)
