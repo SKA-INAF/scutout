@@ -520,7 +520,11 @@ class CutoutHelper(object):
 		for index in range(len(raw_cutouts)):
 
 			# - Find convolving beam 
-			bmaj, bmin, pa= radio_beam.utils.deconvolve(common_beam,beam_list[index])
+			try:
+				bmaj, bmin, pa= radio_beam.utils.deconvolve(common_beam,beam_list[index])
+			except Exception as e:	
+				logger.error("Failed to deconvolve beam no. %d (err=%s)" % (index,str(e)))
+				continue
 
 			try:
 				bmaj_deg= bmaj.to(u.deg).value
