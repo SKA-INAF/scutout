@@ -529,6 +529,10 @@ class CutoutHelper(object):
 
 			logger.info("type(bmaj)")
 			logger.info(type(bmaj))
+			logger.info("type(bmin)")
+			logger.info(type(bmin))
+			logger.info("type(pa)")
+			logger.info(type(pa))
 
 			try:
 				#bmaj_deg= bmaj.to(u.deg).value
@@ -544,7 +548,7 @@ class CutoutHelper(object):
 				bmin_arcsec= bmin.to_value(u.arcsec)
 
 			except Exception as e:
-				logger.error("Failed to convert (bmin,bmaj,pa) to no unit values (possibly not astropy Units type) ...")
+				logger.error("Failed to convert (bmin,bmaj,pa) to no unit values (possibly not astropy Units type) (err=%s) ..." % str(e))
 				try:
 					bmaj_deg= bmaj
 					bmin_deg= bmin
