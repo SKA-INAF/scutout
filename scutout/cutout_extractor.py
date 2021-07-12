@@ -520,6 +520,7 @@ class CutoutHelper(object):
 		for index in range(len(raw_cutouts)):
 
 			# - Find convolving beam 
+			logger.info("Finding convolving beam ...")
 			try:
 				bmaj, bmin, pa= radio_beam.utils.deconvolve(common_beam,beam_list[index])
 			except Exception as e:	
@@ -547,6 +548,7 @@ class CutoutHelper(object):
 					logger.error("Failed to set (bmaj,bmin,pa)=(%f,%f,%f) to values!" % (bmaj,bmin,pa))
 					continue
 
+			logger.info("Creating radio beam object ...")
 			try:
 				conv_beam= radio_beam.Beam(bmaj_deg*u.deg,bmin_deg*u.deg,pa_deg*u.deg)
 			except Exception as e:	
@@ -559,14 +561,13 @@ class CutoutHelper(object):
 			logger.info("Convolving image %s (size=%d,%d) with beam (bmaj,bmin,pa)=(%f,%f,%f) ..." % (raw_cutouts[index],nx,ny,bmaj_arcsec,bmin_arcsec,pa_deg))
 		
 			# - Create convolution kernel
+			logger.info("Creating convolution kernel ...")
 			dx= pixsize_x[index]
 			dy= pixsize_y[index]
 			pixsize= max(dx,dy)
 			conv_kernel= conv_beam.as_kernel(pixsize*u.deg)
 			conv_kernel.normalize()
 			kernel=conv_kernel.array
-
-			
 
 			# - Convolve image and write fits
 			data_list[index][np.isnan(data_list[index])]=0.0
