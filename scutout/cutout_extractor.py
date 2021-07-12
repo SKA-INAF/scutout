@@ -543,7 +543,8 @@ class CutoutHelper(object):
 				bmaj_arcsec= bmaj.to_value(u.arcsec)
 				bmin_arcsec= bmin.to_value(u.arcsec)
 
-			except:
+			except Exception as e:
+				logger.error("Failed to convert (bmin,bmaj,pa) to no unit values (possibly not astropy Units type) ...")
 				try:
 					bmaj_deg= bmaj
 					bmin_deg= bmin
