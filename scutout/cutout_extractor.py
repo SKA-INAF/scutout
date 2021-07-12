@@ -534,11 +534,15 @@ class CutoutHelper(object):
 				bmin_arcsec= bmin.to(u.arcsec).value
 
 			except:
-				bmaj_deg= bmaj
-				bmin_deg= bmin
-				pa_deg= pa
-				bmaj_arcsec= bmaj*3600
-				bmin_arcsec= bmin*3600		
+				try:
+					bmaj_deg= bmaj
+					bmin_deg= bmin
+					pa_deg= pa
+					bmaj_arcsec= bmaj*3600
+					bmin_arcsec= bmin*3600		
+				except Exception as e:
+					logger.error("Failed to set (bmaj,bmin,pa)=(%f,%f,%f) to values!" % (bmaj,bmin,pa))
+					continue
 
 			try:
 				conv_beam= radio_beam.Beam(bmaj_deg*u.deg,bmin_deg*u.deg,pa_deg*u.deg)
