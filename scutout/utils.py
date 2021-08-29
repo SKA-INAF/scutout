@@ -937,8 +937,14 @@ class Utils(object):
             else:
                 output_data[np.isnan(output_data)] = nanfill_val
 
+        # - Create new header copying old one but overriding NAXIS keywords
+        output_header= header
+        output_header['NAXIS']= 2
+        output_header['NAXIS1']= output_data.shape[1]
+        output_header['NAXIS2']= output_data.shape[0]
+
         # - Write reshaped image fits
-        Utils.write_fits(output_data, outfile)
+        Utils.write_fits(output_data, outfile, output_header)
 
         return 0
 

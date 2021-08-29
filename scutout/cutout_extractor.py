@@ -558,7 +558,7 @@ class CutoutHelper(object):
 				#pa_deg= pa.to(u.deg).value
 				pa_deg= pa.to_value(u.deg)
 			except Exception as e:
-				logger.warn("Failed to convert pa to no unit values (possibly not astropy Units type) (err=%s), assuming it is a scalar ..." % str(e))
+				logger.debug("Failed to convert pa to no unit values (possibly not astropy Units type) (err=%s), assuming it is a scalar ..." % str(e))
 				pa_deg= pa
 				
 
