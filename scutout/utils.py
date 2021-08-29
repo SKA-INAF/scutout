@@ -945,7 +945,9 @@ class Utils(object):
         #output_header['NAXIS2']= output_data.shape[0]
 
         # - Write reshaped image fits
-        Utils.write_fits(output_data, outfile, output_header)
+        #Utils.write_fits(output_data, outfile, output_header)
+        Utils.write_fits(output_data, outfile)
+
 
         return 0
 
