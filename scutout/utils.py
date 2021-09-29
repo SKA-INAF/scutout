@@ -949,7 +949,7 @@ class Utils(object):
         elif n_wcs_axis==4:
             data= data[0, 0, :, :]
         else:
-            errmsg= "WCS naxis is not 2, 3 or 4, cannot extract image data!" 
+            errmsg= "WCS naxis is " + str(n_wcs_axis) + ", cannot extract image data!" 
             logger.warning(errmsg)
             raise Exception(errmsg)
 
