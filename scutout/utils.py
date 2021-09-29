@@ -989,8 +989,9 @@ class Utils(object):
             print(coords[0].shape)
             print(coords[1])
             print(coords[1].shape)
-            x0= coords[0][0]
-            y0= coords[1][0] 
+            x0= coords[0]
+            y0= coords[1]
+            print("x0 & y0")
             print(x0)
             print(y0)
           elif n_wcs_axis==4:
