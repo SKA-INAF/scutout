@@ -969,6 +969,8 @@ class Utils(object):
             del header['CRPIX3']
           if 'CROTA3' in header:
             del header['CROTA3']
+          if 'CUNIT3' in header:
+            del header['CUNIT3']
           if 'CTYPE4' in header:
             del header['CTYPE4']
           if 'CRVAL4' in header:
@@ -979,6 +981,8 @@ class Utils(object):
             del header['CRPIX4']
           if 'CROTA4' in header:
             del header['CROTA4']
+           if 'CUNIT4' in header:
+            del header['CUNIT4']
 
           logger.warn("Recreating WCS after modyfying the header ...") 
           wcs = WCS(header)
