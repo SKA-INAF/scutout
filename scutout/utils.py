@@ -326,7 +326,7 @@ class Utils(object):
     def getHiGalSurveyBeamArea(cls, band):
         """ Returns HiGal survey beam area """
         if band == 'higal_70':
-            bmaj = 6.7  # arcsec	https://hi-gal.iaps.inaf.it/ ; Bufano+18
+            bmaj = 6.7  # arcsec  https://hi-gal.iaps.inaf.it/ ; Bufano+18
             bmin = 6.7  # arcsec
         elif band == 'higal_160':
             bmaj = 11.  # arcsec
@@ -761,6 +761,12 @@ class Utils(object):
         data, header = Utils.read_fits(filename)
         wcs = WCS(header)
 
+        # - Read WCS axis name
+        wcs_axis_types= wcs.axis_type_names
+        wcs_axis_units= wcs.world_axis_units
+        n_wcs_axis= len(wcs_axis_types)
+        is_galactic= (wcs_axis_types[0]=='GLON') and (wcs_axis_types[1]=='GLAT')
+
         # - Check header keywords
         if 'BUNIT' not in header:
             if not default_bunit:
@@ -799,21 +805,51 @@ class Utils(object):
         if units == 'JY/BEAM' or units == 'Jy/beam':
             xc = header['CRPIX1']
             yc = header['CRPIX2']
-            try:
-                ra, dec = wcs.all_pix2world(xc, yc, 0, ra_dec_order=True)
-            except Exception:
-                ra, dec = (0, 0)
-                logger.warning(
-                    "Cannot compute RA, Dec from WCS header, assuming (0,0)")
-
+            
             hasBeamInfo = Utils.hasBeamInfo(header)
             if hasBeamInfo:
                 bmaj = header['BMAJ']  # in deg
                 bmin = header['BMIN']  # in deg
                 convFactor = Utils.getJyBeamToPixel2(bmaj, bmin, dx, dy)
             else:
-                logger.warning("No BMAJ/BMIN keyword present in file " +
-                               filename + ", trying to retrieve from survey name...")
+                logger.warning("No BMAJ/BMIN keyword present in file " + filename + ", trying to retrieve from survey name...")
+
+                if is_galactic:
+                  try:
+                    if n_wcs_axis==2:
+                      l, b = wcs.all_pix2world(xc, yc, 0)
+                    elif n_wcs_axis==3:
+                      l, b, _ = wcs.all_pix2world(xc, yc, 0, 0) 
+                    elif n_wcs_axis==4:
+                      l, b, _, _ = wcs.all_pix2world(xc, yc, 0, 0, 0)
+                    else:
+                      l, b = (0, 0)
+                      logger.warning("Cannot compute glon/glat from WCS header as naxis is not 2, 3 or 4, assuming (0,0)")
+
+                    if l!=0 and b!=0:
+                      coord_gal = SkyCoord(l=l, b=b, unit='deg', frame="galactic")
+                      coord_j2000= coord_gal.transform_to("fk5")
+                      ra= coord_j2000.ra.value
+                      dec= coord_j2000.dec.value
+
+                  except Exception:
+                    ra, dec = (0, 0)
+                    logger.warning("Cannot compute RA, Dec from WCS header, assuming (0,0)")
+                else:
+                  try:
+                    if n_wcs_axis==2:
+                      ra, dec = wcs.all_pix2world(xc, yc, 0, ra_dec_order=True)
+                    elif n_wcs_axis==3:
+                      ra, dec = wcs.all_pix2world(xc, yc, 0, 0, ra_dec_order=True) 
+                    elif n_wcs_axis==4:
+                      ra, dec = wcs.all_pix2world(xc, yc, 0, 0, 0, ra_dec_order=True)
+                    else:
+                      ra, dec = (0, 0)
+                      logger.warning("Cannot compute RA, Dec from WCS header as naxis is not 2, 3 or 4, assuming (0,0)")
+                  except Exception:
+                    ra, dec = (0, 0)
+                    logger.warning("Cannot compute RA, Dec from WCS header, assuming (0,0)")
+
                 beamArea = Utils.getSurveyBeamArea(survey, ra, dec)
                 if beamArea > 0:
                     convFactor = Utils.getJyBeamToPixel(beamArea, dx, dy)
@@ -901,6 +937,12 @@ class Utils(object):
         dy = abs(header['CDELT2'])  # in deg
         pix_size = max(dx, dy)  # in deg
 
+        # - Read WCS axis name
+        wcs_axis_types= wcs.axis_type_names
+        wcs_axis_units= wcs.world_axis_units
+        n_wcs_axis= len(wcs_axis_types)
+        is_galactic= (wcs_axis_types[0]=='GLON') and (wcs_axis_types[1]=='GLAT')
+
         # - Check if crop size is cutting part of the source
         if source_size != -1:
             source_size_pix = source_size/pix_size
@@ -913,13 +955,40 @@ class Utils(object):
                 logger.warning("Requested crop size (%d) smaller than source size (size=%d arcsec, %d pix), won't write cropped fits file!" % (crop_size_pix, source_size*3600, source_size_pix))
                 return -1
         elif crop_mode == 'factor':
-		        crop_size_pix = 2 * crop_size * source_size_pix # twice the source radius*factor
-		
+            crop_size_pix = 2 * crop_size * source_size_pix # twice the source radius*factor
+
         logging.info('Cropping image to {0}x{0} px'.format(crop_size_pix, crop_size_pix))
 
         # - Find pixel coordinates corresponding to ra,dec
-        x0, y0 = wcs.all_world2pix(ra, dec, 0, ra_dec_order=True)
+        if is_galactic:
+          sc = SkyCoord(ra=ra, dec=dec, unit='deg', frame="fk5")
+          sc_gal= sc.transform_to("galactic")
+          l= sc_gal.l.value
+          b= sc_gal.b.value
 
+          if n_wcs_axis==2:
+            x0, y0 = wcs.all_world2pix(l, b, 0)
+          elif n_wcs_axis==3:
+            x0, y0, _ = wcs.all_world2pix(l, b, 0, 0)
+          elif n_wcs_axis==4:
+            x0, y0, _, _ = wcs.all_world2pix(l, b, 0, 0, 0)
+          else:
+            errmsg= "WCS naxis is not 2, 3 or 4, cannot compute pix coordinates!" 
+            logger.warning(errmsg)
+            raise Exception(errmsg)
+
+        else:
+          if n_wcs_axis==2:
+            x0, y0 = wcs.all_world2pix(ra, dec, 0, ra_dec_order=True)
+          elif n_wcs_axis==3:
+            x0, y0, _ = wcs.all_world2pix(ra, dec, 0, 0, ra_dec_order=True)          
+          elif n_wcs_axis==4:
+            x0, y0, _, _ = wcs.all_world2pix(ra, dec, 0, 0, 0, ra_dec_order=True)
+          else:
+            errmsg= "WCS naxis is not 2, 3 or 4, cannot compute pix coordinates!" 
+            logger.warning(errmsg)
+            raise Exception(errmsg)
+        
         # - Extract cutout. With option 'partial' when cutout size is larger than image size the cutout will be filled with nan (or specified value)
         try:
             cutout = Cutout2D(data, (x0, y0), (crop_size_pix,crop_size_pix), mode='partial', wcs=wcs)
@@ -1041,7 +1110,7 @@ class Utils(object):
             proj_dir=dir_path,
             stats_table=stats_tbl_fullpath,
             exact=exact,
-	          debug=True
+            debug=True
         )
 
         # - List projected frames
@@ -1075,17 +1144,17 @@ class Utils(object):
             mosaic_file_fullpath = os.path.join(dir_path, mosaic_file)
 
         try:
-		        montage.mAdd(
+            montage.mAdd(
               projimg_tbl_fullpath,
-		          header_tbl_fullpath,
-		          mosaic_file_fullpath,
-		          img_dir=dir_path,
-		          type=combine,
-		          exact=exact
-		        )
+              header_tbl_fullpath,
+              mosaic_file_fullpath,
+              img_dir=dir_path,
+              type=combine,
+              exact=exact
+            )
         except:
-		        logger.error(sys.exc_info())
-		        return -1
+            logger.error(sys.exc_info())
+            return -1
 
 
         # - Converting mosaic file to desired format
@@ -1093,7 +1162,7 @@ class Utils(object):
 
 
         try:
-		        montage.mConvert(mosaic_file_fullpath, output, bitpix=bitpix)
+            montage.mConvert(mosaic_file_fullpath, output, bitpix=bitpix)
         except:
             logger.error(sys.exc_info())
             return -1
