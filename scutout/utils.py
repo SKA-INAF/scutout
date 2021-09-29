@@ -764,7 +764,7 @@ class Utils(object):
         # - Read WCS axis name
         wcs_axis_types= wcs.axis_type_names
         wcs_axis_units= wcs.world_axis_units
-        n_wcs_axis= len(wcs_axis_types)
+        n_wcs_axis= wcs.naxis
         is_galactic= (wcs_axis_types[0]=='GLON') and (wcs_axis_types[1]=='GLAT')
 
         # - Check header keywords
@@ -949,10 +949,49 @@ class Utils(object):
             logger.warning(errmsg)
             raise Exception(errmsg)
 
+        # - Check mismatch between wcs naxis and data
+        ndim= data.ndim
+        n_wcs_axis= wcs.naxis
+        if ndim!=n_wcs_axis:
+          logger.warn("Data and WCS axis differs, trying to remove 3rd & 4th axis header keywords ...") 
+
+          if 'NAXIS3' in header:
+            del header['NAXIS3']
+          if 'NAXIS4' in header:
+            del header['NAXIS4']
+          if 'CTYPE3' in header:
+            del header['CTYPE3']
+          if 'CRVAL3' in header:
+            del header['CRVAL3']
+          if 'CDELT3' in header:
+            del header['CDELT3']
+          if 'CRPIX3' in header:
+            del header['CRPIX3']
+          if 'CROTA3' in header:
+            del header['CROTA3']
+          if 'CTYPE4' in header:
+            del header['CTYPE4']
+          if 'CRVAL4' in header:
+            del header['CRVAL4']
+          if 'CDELT4' in header:
+            del header['CDELT4']
+          if 'CRPIX4' in header:
+            del header['CRPIX4']
+          if 'CROTA4' in header:
+            del header['CROTA4']
+
+          logger.warn("Recreating WCS after modyfying the header ...") 
+          wcs = WCS(header)
+          n_wcs_axis= wcs.naxis
+          if ndim!=n_wcs_axis:
+            errmsg= "Data and WCS axis still differs, giving up ..."
+            logger.error(errmsg) 
+            raise Exception(errmsg)
+
         # - Read WCS axis name
         wcs_axis_types= wcs.axis_type_names
         wcs_axis_units= wcs.world_axis_units
-        n_wcs_axis= len(wcs_axis_types)
+        n_wcs_axis= wcs.naxis
         is_galactic= (wcs_axis_types[0]=='GLON') and (wcs_axis_types[1]=='GLAT')
 
         # - Check if crop size is cutting part of the source
