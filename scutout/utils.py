@@ -953,7 +953,7 @@ class Utils(object):
         ndim= data.ndim
         n_wcs_axis= wcs.naxis
         if ndim!=n_wcs_axis:
-          logger.warn("Data and WCS axis differs, trying to remove 3rd & 4th axis header keywords ...") 
+          logger.info("Data and WCS axis differs, trying to remove 3rd & 4th axis header keywords ...") 
 
           if 'NAXIS3' in header:
             del header['NAXIS3']
@@ -984,7 +984,7 @@ class Utils(object):
           if 'CUNIT4' in header:
             del header['CUNIT4']
 
-          logger.warn("Recreating WCS after modyfying the header ...") 
+          logger.info("Recreating WCS after modyfying the header ...") 
           wcs = WCS(header)
           n_wcs_axis= wcs.naxis
           if ndim!=n_wcs_axis:
