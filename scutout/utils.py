@@ -937,21 +937,23 @@ class Utils(object):
         dy = abs(header['CDELT2'])  # in deg
         pix_size = max(dx, dy)  # in deg
         data_shape= data.shape 
+        ndim= data.ndim
+        
+        if ndim!=2:
+          if ndim==3:
+            data= data[0, :, :]
+          elif n_wcs_axis==4:
+            data= data[0, 0, :, :]
+          else:
+            errmsg= "WCS naxis is " + str(n_wcs_axis) + ", cannot extract image data!" 
+            logger.warning(errmsg)
+            raise Exception(errmsg)
 
         # - Read WCS axis name
         wcs_axis_types= wcs.axis_type_names
         wcs_axis_units= wcs.world_axis_units
         n_wcs_axis= len(wcs_axis_types)
         is_galactic= (wcs_axis_types[0]=='GLON') and (wcs_axis_types[1]=='GLAT')
-
-        if n_wcs_axis==3:
-            data= data[0, :, :]
-        elif n_wcs_axis==4:
-            data= data[0, 0, :, :]
-        else:
-            errmsg= "WCS naxis is " + str(n_wcs_axis) + ", cannot extract image data!" 
-            logger.warning(errmsg)
-            raise Exception(errmsg)
 
         # - Check if crop size is cutting part of the source
         if source_size != -1:
