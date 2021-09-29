@@ -981,7 +981,10 @@ class Utils(object):
             x0, y0 = wcs.all_world2pix(l, b, 0)
           elif n_wcs_axis==3:
             #x0, y0, _ = wcs.all_world2pix(l, b, 0, 0)
-            coords= wcs.all_world2pix(l, b, 0, 0) 
+            coords= wcs.all_world2pix(l, b, 0, 0)
+            print("coords")
+            print(coords)
+            print(type(coords)) 
             x0= coords[0][0]
             y0= coords[1][0] 
           elif n_wcs_axis==4:
