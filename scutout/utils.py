@@ -819,14 +819,9 @@ class Utils(object):
                     if n_wcs_axis==2:
                       l, b = wcs.all_pix2world(xc, yc, 0)
                     elif n_wcs_axis==3:
-                      #l, b, _ = wcs.all_pix2world(xc, yc, 0, 0)
-                      coords= wcs.all_pix2world(xc, yc, 0, 0)
-                      l= coords[0][0]
-                      b= coords[1][0] 
+                      l, b, _ = wcs.all_pix2world(xc, yc, 0, 0)
                     elif n_wcs_axis==4:
-                      coords = wcs.all_pix2world(xc, yc, 0, 0, 0)
-                      l= coords[0][0]
-                      b= coords[1][0]
+                      l, b, _, _ = wcs.all_pix2world(xc, yc, 0, 0, 0)
                     else:
                       l, b = (0, 0)
                       logger.warning("Cannot compute glon/glat from WCS header as naxis is not 2, 3 or 4, assuming (0,0)")
@@ -845,15 +840,9 @@ class Utils(object):
                     if n_wcs_axis==2:
                       ra, dec = wcs.all_pix2world(xc, yc, 0, ra_dec_order=True)
                     elif n_wcs_axis==3:
-                      #ra, dec = wcs.all_pix2world(xc, yc, 0, 0, ra_dec_order=True)
-                      coords= wcs.all_pix2world(xc, yc, 0, 0, ra_dec_order=True)
-                      ra= coords[0][0]
-                      dec= coords[1][0] 
+                      ra, dec, _ = wcs.all_pix2world(xc, yc, 0, 0, ra_dec_order=True)
                     elif n_wcs_axis==4:
-                      #ra, dec = wcs.all_pix2world(xc, yc, 0, 0, 0, ra_dec_order=True)
-                      coords= wcs.all_pix2world(xc, yc, 0, 0, 0, ra_dec_order=True)
-                      ra= coords[0][0]
-                      dec= coords[1][0] 
+                      ra, dec, _, _ = wcs.all_pix2world(xc, yc, 0, 0, 0, ra_dec_order=True)
                     else:
                       ra, dec = (0, 0)
                       logger.warning("Cannot compute RA, Dec from WCS header as naxis is not 2, 3 or 4, assuming (0,0)")
@@ -947,12 +936,22 @@ class Utils(object):
         dx = abs(header['CDELT1'])  # in deg
         dy = abs(header['CDELT2'])  # in deg
         pix_size = max(dx, dy)  # in deg
+        data_shape= data.shape 
 
         # - Read WCS axis name
         wcs_axis_types= wcs.axis_type_names
         wcs_axis_units= wcs.world_axis_units
         n_wcs_axis= len(wcs_axis_types)
         is_galactic= (wcs_axis_types[0]=='GLON') and (wcs_axis_types[1]=='GLAT')
+
+        if n_wcs_axis==3:
+            data= data[0, :, :]
+        elif n_wcs_axis==4:
+            data= data[0, 0, :, :]
+        else:
+            errmsg= "WCS naxis is not 2, 3 or 4, cannot extract image data!" 
+            logger.warning(errmsg)
+            raise Exception(errmsg)
 
         # - Check if crop size is cutting part of the source
         if source_size != -1:
@@ -981,24 +980,8 @@ class Utils(object):
             x0, y0 = wcs.all_world2pix(l, b, 0)
           elif n_wcs_axis==3:
             x0, y0, _ = wcs.all_world2pix(l, b, 0, 0)
-            #coords= wcs.all_world2pix(l, b, 0, 0)
-            #print("coords")
-            #print(coords)
-            #print(type(coords)) 
-            #print(coords[0])
-            #print(coords[0].shape)
-            #print(coords[1])
-            #print(coords[1].shape)
-            #x0= coords[0]
-            #y0= coords[1]
-            print("x0 & y0")
-            print(x0)
-            print(y0)
           elif n_wcs_axis==4:
-            #x0, y0, _, _ = wcs.all_world2pix(l, b, 0, 0, 0)
-            coords = wcs.all_world2pix(l, b, 0, 0, 0)
-            x0= coords[0][0]
-            y0= coords[1][0]
+            x0, y0, _, _ = wcs.all_world2pix(l, b, 0, 0, 0)
           else:
             errmsg= "WCS naxis is not 2, 3 or 4, cannot compute pix coordinates!" 
             logger.warning(errmsg)
@@ -1008,15 +991,9 @@ class Utils(object):
           if n_wcs_axis==2:
             x0, y0 = wcs.all_world2pix(ra, dec, 0, ra_dec_order=True)
           elif n_wcs_axis==3:
-            #x0, y0, _ = wcs.all_world2pix(ra, dec, 0, 0, ra_dec_order=True)
-            coords= wcs.all_world2pix(ra, dec, 0, 0, ra_dec_order=True)          
-            x0= coords[0][0]
-            y0= coords[1][0]
+            x0, y0, _ = wcs.all_world2pix(ra, dec, 0, 0, ra_dec_order=True)
           elif n_wcs_axis==4:
-            #x0, y0, _, _ = wcs.all_world2pix(ra, dec, 0, 0, 0, ra_dec_order=True) 
-            coords = wcs.all_world2pix(ra, dec, 0, 0, 0, ra_dec_order=True)
-            x0= coords[0][0]
-            y0= coords[1][0]
+            x0, y0, _, _ = wcs.all_world2pix(ra, dec, 0, 0, 0, ra_dec_order=True) 
           else:
             errmsg= "WCS naxis is not 2, 3 or 4, cannot compute pix coordinates!" 
             logger.warning(errmsg)
