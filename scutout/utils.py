@@ -513,6 +513,16 @@ class Utils(object):
         return beamArea
 
     @classmethod
+    def getASKAPRACSSurveyBeamArea(cls):
+        """ Returns ASKAP RACS survey beam area """
+        bmaj = 25  # arcsec
+        bmin = 25  # arcsec
+        bmaj_deg = bmaj/3600.
+        bmin_deg = bmin/3600.
+        beamArea = Utils.getBeamArea(bmaj_deg, bmin_deg)
+        return beamArea
+
+    @classmethod
     def getMAGPIS21cmSurveyBeamArea(cls):
         """ Returns MAGPIS new 21cm survey beam area """
         bmaj = 6.2  # arcsec
@@ -615,6 +625,8 @@ class Utils(object):
             beamArea = Utils.getMeerkatGPSSurveyBeamArea()
         elif survey == 'meerkat_gps_ch14':
             beamArea = Utils.getMeerkatGPSSurveyBeamArea()
+        elif survey == 'askap_racs':
+            beamArea = Utils.getASKAPRACSSurveyBeamArea()
         elif survey == 'magpis_21cm':
             beamArea = Utils.getMAGPIS21cmSurveyBeamArea()
         else:

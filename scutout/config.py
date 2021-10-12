@@ -172,6 +172,11 @@ class Config(object):
 			"metadata": ""
 		}
 
+		# - ASKAP RACS survey options
+		askap_racs_options= {
+			"metadata": ""
+		}
+
 		# - MAGPIS 21cm survey options
 		magpis_21cm_options= {
 			"metadata": ""
@@ -276,6 +281,7 @@ class Config(object):
 			"meerkat_gps_ch12" : meerkat_gps_ch12_options,
 			"meerkat_gps_ch13" : meerkat_gps_ch13_options,
 			"meerkat_gps_ch14" : meerkat_gps_ch14_options,
+			"askap_racs" : askap_racs_options,
 			"magpis_21cm" : magpis_21cm_options,
 			"irac_3_6" : spitzer_irac_3_6_options,
 			"irac_4_5" : spitzer_irac_4_5_options,
@@ -631,6 +637,12 @@ class Config(object):
 			option_value= self.parser.get('MEERKAT_GPS_CH14_DATA', 'metadata')	
 			if option_value:
 				self.survey_options['meerkat_gps_ch14']['metadata']= option_value
+
+		# - Parse ASKAP RACS section options	
+		if self.parser.has_option('ASKAP_RACS_DATA', 'metadata'):
+			option_value= self.parser.get('ASKAP_RACS_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['askap_racs']['metadata']= option_value		
 
 		# - Parse MAGPIS 21cm section options	
 		if self.parser.has_option('MAGPIS_21cm_DATA', 'metadata'):
