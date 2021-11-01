@@ -689,7 +689,7 @@ class Config(object):
 			if option_value:
 				self.survey_options['magpis_21cm']['metadata']= option_value
 
-		# - Parse CORNISHG section options	
+		# - Parse CORNISH section options	
 		if self.parser.has_option('CORNISH_DATA', 'metadata'):
 			option_value= self.parser.get('CORNISH_DATA', 'metadata')	
 			if option_value:
