@@ -182,6 +182,11 @@ class Config(object):
 			"metadata": ""
 		}
 
+		# - CORNISH 5 GHz survey options
+		cornish_options= {
+			"metadata": ""
+		}
+
 		# - Spitzer IRAC survey options
 		spitzer_irac_3_6_options= {
 			"metadata": ""
@@ -252,7 +257,12 @@ class Config(object):
 		}	
 		msx_21_3_options= {
 			"metadata": ""
-		}		
+		}
+
+		# - CUSTOM survey (placeholder for new survey data added by users)
+		custom_survey_options= {
+			"metadata": ""
+		}
 
 	
 		# - SURVEY options
@@ -283,6 +293,7 @@ class Config(object):
 			"meerkat_gps_ch14" : meerkat_gps_ch14_options,
 			"askap_racs" : askap_racs_options,
 			"magpis_21cm" : magpis_21cm_options,
+			"cornish" : cornish_options,
 			"irac_3_6" : spitzer_irac_3_6_options,
 			"irac_4_5" : spitzer_irac_4_5_options,
 			"irac_5_8" : spitzer_irac_5_8_options,
@@ -303,25 +314,53 @@ class Config(object):
 			"msx_12_1" : msx_12_1_options,
 			"msx_14_7" : msx_14_7_options,
 			"msx_21_3" : msx_21_3_options,
+			"custom_survey": custom_survey_options,
 		}
+
+	#==============================
+	#     READ CONFIG FILE
+	#==============================
+	def __read(self, filename):
+		""" Read input INI config file"""
+
+		try:
+			self.parser.read(filename)
+		except Exception as e:
+			logger.error("Exception occurred when reading config file %s (err=%s)!" % (filename, str(e)))
+			return -1
+		
+		#print(self.parser.sections())
+		#self.__print_options()
+
+		return 0
+
+	#==============================
+	#     ADD CUSTOM SURVEY
+	#==============================
+	def __add_custom_survey(self, metadata_path):
+		""" Add custom survey to config parser (to be called after read config) """
+	
+		# - Check if metadata field is empty
+		if metadata_path=="":
+			logger.error("Empty metadata path string given!")
+			return -1	
+
+		# - Add section if not already present
+		section_name= "CUSTOM_SURVEY_DATA"
+		if not self.parser.has_section(section_name):
+			self.parser.add_section(section_name)
+
+		# - Add metadata field to section
+		self.parser.set(section_name, 'metadata', metadata)
+
+		return 0
 
 	#==============================
 	#     PARSE CONFIG FILE
 	#==============================
-	def parse(self,filename):
-		""" Read input INI config file and set options """
+	def __set_options(self):
+		""" Parse input INI config file after reading it """
 
-		# ***************************
-		# **    READ CONFIG FILE
-		# ***************************
-		# - Read config parser
-		self.parser.read(filename)
-		#print(self.parser.sections())
-		#self.__print_options()
-
-		# ***************************
-		# **    PARSE OPTIONS
-		# ***************************
 		# - Parse RUN section options
 		if self.parser.has_option('RUN', 'workdir'):
 			option_value= self.parser.get('RUN', 'workdir')	
@@ -649,7 +688,44 @@ class Config(object):
 			option_value= self.parser.get('MAGPIS_21cm_DATA', 'metadata')	
 			if option_value:
 				self.survey_options['magpis_21cm']['metadata']= option_value
+
+		# - Parse CORNISHG section options	
+		if self.parser.has_option('CORNISH_DATA', 'metadata'):
+			option_value= self.parser.get('CORNISH_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['cornish']['metadata']= option_value
+
+		# - Parse custom survey section options	
+		if self.parser.has_option('CUSTOM_SURVEY_DATA', 'metadata'):
+			option_value= self.parser.get('CUSTOM_SURVEY_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['custom_survey']['metadata']= option_value
 	
+
+	def parse(self, filename, add_survey=False, metadata_path=""):
+		""" Read input INI config file and set options """
+
+		# ***************************
+		# **    READ CONFIG FILE
+		# ***************************
+		# - Read config parser
+		if self.__read(filename)<0:
+			logger.error("Failed to read config file %s!" % (filename))
+			return -1
+
+		# ***************************
+		# **    ADD CUSTOM SURVEY
+		# ***************************
+		if add_survey:
+			if self.__add_custom_survey(metadata_path)<0:
+				logger.error("Failed to add custom survey with metadata %s!" % (metadata_path))
+				return -1
+
+		# ***************************
+		# **  PARSE AND SET OPTIONS
+		# ***************************
+		self.__set_options()
+
 		# ***************************
 		# **    VALIDATE CONFIG
 		# ***************************

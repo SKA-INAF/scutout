@@ -533,6 +533,16 @@ class Utils(object):
         return beamArea
 
     @classmethod
+    def getCORNISHSurveyBeamArea(cls):
+        """ Returns CORNISH 5 GHz survey beam area """
+        bmaj = 1.5  # arcsec
+        bmin = 1.5  # arcsec
+        bmaj_deg = bmaj/3600.
+        bmin_deg = bmin/3600.
+        beamArea = Utils.getBeamArea(bmaj_deg, bmin_deg)
+        return beamArea
+
+    @classmethod
     def getSurveyBeamArea(cls, survey, ra=None, dec=None):
         """ Return beam area of given survey """
 
@@ -629,6 +639,8 @@ class Utils(object):
             beamArea = Utils.getASKAPRACSSurveyBeamArea()
         elif survey == 'magpis_21cm':
             beamArea = Utils.getMAGPIS21cmSurveyBeamArea()
+        elif survey == 'cornish':
+            beamArea = Utils.getCORNISHSurveyBeamArea()
         else:
             logger.error("Unknown survey (" + survey + "), returning area=0!")
             beamArea = 0
