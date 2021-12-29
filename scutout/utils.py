@@ -263,6 +263,17 @@ class Utils(object):
         return beamArea
 
     @classmethod
+    def getVLASSSurveyBeamArea(cls):
+        """ Returns VLASS survey beam area """
+        # Very approximated (no pa info), taken from Lacy arXiv:1907.01981v3 (2019)
+        bmaj = 3.  # arcsec
+        bmin = 2.  # arcsec (assumed 1.5 smaller than bmaj)
+        bmaj_deg = bmaj/3600.
+        bmin_deg = bmin/3600.
+        beamArea = Utils.getBeamArea(bmaj_deg, bmin_deg)
+        return beamArea
+
+    @classmethod
     def getWiseSurveyBeamArea(cls, band):
         """ Returns Wise survey beam area """
         if band == 'wise_3_4':     # http://wise2.ipac.caltech.edu/docs/release/allsky/  (Wrigth+10)
@@ -557,6 +568,8 @@ class Utils(object):
             beamArea = Utils.getSGPSSurveyBeamArea()
         elif survey == 'vgps':
             beamArea = Utils.getVGPSSurveyBeamArea()
+        elif survey == 'vlass':
+            beamArea = Utils.getVLASSSurveyBeamArea()
         elif survey == 'wise_3_4':
             beamArea = Utils.getWiseSurveyBeamArea(survey)
         elif survey == 'wise_4_6':

@@ -107,6 +107,11 @@ class Config(object):
 			"metadata": ""
 		}
 
+		# - VLASS survey options
+		vlass_options= {
+			"metadata": ""
+		}
+
 		# - SCORPIO ATCA survey options
 		scorpio_atca_2_1_options= {
 			"metadata": ""
@@ -272,6 +277,7 @@ class Config(object):
 			"mgps" : mgps_options,
 			"vgps" : vgps_options,
 			"sgps" : sgps_options,
+			"vlass" : vlass_options,
 			"scorpio_atca_2_1" : scorpio_atca_2_1_options,
 			"scorpio_askap15_b1" : scorpio_askap15_b1_options,
 			"scorpio_askap36_b123" : scorpio_askap36_b123_options,
@@ -471,6 +477,12 @@ class Config(object):
 			option_value= self.parser.get('SGPS_DATA', 'metadata')	
 			if option_value:
 				self.survey_options['sgps']['metadata']= option_value
+
+		# - Parse VLASS DATA section options
+		if self.parser.has_option('VLASS_DATA', 'metadata'):
+			option_value= self.parser.get('VLASS_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['vlass']['metadata']= option_value
 
 		# - Parse WISE section options
 		if self.parser.has_option('WISE_3_4_DATA', 'metadata'):
