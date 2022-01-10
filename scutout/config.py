@@ -617,38 +617,38 @@ class Config(object):
 				self.survey_options['scorpio_atca_2_1']['metadata']= option_value
 
 		# - Parse SCORPIO ASKAP section options	
-		if self.parser.has_option('SCORPIO_ASKAP15_b1_DATA', 'metadata'):
-			option_value= self.parser.get('SCORPIO_ASKAP15_b1_DATA', 'metadata')	
+		if self.parser.has_option('SCORPIO_ASKAP15_B1_DATA', 'metadata'):
+			option_value= self.parser.get('SCORPIO_ASKAP15_B1_DATA', 'metadata')	
 			if option_value:
 				self.survey_options['scorpio_askap15_b1']['metadata']= option_value
 
-		if self.parser.has_option('SCORPIO_ASKAP36_b123_DATA', 'metadata'):
-			option_value= self.parser.get('SCORPIO_ASKAP36_b123_DATA', 'metadata')	
+		if self.parser.has_option('SCORPIO_ASKAP36_B123_DATA', 'metadata'):
+			option_value= self.parser.get('SCORPIO_ASKAP36_B123_DATA', 'metadata')	
 			if option_value:
 				self.survey_options['scorpio_askap36_b123']['metadata']= option_value
 
-		if self.parser.has_option('SCORPIO_ASKAP36_b123_ch1_DATA', 'metadata'):
-			option_value= self.parser.get('SCORPIO_ASKAP36_b123_ch1_DATA', 'metadata')	
+		if self.parser.has_option('SCORPIO_ASKAP36_B123_CH1_DATA', 'metadata'):
+			option_value= self.parser.get('SCORPIO_ASKAP36_B123_CH1_DATA', 'metadata')	
 			if option_value:
 				self.survey_options['scorpio_askap36_b123_ch1']['metadata']= option_value
 
-		if self.parser.has_option('SCORPIO_ASKAP36_b123_ch2_DATA', 'metadata'):
-			option_value= self.parser.get('SCORPIO_ASKAP36_b123_ch2_DATA', 'metadata')	
+		if self.parser.has_option('SCORPIO_ASKAP36_B123_CH2_DATA', 'metadata'):
+			option_value= self.parser.get('SCORPIO_ASKAP36_B123_CH2_DATA', 'metadata')	
 			if option_value:
 				self.survey_options['scorpio_askap36_b123_ch2']['metadata']= option_value
 
-		if self.parser.has_option('SCORPIO_ASKAP36_b123_ch3_DATA', 'metadata'):
-			option_value= self.parser.get('SCORPIO_ASKAP36_b123_ch3_DATA', 'metadata')	
+		if self.parser.has_option('SCORPIO_ASKAP36_B123_CH3_DATA', 'metadata'):
+			option_value= self.parser.get('SCORPIO_ASKAP36_B123_CH3_DATA', 'metadata')	
 			if option_value:
 				self.survey_options['scorpio_askap36_b123_ch3']['metadata']= option_value
 
-		if self.parser.has_option('SCORPIO_ASKAP36_b123_ch4_DATA', 'metadata'):
-			option_value= self.parser.get('SCORPIO_ASKAP36_b123_ch4_DATA', 'metadata')	
+		if self.parser.has_option('SCORPIO_ASKAP36_B123_CH4_DATA', 'metadata'):
+			option_value= self.parser.get('SCORPIO_ASKAP36_B123_CH4_DATA', 'metadata')	
 			if option_value:
 				self.survey_options['scorpio_askap36_b123_ch4']['metadata']= option_value
 
-		if self.parser.has_option('SCORPIO_ASKAP36_b123_ch5_DATA', 'metadata'):
-			option_value= self.parser.get('SCORPIO_ASKAP36_b123_ch5_DATA', 'metadata')	
+		if self.parser.has_option('SCORPIO_ASKAP36_B123_CH5_DATA', 'metadata'):
+			option_value= self.parser.get('SCORPIO_ASKAP36_B123_CH5_DATA', 'metadata')	
 			if option_value:
 				self.survey_options['scorpio_askap36_b123_ch5']['metadata']= option_value
 
