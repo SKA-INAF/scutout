@@ -124,6 +124,21 @@ class Config(object):
 		scorpio_askap36_b123_options= {
 			"metadata": ""
 		}
+		scorpio_askap36_b123_ch1_options= {
+			"metadata": ""
+		}
+		scorpio_askap36_b123_ch2_options= {
+			"metadata": ""
+		}
+		scorpio_askap36_b123_ch3_options= {
+			"metadata": ""
+		}
+		scorpio_askap36_b123_ch4_options= {
+			"metadata": ""
+		}
+		scorpio_askap36_b123_ch5_options= {
+			"metadata": ""
+		}
 		
 		# - THOR survey options
 		thor_options= {
@@ -281,6 +296,11 @@ class Config(object):
 			"scorpio_atca_2_1" : scorpio_atca_2_1_options,
 			"scorpio_askap15_b1" : scorpio_askap15_b1_options,
 			"scorpio_askap36_b123" : scorpio_askap36_b123_options,
+			"scorpio_askap36_b123_ch1" : scorpio_askap36_b123_ch1_options,
+			"scorpio_askap36_b123_ch2" : scorpio_askap36_b123_ch2_options,
+			"scorpio_askap36_b123_ch3" : scorpio_askap36_b123_ch3_options,
+			"scorpio_askap36_b123_ch4" : scorpio_askap36_b123_ch4_options,
+			"scorpio_askap36_b123_ch5" : scorpio_askap36_b123_ch5_options,
 			"thor" : thor_options,
 			"meerkat_gps" : meerkat_gps_options,
 			"meerkat_gps_ch1" : meerkat_gps_ch1_options,
@@ -606,6 +626,31 @@ class Config(object):
 			option_value= self.parser.get('SCORPIO_ASKAP36_b123_DATA', 'metadata')	
 			if option_value:
 				self.survey_options['scorpio_askap36_b123']['metadata']= option_value
+
+		if self.parser.has_option('SCORPIO_ASKAP36_b123_ch1_DATA', 'metadata'):
+			option_value= self.parser.get('SCORPIO_ASKAP36_b123_ch1_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['scorpio_askap36_b123_ch1']['metadata']= option_value
+
+		if self.parser.has_option('SCORPIO_ASKAP36_b123_ch2_DATA', 'metadata'):
+			option_value= self.parser.get('SCORPIO_ASKAP36_b123_ch2_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['scorpio_askap36_b123_ch2']['metadata']= option_value
+
+		if self.parser.has_option('SCORPIO_ASKAP36_b123_ch3_DATA', 'metadata'):
+			option_value= self.parser.get('SCORPIO_ASKAP36_b123_ch3_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['scorpio_askap36_b123_ch3']['metadata']= option_value
+
+		if self.parser.has_option('SCORPIO_ASKAP36_b123_ch4_DATA', 'metadata'):
+			option_value= self.parser.get('SCORPIO_ASKAP36_b123_ch4_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['scorpio_askap36_b123_ch4']['metadata']= option_value
+
+		if self.parser.has_option('SCORPIO_ASKAP36_b123_ch5_DATA', 'metadata'):
+			option_value= self.parser.get('SCORPIO_ASKAP36_b123_ch5_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['scorpio_askap36_b123_ch5']['metadata']= option_value
 
 		# - Parse THOR survey
 		if self.parser.has_option('THOR_DATA', 'metadata'):

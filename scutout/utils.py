@@ -616,6 +616,16 @@ class Utils(object):
             beamArea = Utils.getScorpioASKAP15B1SurveyBeamArea()
         elif survey == 'scorpio_askap36_b123':
             beamArea = Utils.getScorpioASKAP36B123SurveyBeamArea()
+        elif survey == 'scorpio_askap36_b123_ch1':
+            beamArea = Utils.getScorpioASKAP36B123SurveyBeamArea()
+        elif survey == 'scorpio_askap36_b123_ch2':
+            beamArea = Utils.getScorpioASKAP36B123SurveyBeamArea()
+        elif survey == 'scorpio_askap36_b123_ch3':
+            beamArea = Utils.getScorpioASKAP36B123SurveyBeamArea()
+        elif survey == 'scorpio_askap36_b123_ch4':
+            beamArea = Utils.getScorpioASKAP36B123SurveyBeamArea()
+        elif survey == 'scorpio_askap36_b123_ch5':
+            beamArea = Utils.getScorpioASKAP36B123SurveyBeamArea()
         elif survey == 'thor':
             beamArea = Utils.getTHORSurveyBeamArea()
         elif survey == 'meerkat_gps':
