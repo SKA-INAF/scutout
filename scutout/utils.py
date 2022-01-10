@@ -502,6 +502,16 @@ class Utils(object):
         beamArea = Utils.getBeamArea(bmaj_deg, bmin_deg)
         return beamArea
 
+		@classmethod
+    def getScorpioASKAP36B123SubChanSurveyBeamArea(cls):
+        """ Returns Scorpio ASKAP 36 B123 ch1 survey beam area """
+        bmaj = 14.0  # arcsec
+        bmin = 12.0  # arcsec
+        bmaj_deg = bmaj/3600.
+        bmin_deg = bmin/3600.
+        beamArea = Utils.getBeamArea(bmaj_deg, bmin_deg)
+        return beamArea
+
     @classmethod
     def getTHORSurveyBeamArea(cls):
         """ Returns THOR survey beam area """
@@ -617,15 +627,15 @@ class Utils(object):
         elif survey == 'scorpio_askap36_b123':
             beamArea = Utils.getScorpioASKAP36B123SurveyBeamArea()
         elif survey == 'scorpio_askap36_b123_ch1':
-            beamArea = Utils.getScorpioASKAP36B123SurveyBeamArea()
+            beamArea = Utils.getScorpioASKAP36B123SubChanSurveyBeamArea()
         elif survey == 'scorpio_askap36_b123_ch2':
-            beamArea = Utils.getScorpioASKAP36B123SurveyBeamArea()
+            beamArea = Utils.getScorpioASKAP36B123SubChanSurveyBeamArea()
         elif survey == 'scorpio_askap36_b123_ch3':
-            beamArea = Utils.getScorpioASKAP36B123SurveyBeamArea()
+            beamArea = Utils.getScorpioASKAP36B123SubChanSurveyBeamArea()
         elif survey == 'scorpio_askap36_b123_ch4':
-            beamArea = Utils.getScorpioASKAP36B123SurveyBeamArea()
+            beamArea = Utils.getScorpioASKAP36B123SubChanSurveyBeamArea()
         elif survey == 'scorpio_askap36_b123_ch5':
-            beamArea = Utils.getScorpioASKAP36B123SurveyBeamArea()
+            beamArea = Utils.getScorpioASKAP36B123SubChanSurveyBeamArea()
         elif survey == 'thor':
             beamArea = Utils.getTHORSurveyBeamArea()
         elif survey == 'meerkat_gps':
