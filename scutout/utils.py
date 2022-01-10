@@ -502,7 +502,7 @@ class Utils(object):
         beamArea = Utils.getBeamArea(bmaj_deg, bmin_deg)
         return beamArea
 
-		@classmethod
+    @classmethod
     def getScorpioASKAP36B123SubChanSurveyBeamArea(cls):
         """ Returns Scorpio ASKAP 36 B123 ch1 survey beam area """
         bmaj = 14.0  # arcsec
