@@ -1072,9 +1072,9 @@ class Utils(object):
           n_wcs_axis= wcs.naxis
           if ndim!=n_wcs_axis:
             errmsg= "Data and WCS axis (" + str(n_wcs_axis) + ") still differs, giving up ..."
+            logger.error(errmsg) 
             print("FITS header")
             print(header)
-            logger.error(errmsg) 
             raise Exception(errmsg)
 
         # - Read WCS axis name
