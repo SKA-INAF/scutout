@@ -1067,6 +1067,31 @@ class Utils(object):
           if 'PC04_04' in header:
             del header['PC04_04']
 
+          if 'PC3_1' in header:
+            del header['PC3_1']
+          if 'PC4_1' in header:
+            del header['PC4_1']
+          if 'PC3_2' in header:
+            del header['PC3_2']
+          if 'PC4_2' in header:
+            del header['PC4_2']
+          if 'PC1_3' in header:
+            del header['PC1_3']
+          if 'PC2_3' in header:
+            del header['PC2_3']
+          if 'PC3_3' in header:
+            del header['PC3_3']
+          if 'PC4_3' in header:
+            del header['PC4_3']
+          if 'PC1_4' in header:
+            del header['PC1_4']
+          if 'PC2_4' in header:
+            del header['PC2_4']
+          if 'PC3_4' in header:
+            del header['PC3_4']
+          if 'PC4_4' in header:
+            del header['PC4_4']
+
           logger.info("Recreating WCS after modyfying the header ...") 
           wcs = WCS(header)
           n_wcs_axis= wcs.naxis
