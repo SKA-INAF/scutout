@@ -280,10 +280,10 @@ class CutoutHelper(object):
 			return -1
 
 		# - Convert to Jy/pixel units?
-		band= -1
-		pos= survey.find('_b')
-		if pos>0:
-			band= int(survey[pos+2:])
+		#band= -1
+		#pos= survey.find('_b')
+		#if pos>0:
+		#	band= int(survey[pos+2:])
 
 		if self.config.convert_to_jypix_units:
 			cutout_file_scaled= self.sname + '_' + survey + '_cut_jy.fits'
