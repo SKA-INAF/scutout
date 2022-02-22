@@ -1012,6 +1012,7 @@ class Utils(object):
         if ndim!=n_wcs_axis:
           logger.info("Data and WCS axis differs, trying to remove 3rd & 4th axis header keywords ...") 
 
+          header['NAXIS']= 2			
           if 'NAXIS3' in header:
             del header['NAXIS3']
           if 'NAXIS4' in header:
