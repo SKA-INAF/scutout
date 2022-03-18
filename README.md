@@ -6,9 +6,14 @@ This software is distributed with GPLv3 license. If you use scutout for your res
 
 ## **Installation**  
 
-To build and install the package:    
+To install the package with pip from PyPi:      
 
-* Create a local install directory, e.g. ```$INSTALL_DIR```
+``` pip install scutout ```     
+      
+To build and install the package from source:    
+
+* Clone this repository or download the tar file of the desired release;    
+* Create a local install directory, e.g. ```$INSTALL_DIR```;    
 * Add installation path to your ```PYTHONPATH``` environment variable:   
   ``` export PYTHONPATH=$PYTHONPATH:$INSTALL_DIR/lib/python2.7/site-packages ```
 * Build and install package:   
