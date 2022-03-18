@@ -25,7 +25,8 @@ print("PY VERSION: maj=%s, min=%s" % (PY_MAJOR_VERSION,PY_MINOR_VERSION))
 
 reqs= []
 reqs.append('numpy>=1.10')
-reqs.append('astropy>=2.0, <3')
+#reqs.append('astropy>=2.0, <3')
+reqs.append('astropy')
 reqs.append('montage-wrapper')
 reqs.append('radio-beam')
 reqs.append('regions')
