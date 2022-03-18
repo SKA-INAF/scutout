@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 __title__ = 'scutout'
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 __author__ = 'Simone Riggi'
 __license__ = 'GPL3'
 __date__ = '2019-05-29'
