@@ -49,7 +49,6 @@ data_dir = 'data'
 
 setup(
 	name="scutout",
-	packages=["scutout"],
 	version=get_version(),
 	author="Simone Riggi",
 	author_email="simone.riggi@gmail.com",
