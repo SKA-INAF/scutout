@@ -49,15 +49,24 @@ data_dir = 'data'
 
 setup(
 	name="scutout",
+	packages=["scutout"],
 	version=get_version(),
 	author="Simone Riggi",
 	author_email="simone.riggi@gmail.com",
 	description="Tool to extract source cutouts from a collection of astronomical FITS images",
 	license = "GPL3",
 	url="https://github.com/SKA-INAF/scutout",
+  download_url="https://github.com/user/reponame/archive/v1.0.0.tar.gz",
+	keywords = ['source', 'cutout', 'survey'],
 	long_description=read('README.md'),
 	packages=['scutout'],
 	install_requires=reqs,
 	scripts=['scripts/run_scutout.py'],
-	
+	classifiers=[
+    'Development Status :: 5 - Production/Stable',
+    'Intended Audience :: Science/Research',
+    'Topic :: Scientific/Engineering :: Astronomy',
+    'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+    'Programming Language :: Python :: 3'
+  ]
 )
