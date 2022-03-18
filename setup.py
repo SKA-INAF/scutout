@@ -58,6 +58,7 @@ setup(
   download_url="https://github.com/user/reponame/archive/v1.0.0.tar.gz",
 	keywords = ['source', 'cutout', 'survey'],
 	long_description=read('README.md'),
+	long_description_content_type='text/markdown',
 	packages=['scutout'],
 	install_requires=reqs,
 	scripts=['scripts/run_scutout.py'],

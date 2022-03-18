@@ -74,8 +74,9 @@ To run source cutout tool:
 * Run cutout search:   
   ``` $INSTALL_DIR/bin/run_scutout.py --config=config.ini --filename=sources.dat```   
 
-* Run Unit tests:
-To run tests, cd into scutout directory and type:
+## **Testing** 
+
+To run unit tests, enter into scutout directory and type:
 
 ``` python -m unittest -v tests.test_utils```
 
