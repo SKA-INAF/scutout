@@ -377,7 +377,7 @@ class Config(object):
 			self.parser.add_section(section_name)
 
 		# - Add metadata field to section
-		self.parser.set(section_name, 'metadata', metadata)
+		self.parser.set(section_name, 'metadata', metadata_path)
 
 		return 0
 
@@ -759,7 +759,7 @@ class Config(object):
 				self.survey_options['custom_survey']['metadata']= option_value
 	
 
-	def parse(self, filename, add_survey=False, metadata_path=""):
+	def parse(self, filename, add_survey=False, metadata_path="", validate=True):
 		""" Read input INI config file and set options """
 
 		# ***************************
@@ -786,9 +786,10 @@ class Config(object):
 		# ***************************
 		# **    VALIDATE CONFIG
 		# ***************************
-		if self.__validate()<0:
-			logger.error("Invalid configuration options detected, please check!")
-			return -1
+		if validate:
+			if self.__validate()<0:
+				logger.error("Invalid configuration options detected, please check!")
+				return -1
 
 		return 0
 
