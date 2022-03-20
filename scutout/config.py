@@ -787,7 +787,7 @@ class Config(object):
 		# **    VALIDATE CONFIG
 		# ***************************
 		if validate:
-			if self.__validate()<0:
+			if self.validate()<0:
 				logger.error("Invalid configuration options detected, please check!")
 				return -1
 
@@ -796,7 +796,7 @@ class Config(object):
 	#==============================
 	#     VALIDATE CONFIG
 	#==============================
-	def __validate(self):
+	def validate(self):
 		""" Validate config file """
 		
 		# - Check survey options
