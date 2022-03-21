@@ -43,7 +43,7 @@ else:
 	reqs.append('pyparsing')
 	#reqs.append('matplotlib')
 
-
+reqs.append('enlighten')
 
 
 data_dir = 'data'
