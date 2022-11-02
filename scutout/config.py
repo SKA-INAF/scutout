@@ -301,6 +301,7 @@ class Config(object):
 			"scorpio_askap36_b123_ch3" : scorpio_askap36_b123_ch3_options,
 			"scorpio_askap36_b123_ch4" : scorpio_askap36_b123_ch4_options,
 			"scorpio_askap36_b123_ch5" : scorpio_askap36_b123_ch5_options,
+			"scorpio_askap36_pilot2_b1" : scorpio_askap36_pilot2_b1_options,
 			"thor" : thor_options,
 			"meerkat_gps" : meerkat_gps_options,
 			"meerkat_gps_ch1" : meerkat_gps_ch1_options,
@@ -651,6 +652,11 @@ class Config(object):
 			option_value= self.parser.get('SCORPIO_ASKAP36_B123_CH5_DATA', 'metadata')	
 			if option_value:
 				self.survey_options['scorpio_askap36_b123_ch5']['metadata']= option_value
+
+		if self.parser.has_option('SCORPIO_ASKAP36_PILOT2_B1_DATA', 'metadata'):
+			option_value= self.parser.get('SCORPIO_ASKAP36_PILOT2_B1_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['scorpio_askap36_pilot2_b1']['metadata']= option_value
 
 		# - Parse THOR survey
 		if self.parser.has_option('THOR_DATA', 'metadata'):

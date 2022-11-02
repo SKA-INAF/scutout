@@ -513,6 +513,16 @@ class Utils(object):
         return beamArea
 
     @classmethod
+    def getScorpioASKAP36Pilot2B1SurveyBeamArea(cls):
+        """ Returns Scorpio ASKAP 36 Pilot2 B1 survey beam area """
+        bmaj = 16.6  # arcsec (NB: tiles have different bmaj: 16.6, 16.6, 17, 20.7)
+        bmin = 13.4  # arcsec (NB: tiles have different bmin: 13.4, 13.4, 13.6, 14.8)
+        bmaj_deg = bmaj/3600.
+        bmin_deg = bmin/3600.
+        beamArea = Utils.getBeamArea(bmaj_deg, bmin_deg)
+        return beamArea
+
+    @classmethod
     def getTHORSurveyBeamArea(cls):
         """ Returns THOR survey beam area """
         # Beam varying from 18.1 x 11.1 to 12.0 x 11.6
@@ -636,6 +646,8 @@ class Utils(object):
             beamArea = Utils.getScorpioASKAP36B123SubChanSurveyBeamArea()
         elif survey == 'scorpio_askap36_b123_ch5':
             beamArea = Utils.getScorpioASKAP36B123SubChanSurveyBeamArea()
+        elif survey == 'scorpio_askap36_pilot2_b1':
+            beamArea = Utils.getScorpioASKAP36Pilot2B1SurveyBeamArea()
         elif survey == 'thor':
             beamArea = Utils.getTHORSurveyBeamArea()
         elif survey == 'meerkat_gps':
@@ -1012,7 +1024,7 @@ class Utils(object):
         if ndim!=n_wcs_axis:
           logger.info("Data and WCS axis differs, trying to remove 3rd & 4th axis header keywords ...") 
 
-          header['NAXIS']= 2			
+          header['NAXIS']= 2
           if 'NAXIS3' in header:
             del header['NAXIS3']
           if 'NAXIS4' in header:
