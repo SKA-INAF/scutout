@@ -139,6 +139,9 @@ class Config(object):
 		scorpio_askap36_b123_ch5_options= {
 			"metadata": ""
 		}
+		scorpio_askap36_pilot2_b1_options= {
+			"metadata": ""
+		}
 		
 		# - THOR survey options
 		thor_options= {
