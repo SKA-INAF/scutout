@@ -210,6 +210,39 @@ class Config(object):
 			"metadata": ""
 		}
 
+		# - GLOSTAR D-config 5.8 GHz survey options
+		glostar_options= {
+			"metadata": ""
+		}
+
+		glostar_ch1_options= {
+			"metadata": ""
+		}
+		glostar_ch2_options= {
+			"metadata": ""
+		}
+		glostar_ch3_options= {
+			"metadata": ""
+		}
+		glostar_ch4_options= {
+			"metadata": ""
+		}
+		glostar_ch5_options= {
+			"metadata": ""
+		}
+		glostar_ch6_options= {
+			"metadata": ""
+		}
+		glostar_ch7_options= {
+			"metadata": ""
+		}
+		glostar_ch8_options= {
+			"metadata": ""
+		}
+		glostar_ch9_options= {
+			"metadata": ""
+		}
+
 		# - Spitzer IRAC survey options
 		spitzer_irac_3_6_options= {
 			"metadata": ""
@@ -324,6 +357,16 @@ class Config(object):
 			"askap_racs" : askap_racs_options,
 			"magpis_21cm" : magpis_21cm_options,
 			"cornish" : cornish_options,
+			"glostar" : glostar_options,
+			"glostar_ch1" : glostar_ch1_options,
+			"glostar_ch2" : glostar_ch2_options,
+			"glostar_ch3" : glostar_ch3_options,
+			"glostar_ch4" : glostar_ch4_options,
+			"glostar_ch5" : glostar_ch5_options,
+			"glostar_ch6" : glostar_ch6_options,
+			"glostar_ch7" : glostar_ch7_options,
+			"glostar_ch8" : glostar_ch8_options,
+			"glostar_ch9" : glostar_ch9_options,
 			"irac_3_6" : spitzer_irac_3_6_options,
 			"irac_4_5" : spitzer_irac_4_5_options,
 			"irac_5_8" : spitzer_irac_5_8_options,
@@ -760,6 +803,57 @@ class Config(object):
 			option_value= self.parser.get('CORNISH_DATA', 'metadata')	
 			if option_value:
 				self.survey_options['cornish']['metadata']= option_value
+
+		# - Parse GLOSTAR section options	
+		if self.parser.has_option('GLOSTAR_DATA', 'metadata'):
+			option_value= self.parser.get('GLOSTAR_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['glostar']['metadata']= option_value
+
+		if self.parser.has_option('GLOSTAR_CH1_DATA', 'metadata'):
+			option_value= self.parser.get('GLOSTAR_CH1_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['glostar_ch1']['metadata']= option_value
+
+		if self.parser.has_option('GLOSTAR_CH2_DATA', 'metadata'):
+			option_value= self.parser.get('GLOSTAR_CH2_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['glostar_ch2']['metadata']= option_value
+
+		if self.parser.has_option('GLOSTAR_CH3_DATA', 'metadata'):
+			option_value= self.parser.get('GLOSTAR_CH3_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['glostar_ch3']['metadata']= option_value
+
+		if self.parser.has_option('GLOSTAR_CH4_DATA', 'metadata'):
+			option_value= self.parser.get('GLOSTAR_CH4_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['glostar_ch4']['metadata']= option_value
+
+		if self.parser.has_option('GLOSTAR_CH5_DATA', 'metadata'):
+			option_value= self.parser.get('GLOSTAR_CH5_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['glostar_ch5']['metadata']= option_value
+
+		if self.parser.has_option('GLOSTAR_CH6_DATA', 'metadata'):
+			option_value= self.parser.get('GLOSTAR_CH6_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['glostar_ch6']['metadata']= option_value
+
+		if self.parser.has_option('GLOSTAR_CH7_DATA', 'metadata'):
+			option_value= self.parser.get('GLOSTAR_CH7_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['glostar_ch7']['metadata']= option_value
+
+		if self.parser.has_option('GLOSTAR_CH8_DATA', 'metadata'):
+			option_value= self.parser.get('GLOSTAR_CH8_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['glostar_ch8']['metadata']= option_value
+
+		if self.parser.has_option('GLOSTAR_CH9_DATA', 'metadata'):
+			option_value= self.parser.get('GLOSTAR_CH9_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['glostar_ch9']['metadata']= option_value
 
 		# - Parse custom survey section options	
 		if self.parser.has_option('CUSTOM_SURVEY_DATA', 'metadata'):

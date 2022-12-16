@@ -274,6 +274,16 @@ class Utils(object):
         return beamArea
 
     @classmethod
+    def getGLOSTARSurveyBeamArea(cls):
+        """ Returns GLOSTAR survey beam area """
+        bmaj = 18.  # arcsec
+        bmin = 18.  # arcsec
+        bmaj_deg = bmaj/3600.
+        bmin_deg = bmin/3600.
+        beamArea = Utils.getBeamArea(bmaj_deg, bmin_deg)
+        return beamArea
+
+    @classmethod
     def getWiseSurveyBeamArea(cls, band):
         """ Returns Wise survey beam area """
         if band == 'wise_3_4':     # http://wise2.ipac.caltech.edu/docs/release/allsky/  (Wrigth+10)
@@ -686,6 +696,26 @@ class Utils(object):
             beamArea = Utils.getMAGPIS21cmSurveyBeamArea()
         elif survey == 'cornish':
             beamArea = Utils.getCORNISHSurveyBeamArea()
+        elif survey == 'glostar':
+            beamArea = Utils.getGLOSTARSurveyBeamArea()
+        elif survey == 'glostar_ch1':
+            beamArea = Utils.getGLOSTARSurveyBeamArea()
+        elif survey == 'glostar_ch2':
+            beamArea = Utils.getGLOSTARSurveyBeamArea()
+        elif survey == 'glostar_ch3':
+            beamArea = Utils.getGLOSTARSurveyBeamArea()
+        elif survey == 'glostar_ch4':
+            beamArea = Utils.getGLOSTARSurveyBeamArea()
+        elif survey == 'glostar_ch5':
+            beamArea = Utils.getGLOSTARSurveyBeamArea()
+        elif survey == 'glostar_ch6':
+            beamArea = Utils.getGLOSTARSurveyBeamArea()
+        elif survey == 'glostar_ch7':
+            beamArea = Utils.getGLOSTARSurveyBeamArea()
+        elif survey == 'glostar_ch8':
+            beamArea = Utils.getGLOSTARSurveyBeamArea()
+        elif survey == 'glostar_ch9':
+            beamArea = Utils.getGLOSTARSurveyBeamArea()
         else:
             logger.error("Unknown survey (" + survey + "), returning area=0!")
             beamArea = 0
