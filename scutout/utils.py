@@ -533,6 +533,18 @@ class Utils(object):
         return beamArea
 
     @classmethod
+    def getASKAPEMUPilot2B1SurveyBeamArea(cls):
+        """ Returns ASKAP EMU pilot 2 survey beam area """
+        ## NB: Assuming 16.6"x13.4", but each tile has different beam size, e.g. 18"x18" (SB33284), 16.6"x13.4" (SB32043, SB32526), 20.7"x14.8" (SB32145)
+        bmaj = 16.6  # arcsec 
+        bmin = 13.4  # arcsec
+        bmaj_deg = bmaj/3600.
+        bmin_deg = bmin/3600.
+        beamArea = Utils.getBeamArea(bmaj_deg, bmin_deg)
+        return beamArea
+
+
+    @classmethod
     def getTHORSurveyBeamArea(cls):
         """ Returns THOR survey beam area """
         # Beam varying from 18.1 x 11.1 to 12.0 x 11.6
@@ -658,6 +670,8 @@ class Utils(object):
             beamArea = Utils.getScorpioASKAP36B123SubChanSurveyBeamArea()
         elif survey == 'scorpio_askap36_pilot2_b1':
             beamArea = Utils.getScorpioASKAP36Pilot2B1SurveyBeamArea()
+        elif survey == 'askap_emu_pilot2_b1':
+            beamArea = Utils.getASKAPEMUPilot2B1SurveyBeamArea()
         elif survey == 'thor':
             beamArea = Utils.getTHORSurveyBeamArea()
         elif survey == 'meerkat_gps':

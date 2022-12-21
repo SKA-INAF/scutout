@@ -117,7 +117,7 @@ class Config(object):
 			"metadata": ""
 		}
 
-		# - SCORPIO ASKAP survey options
+		# - SCORPIO ASKAP EMU survey options
 		scorpio_askap15_b1_options= {
 			"metadata": ""
 		}
@@ -139,7 +139,10 @@ class Config(object):
 		scorpio_askap36_b123_ch5_options= {
 			"metadata": ""
 		}
-		scorpio_askap36_pilot2_b1_options= {
+		#scorpio_askap36_pilot2_b1_options= {
+		#	"metadata": ""
+		#}
+		askap_emu_pilot2_b1_options= {
 			"metadata": ""
 		}
 		
@@ -337,7 +340,8 @@ class Config(object):
 			"scorpio_askap36_b123_ch3" : scorpio_askap36_b123_ch3_options,
 			"scorpio_askap36_b123_ch4" : scorpio_askap36_b123_ch4_options,
 			"scorpio_askap36_b123_ch5" : scorpio_askap36_b123_ch5_options,
-			"scorpio_askap36_pilot2_b1" : scorpio_askap36_pilot2_b1_options,
+			##"scorpio_askap36_pilot2_b1" : scorpio_askap36_pilot2_b1_options,
+			"askap_emu_pilot2_b1" : askap_emu_pilot2_b1_options,
 			"thor" : thor_options,
 			"meerkat_gps" : meerkat_gps_options,
 			"meerkat_gps_ch1" : meerkat_gps_ch1_options,
@@ -699,10 +703,15 @@ class Config(object):
 			if option_value:
 				self.survey_options['scorpio_askap36_b123_ch5']['metadata']= option_value
 
-		if self.parser.has_option('SCORPIO_ASKAP36_PILOT2_B1_DATA', 'metadata'):
-			option_value= self.parser.get('SCORPIO_ASKAP36_PILOT2_B1_DATA', 'metadata')	
+		#if self.parser.has_option('SCORPIO_ASKAP36_PILOT2_B1_DATA', 'metadata'):
+		#	option_value= self.parser.get('SCORPIO_ASKAP36_PILOT2_B1_DATA', 'metadata')	
+		#	if option_value:
+		#		self.survey_options['scorpio_askap36_pilot2_b1']['metadata']= option_value
+
+		if self.parser.has_option('ASKAP_EMU_PILOT2_B1_DATA', 'metadata'):
+			option_value= self.parser.get('ASKAP_EMU_PILOT2_B1_DATA', 'metadata')	
 			if option_value:
-				self.survey_options['scorpio_askap36_pilot2_b1']['metadata']= option_value
+				self.survey_options['askap_emu_pilot2_b1']['metadata']= option_value
 
 		# - Parse THOR survey
 		if self.parser.has_option('THOR_DATA', 'metadata'):
