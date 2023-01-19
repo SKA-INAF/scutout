@@ -150,6 +150,24 @@ class Config(object):
 		thor_options= {
 			"metadata": ""
 		}
+		thor_ch1_options= {
+			"metadata": ""
+		}
+		thor_ch2_options= {
+			"metadata": ""
+		}
+		thor_ch3_options= {
+			"metadata": ""
+		}
+		thor_ch4_options= {
+			"metadata": ""
+		}
+		thor_ch5_options= {
+			"metadata": ""
+		}
+		thor_ch6_options= {
+			"metadata": ""
+		}		
 
 		# - MEERKAT-GPS survey options
 		meerkat_gps_options= {
@@ -343,6 +361,12 @@ class Config(object):
 			##"scorpio_askap36_pilot2_b1" : scorpio_askap36_pilot2_b1_options,
 			"askap_emu_pilot2_b1" : askap_emu_pilot2_b1_options,
 			"thor" : thor_options,
+			"thor_ch1" : thor_ch1_options,
+			"thor_ch2" : thor_ch2_options,
+			"thor_ch3" : thor_ch3_options,
+			"thor_ch4" : thor_ch4_options,
+			"thor_ch5" : thor_ch5_options,
+			"thor_ch6" : thor_ch6_options,
 			"meerkat_gps" : meerkat_gps_options,
 			"meerkat_gps_ch1" : meerkat_gps_ch1_options,
 			"meerkat_gps_ch2" : meerkat_gps_ch2_options,
@@ -718,6 +742,36 @@ class Config(object):
 			option_value= self.parser.get('THOR_DATA', 'metadata')	
 			if option_value:
 				self.survey_options['thor']['metadata']= option_value
+
+		if self.parser.has_option('THOR_CH1_DATA', 'metadata'):
+			option_value= self.parser.get('THOR_CH1_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['thor_ch1']['metadata']= option_value
+
+		if self.parser.has_option('THOR_CH2_DATA', 'metadata'):
+			option_value= self.parser.get('THOR_CH2_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['thor_ch2']['metadata']= option_value
+
+		if self.parser.has_option('THOR_CH3_DATA', 'metadata'):
+			option_value= self.parser.get('THOR_CH3_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['thor_ch3']['metadata']= option_value
+
+		if self.parser.has_option('THOR_CH4_DATA', 'metadata'):
+			option_value= self.parser.get('THOR_CH4_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['thor_ch4']['metadata']= option_value
+
+		if self.parser.has_option('THOR_CH5_DATA', 'metadata'):
+			option_value= self.parser.get('THOR_CH5_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['thor_ch5']['metadata']= option_value
+
+		if self.parser.has_option('THOR_CH6_DATA', 'metadata'):
+			option_value= self.parser.get('THOR_CH6_DATA', 'metadata')	
+			if option_value:
+				self.survey_options['thor_ch6']['metadata']= option_value
 
 		# - Parse MeerKAT-GPS section options	
 		if self.parser.has_option('MEERKAT_GPS_DATA', 'metadata'):

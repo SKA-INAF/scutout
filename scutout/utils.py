@@ -556,6 +556,16 @@ class Utils(object):
         return beamArea
 
     @classmethod
+    def getTHORSurveyConvBeamArea(cls):
+        """ Returns THOR survey beam area """
+        bmaj = 25  # arcsec
+        bmin = 25  # arcsec
+        bmaj_deg = bmaj/3600.
+        bmin_deg = bmin/3600.
+        beamArea = Utils.getBeamArea(bmaj_deg, bmin_deg)
+        return beamArea
+
+    @classmethod
     def getMeerkatGPSSurveyBeamArea(cls):
         """ Returns Meerkat GPS survey beam area """
         bmaj = 8  # arcsec
@@ -674,6 +684,18 @@ class Utils(object):
             beamArea = Utils.getASKAPEMUPilot2B1SurveyBeamArea()
         elif survey == 'thor':
             beamArea = Utils.getTHORSurveyBeamArea()
+        elif survey == 'thor_ch1':
+            beamArea = Utils.getTHORSurveyConvBeamArea()
+        elif survey == 'thor_ch2':
+            beamArea = Utils.getTHORSurveyConvBeamArea()
+        elif survey == 'thor_ch3':
+            beamArea = Utils.getTHORSurveyConvBeamArea()
+        elif survey == 'thor_ch4':
+            beamArea = Utils.getTHORSurveyConvBeamArea()
+        elif survey == 'thor_ch5':
+            beamArea = Utils.getTHORSurveyConvBeamArea()
+        elif survey == 'thor_ch6':
+            beamArea = Utils.getTHORSurveyConvBeamArea()
         elif survey == 'meerkat_gps':
             beamArea = Utils.getMeerkatGPSSurveyBeamArea()
         elif survey == 'meerkat_gps_ch1':
